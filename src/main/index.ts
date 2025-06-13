@@ -3,6 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import initIpcServer from './server'
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -18,6 +20,10 @@ function createWindow(): void {
   })
 
   mainWindow.on('ready-to-show', () => {
+    // 开发环境自动打开 dev-tool
+    if (is.dev) {
+      mainWindow.webContents.openDevTools()
+    }
     mainWindow.show()
   })
 
@@ -49,8 +55,8 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  // IPC test
-  ipcMain.on('ping', () => console.log('pong'))
+  // register IPC functions
+  initIpcServer(ipcMain)
 
   createWindow()
 
