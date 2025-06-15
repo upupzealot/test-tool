@@ -1,47 +1,37 @@
 <template>
   <div class="root">
-    <div class="header" :style="{ fontSize }">
-      <span v-if="project.name"><FileOutlined /> {{ project.name }}</span>
-      <a-button type="link" @click="openProjectFile"><FolderOpenOutlined /></a-button>
-      <a-button type="link"><PlusOutlined /></a-button>
-
-      <a-button type="link" style="float: right"><SettingOutlined />Settings</a-button>
+    <HeaderMenu class="header" />
+    <div class="content">
+      <a-tabs v-model:activeKey="activeTab">
+        <a-tab-pane
+          key="project-info"
+          tab="基本信息"
+        >
+          <ProjectInfo />
+        </a-tab-pane>
+        <a-tab-pane
+          key="test-cases"
+          tab="测试用例"
+          force-render
+        >
+          <TestCases />
+        </a-tab-pane>
+      </a-tabs>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { theme } from 'ant-design-vue'
-import {
-  FileOutlined,
-  FolderOpenOutlined,
-  PlusOutlined,
-  SettingOutlined
-} from '@ant-design/icons-vue'
-
-import { mapState, mapActions } from 'pinia'
-import { useProjectStore } from './store.ts'
+import HeaderMenu from './components/Menu.vue'
+import ProjectInfo from './components/ProjectInfo.vue'
+import TestCases from './components/TestCases.vue'
 
 export default {
-  components: { FileOutlined, FolderOpenOutlined, PlusOutlined, SettingOutlined },
+  // eslint-disable-next-line vue/no-reserved-component-names
+  components: { HeaderMenu, ProjectInfo, TestCases },
   data() {
-    const seed = theme.defaultSeed
-    const projectStore = useProjectStore()
-
     return {
-      fontSize: `${seed.fontSize}px`,
-      projectStore
-    }
-  },
-  computed: {
-    ...mapState(useProjectStore, ['project'])
-  },
-  methods: {
-    ...mapActions(useProjectStore, ['loadProject']),
-    async openProjectFile() {
-      const { ipcRenderer } = window.electron
-      const projectObj = await ipcRenderer.invoke('open-project-file')
-      this.loadProject(projectObj)
+      activeTab: 'project-info'
     }
   }
 }
@@ -60,7 +50,8 @@ export default {
 }
 .header {
   flex: 0;
-  padding: 10px;
-  background-color: aliceblue;
+}
+.content {
+  padding: 0 15px;
 }
 </style>
