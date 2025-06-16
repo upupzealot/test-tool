@@ -18,12 +18,22 @@
         v-model:value="filePath"
       />
     </a-form-item>
+    <a-divider></a-divider>
     <a-form-item
       label="项目名称"
       name="name"
       :rules="[{ required: true, message: '请输入项目名称!' }]"
     >
       <a-input v-model:value="form.name" />
+    </a-form-item>
+    <a-form-item
+      label="项目简介"
+      name="desc"
+    >
+      <a-textarea
+        v-model:value="form.desc"
+        :auto-size="{ minRows: 2, maxRows: 5 }"
+      />
     </a-form-item>
   </a-form>
 </template>
@@ -32,9 +42,7 @@
 import { Form } from 'ant-design-vue'
 import { defineComponent, PropType, toRaw } from 'vue'
 
-type Project = {
-  name: string
-}
+import { Project } from './types'
 
 export default defineComponent({
   props: {
@@ -43,7 +51,7 @@ export default defineComponent({
       required: true
     },
     mode: {
-      type: Object as PropType<'create' | 'edit'>,
+      type: String as PropType<'create' | 'edit'>,
       defaultValue: 'create'
     },
     filePath: {

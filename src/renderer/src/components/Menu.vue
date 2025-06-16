@@ -58,6 +58,7 @@ import { mapState, mapActions } from 'pinia'
 import { useProjectStore } from '../store'
 
 import ProjectForm from './ProjectForm.vue'
+import { Project } from './types'
 
 export default {
   components: { FolderOpenOutlined, PlusOutlined, SettingOutlined, ProjectForm },
@@ -71,8 +72,9 @@ export default {
       projectStore,
       createProjectModalVisible: false,
       projectForm: {
-        name: ''
-      },
+        name: '',
+        tests: []
+      } as Project,
       projectFormLoading: false
     }
   },
@@ -90,7 +92,7 @@ export default {
       }
     },
     async createProject() {
-      this.projectForm = { name: '' }
+      this.projectForm = { name: '', tests: [] }
       this.createProjectModalVisible = true
     },
     async onCancel() {
