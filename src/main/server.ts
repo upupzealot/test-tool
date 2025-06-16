@@ -8,22 +8,33 @@ export default function init(ipcMain: Electron.IpcMain): void {
       filters: [{ name: 'tt.json', extensions: ['.tt.json'] }]
     })
     if (canceled) {
-      return null
+      return { filePath: null }
     } else {
-      return await fs.readJSON(filePaths[0])
+      const filePath = filePaths[0]
+      const projectObj = await fs.readJSON(filePath)
+      return { filePath, projectObj }
     }
   })
 
-  ipcMain.handle('save-project-file', async (__, ...args) => {
+  async function saveProject(filePath, projectObj) {
+    await fs.writeJSON(filePath, projectObj)
+    return { filePath, projectObj }
+  }
+
+  ipcMain.handle('create-project-file', async (__, ...args) => {
     const { canceled, filePath } = await dialog.showSaveDialog({
       filters: [{ name: 'tt.json', extensions: ['.tt.json'] }]
     })
     if (canceled) {
-      return null
+      return { filePath: null }
     } else {
       const [projectObj] = args
-      await fs.writeJSON(filePath, projectObj)
-      return filePath
+      return await saveProject(filePath, projectObj)
     }
+  })
+
+  ipcMain.handle('update-project-file', async (__, ...args) => {
+    const [filePath, projectObj] = args
+    return await saveProject(filePath, projectObj)
   })
 }

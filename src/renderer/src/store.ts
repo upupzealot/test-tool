@@ -2,13 +2,16 @@ import { defineStore } from 'pinia'
 
 export const useProjectStore = defineStore('project', {
   state: () => ({
+    filePath: '',
     project: {
-      name: '',
-      location: ''
+      name: ''
     }
   }),
   actions: {
-    loadProject(project) {
+    setPath(filePath) {
+      this.filePath = filePath
+    },
+    setProject(project) {
       this.project = project
     }
   }

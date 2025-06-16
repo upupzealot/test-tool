@@ -2,7 +2,11 @@
   <div class="root">
     <HeaderMenu class="header" />
     <div class="content">
-      <a-tabs v-model:activeKey="activeTab">
+      <a-tabs
+        v-model:activeKey="activeTab"
+        size="small"
+        v-if="project && project.name"
+      >
         <a-tab-pane
           key="project-info"
           tab="基本信息"
@@ -22,6 +26,9 @@
 </template>
 
 <script lang="ts">
+import { mapState } from 'pinia'
+import { useProjectStore } from './store'
+
 import HeaderMenu from './components/Menu.vue'
 import ProjectInfo from './components/ProjectInfo.vue'
 import TestCases from './components/TestCases.vue'
@@ -33,6 +40,9 @@ export default {
     return {
       activeTab: 'project-info'
     }
+  },
+  computed: {
+    ...mapState(useProjectStore, ['project'])
   }
 }
 </script>

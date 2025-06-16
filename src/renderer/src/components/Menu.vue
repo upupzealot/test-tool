@@ -19,21 +19,11 @@
       v-model:open="createProjectModalVisible"
       title="新建项目"
     >
-      <a-form
-        ref="createProjectForm"
-        :model="projectForm"
-        name="basic"
-        :label-col="{ style: { width: '80px' } }"
-        :wrapper-col="{ span: 16 }"
-      >
-        <a-form-item
-          label="项目名称"
-          name="name"
-          :rules="[{ required: true, message: '请输入项目名称!' }]"
-        >
-          <a-input v-model:value="projectForm.name" />
-        </a-form-item>
-      </a-form>
+      <ProjectForm
+        ref="projectForm"
+        :form="projectForm"
+        mode="create"
+      />
       <template #footer>
         <a-button
           key="back"
@@ -61,15 +51,16 @@
 </template>
 
 <script lang="ts">
-import { toRaw } from 'vue'
-import { theme, Form } from 'ant-design-vue'
+import { theme } from 'ant-design-vue'
 import { FolderOpenOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons-vue'
 
 import { mapState, mapActions } from 'pinia'
 import { useProjectStore } from '../store'
 
+import ProjectForm from './ProjectForm.vue'
+
 export default {
-  components: { FolderOpenOutlined, PlusOutlined, SettingOutlined },
+  components: { FolderOpenOutlined, PlusOutlined, SettingOutlined, ProjectForm },
   data() {
     const seed = theme.defaultSeed
     console.log(theme.defaultAlgorithm(seed))
@@ -86,15 +77,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['project'])
+    ...mapState(useProjectStore, ['filePath', 'project'])
   },
   methods: {
-    ...mapActions(useProjectStore, ['loadProject']),
+    ...mapActions(useProjectStore, ['setPath', 'setProject']),
     async openProjectFile() {
       const { ipcRenderer } = window.electron
-      const projectObj = await ipcRenderer.invoke('open-project-file')
+      const { filePath, projectObj } = await ipcRenderer.invoke('open-project-file')
       if (projectObj) {
-        this.loadProject(projectObj)
+        this.setPath(filePath)
+        this.setProject(projectObj)
       }
     },
     async createProject() {
@@ -105,16 +97,17 @@ export default {
       this.createProjectModalVisible = false
     },
     async onSubmit() {
-      const createForm = this.$refs['createProjectForm'] as typeof Form
+      const projectForm = this.$refs['projectForm'] as typeof ProjectForm
       try {
-        await createForm.validate()
-
-        const projectObj = toRaw(this.projectForm)
-        const { ipcRenderer } = window.electron
-        const res = await ipcRenderer.invoke('save-project-file', projectObj)
-        if (res) {
-          this.projectStore.loadProject(projectObj)
-          this.createProjectModalVisible = false
+        const projectObj = await projectForm.validate()
+        if (projectObj) {
+          const { ipcRenderer } = window.electron
+          const { filePath } = await ipcRenderer.invoke('create-project-file', projectObj)
+          if (filePath) {
+            this.projectStore.setPath(filePath)
+            this.projectStore.setProject(projectObj)
+            this.createProjectModalVisible = false
+          }
         }
       } catch (err) {}
     }
