@@ -7,6 +7,7 @@
     "src/preload/*.d.ts"
   ],
   "compilerOptions": {
+    // https://github.com/developer-plus/weekly/issues/31
     // "composite": true,
     "baseUrl": ".",
     "paths": {
