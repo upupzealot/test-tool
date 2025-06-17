@@ -2,7 +2,16 @@
   <div style="width: 240px">
     <!-- Header -->
     <div class="test-header">
-      <div>测试组</div>
+      <div>
+        <a-breadcrumb>
+          <a-breadcrumb-item v-for="pathNode in currentPaths">
+            <a @click="onEnterTestGroup(pathNode.id)">
+              <HomeOutlined v-if="pathNode.id === '-'" />
+              <span v-else>{{ pathNode.test.name }}</span>
+            </a>
+          </a-breadcrumb-item>
+        </a-breadcrumb>
+      </div>
       <a-button
         type="link"
         class="create-btn"
@@ -40,14 +49,18 @@
     <!-- Test List -->
     <VueDraggable
       class="test-list"
-      v-model="project.tests"
+      v-model="currentGroup.test.children"
     >
       <div
-        class="test-item"
-        v-for="test in project.tests"
+        v-for="test in currentGroup.test.children"
+        :class="test.id === currentNode?.id ? ['test-item', 'active'] : ['test-item']"
       >
         <!-- <div class="handler"><HolderOutlined /></div> -->
-        <div class="content">
+        <div
+          class="content"
+          @click="onSelectTestNode(test.id)"
+          @dblclick="onEnterTestGroup(test.id)"
+        >
           <div class="title"><FolderOutlined /> {{ test.name }}</div>
           <div class="desc">{{ test.desc }}</div>
         </div>
@@ -60,25 +73,31 @@
 import { mapState } from 'pinia'
 import { useProjectStore } from '../store'
 import { VueDraggable } from 'vue-draggable-plus'
-import { PlusOutlined, FolderOutlined } from '@ant-design/icons-vue'
+import { HomeOutlined, PlusOutlined, FolderOutlined } from '@ant-design/icons-vue'
 
 import TestForm from './TestForm.vue'
 import { Test } from './types'
 
+import ShortUniqueId from 'short-unique-id'
+const uid = new ShortUniqueId({ length: 10 })
+
 export default {
-  components: { VueDraggable, PlusOutlined, FolderOutlined, TestForm },
+  components: { VueDraggable, HomeOutlined, PlusOutlined, FolderOutlined, TestForm },
   data() {
+    const projectStore = useProjectStore()
+
     return {
+      projectStore,
       createModalVisible: false,
       testForm: {
         name: '',
         desc: '',
         children: []
-      } as Test
+      } as unknown as Test
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['project'])
+    ...mapState(useProjectStore, ['project', 'currentGroup', 'currentPaths', 'currentNode'])
   },
   methods: {
     async createTest() {
@@ -92,12 +111,22 @@ export default {
     async onSubmit() {
       const testForm = this.$refs['testForm'] as typeof TestForm
       try {
-        const testObj = await testForm.validate()
+        const testObj = (await testForm.validate()) as Test
         if (testObj) {
+          testObj.id = uid.rnd()
           this.project.tests.push(testObj)
+          console.log(this.project)
           this.createModalVisible = false
         }
       } catch (err) {}
+    },
+    async onSelectTestNode(testId: string) {
+      this.projectStore.updateTestTree()
+      this.projectStore.setCurrentNodeId(testId)
+    },
+    async onEnterTestGroup(testId: string) {
+      console.log('onEnterTestGroup', testId)
+      this.projectStore.setCurrentGroupId(testId)
     }
   }
 }
@@ -127,6 +156,9 @@ export default {
   align-items: center;
   margin-top: -1px;
 }
+.test-item.active {
+  background-color: aliceblue;
+}
 
 .test-item .handler {
   flex: 0;
@@ -136,6 +168,7 @@ export default {
 .test-item .content {
   flex: 1;
 }
+
 .test-item .title {
   font-weight: bold;
 }

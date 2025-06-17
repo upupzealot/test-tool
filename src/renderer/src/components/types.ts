@@ -1,8 +1,15 @@
 export type Test = {
+  id: string
   type: 'case' | 'group'
   name: string
   desc?: string
-  children: []
+  children: Test[]
+}
+
+export type TestNode = {
+  id: string
+  paths: string[]
+  test: Test
 }
 
 export type Project = {
