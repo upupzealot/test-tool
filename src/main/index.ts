@@ -5,6 +5,11 @@ import icon from '../../resources/icon.png?asset'
 
 import initIpcServer from './server'
 
+// init electron-conf
+import { Conf } from 'electron-conf/main'
+const conf = new Conf()
+conf.registerRendererListener()
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({

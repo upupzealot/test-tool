@@ -1,3 +1,6 @@
+import { Conf } from 'electron-conf/renderer'
+const conf = new Conf()
+
 import { defineStore } from 'pinia'
 import { Project, Test, TestNode } from './components/types'
 
@@ -38,8 +41,12 @@ export const useProjectStore = defineStore('project', {
     }
   },
   actions: {
-    setPath(filePath: string) {
+    async setPath(filePath: string) {
       this.filePath = filePath
+      await conf.set('lastOpen', filePath)
+    },
+    async getPath() {
+      return await conf.get('lastOpen')
     },
     setProject(project: Project) {
       this.project = project

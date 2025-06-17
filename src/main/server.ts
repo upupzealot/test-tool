@@ -1,6 +1,16 @@
 import fs from 'fs-extra'
 import { dialog } from 'electron'
 
+async function writeProject(filePath, projectObj) {
+  await fs.writeJSON(filePath, projectObj)
+  return { filePath, projectObj }
+}
+
+async function readProject(filePath) {
+  const projectObj = await fs.readJSON(filePath)
+  return { filePath, projectObj }
+}
+
 export default function init(ipcMain: Electron.IpcMain): void {
   ipcMain.handle('open-project-file', async () => {
     const { canceled, filePaths } = await dialog.showOpenDialog({
@@ -11,15 +21,14 @@ export default function init(ipcMain: Electron.IpcMain): void {
       return { filePath: null }
     } else {
       const filePath = filePaths[0]
-      const projectObj = await fs.readJSON(filePath)
-      return { filePath, projectObj }
+      return await readProject(filePath)
     }
   })
 
-  async function saveProject(filePath, projectObj) {
-    await fs.writeJSON(filePath, projectObj)
-    return { filePath, projectObj }
-  }
+  ipcMain.handle('read-project-file', async (__, ...args) => {
+    const [filePath] = args
+    return await readProject(filePath)
+  })
 
   ipcMain.handle('create-project-file', async (__, ...args) => {
     const { canceled, filePath } = await dialog.showSaveDialog({
@@ -29,12 +38,12 @@ export default function init(ipcMain: Electron.IpcMain): void {
       return { filePath: null }
     } else {
       const [projectObj] = args
-      return await saveProject(filePath, projectObj)
+      return await writeProject(filePath, projectObj)
     }
   })
 
   ipcMain.handle('update-project-file', async (__, ...args) => {
     const [filePath, projectObj] = args
-    return await saveProject(filePath, projectObj)
+    return await writeProject(filePath, projectObj)
   })
 }

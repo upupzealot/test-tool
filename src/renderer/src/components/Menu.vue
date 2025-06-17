@@ -51,6 +51,9 @@
 </template>
 
 <script lang="ts">
+import { Conf } from 'electron-conf/renderer'
+const conf = new Conf()
+
 import { theme } from 'ant-design-vue'
 import { FolderOpenOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons-vue'
 
@@ -76,6 +79,17 @@ export default {
       projectFormLoading: false
     }
   },
+  async mounted() {
+    const { ipcRenderer } = window.electron
+    const lastOpen = await conf.get('lastOpen')
+    if (lastOpen) {
+      const { filePath, projectObj } = await ipcRenderer.invoke('read-project-file', lastOpen)
+      if (projectObj) {
+        await this.setPath(filePath)
+        this.setProject(projectObj)
+      }
+    }
+  },
   computed: {
     ...mapState(useProjectStore, ['filePath', 'project'])
   },
@@ -85,7 +99,7 @@ export default {
       const { ipcRenderer } = window.electron
       const { filePath, projectObj } = await ipcRenderer.invoke('open-project-file')
       if (projectObj) {
-        this.setPath(filePath)
+        await this.setPath(filePath)
         this.setProject(projectObj)
       }
     },
@@ -104,7 +118,7 @@ export default {
           const { ipcRenderer } = window.electron
           const { filePath } = await ipcRenderer.invoke('create-project-file', projectObj)
           if (filePath) {
-            this.setPath(filePath)
+            await this.setPath(filePath)
             this.setProject(projectObj)
             this.createProjectModalVisible = false
           }
