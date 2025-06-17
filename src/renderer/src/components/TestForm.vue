@@ -1,14 +1,14 @@
 <template>
   <a-form
-    ref="projectForm"
+    ref="testForm"
     :model="form"
     :layout="'horizontal'"
     :colon="false"
     :label-align="'right'"
     :label-col="{
       style: {
-        width: '90px',
-        maxWidth: '90px',
+        width: '60px',
+        maxWidth: '60px',
         textAlign: 'right',
         paddingBottom: 0,
         paddingRight: '10px'
@@ -18,25 +18,24 @@
     style="padding-top: 10px"
   >
     <a-form-item
-      label="文件路径"
-      name="filePath"
-      v-if="filePath"
+      label="类型"
+      name="type"
+      :rules="[{ required: true, message: '请选择类型' }]"
     >
-      <a-input
-        disabled
-        v-model:value="filePath"
-      />
+      <a-radio-group v-model:value="form.type">
+        <a-radio-button value="group"><FolderOutlined /> 测试组</a-radio-button>
+        <a-radio-button value="case"><CodeOutlined /> 测试用例</a-radio-button>
+      </a-radio-group>
     </a-form-item>
-    <a-divider v-if="filePath"></a-divider>
     <a-form-item
-      label="项目名称"
+      label="名称"
       name="name"
       :rules="[{ required: true, message: '请输入项目名称' }]"
     >
       <a-input v-model:value="form.name" />
     </a-form-item>
     <a-form-item
-      label="项目简介"
+      label="描述"
       name="desc"
     >
       <a-textarea
@@ -48,31 +47,29 @@
 </template>
 
 <script lang="ts">
-import { Form } from 'ant-design-vue'
 import { defineComponent, PropType, toRaw } from 'vue'
+import { Form } from 'ant-design-vue'
+import { FolderOutlined, CodeOutlined } from '@ant-design/icons-vue'
 
-import { Project } from './types'
+import { Test } from './types'
 
 export default defineComponent({
+  components: { FolderOutlined, CodeOutlined },
   props: {
     form: {
-      type: Object as PropType<Project>,
+      type: Object as PropType<Test>,
       required: true
     },
     mode: {
       type: String as PropType<'create' | 'edit'>,
       defaultValue: 'create'
-    },
-    filePath: {
-      type: String as PropType<string>,
-      defaultValue: ''
     }
   },
   methods: {
-    async validate(): Promise<Project | null> {
-      const projectForm = this.$refs['projectForm'] as typeof Form
+    async validate(): Promise<Test | null> {
+      const testForm = this.$refs['testForm'] as typeof Form
       try {
-        await projectForm.validate()
+        await testForm.validate()
         const projectObj = toRaw(this.form)
         return projectObj
       } catch (err) {

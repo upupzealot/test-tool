@@ -29,7 +29,8 @@ export default {
     return {
       projectStore,
       projectForm: {
-        name: ''
+        name: '',
+        tests: []
       }
     }
   },

@@ -1,4 +1,5 @@
 export type Test = {
+  type: 'case' | 'group'
   name: string
   desc?: string
   children: []
