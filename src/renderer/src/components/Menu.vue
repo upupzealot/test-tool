@@ -65,11 +65,9 @@ export default {
   data() {
     const seed = theme.defaultSeed
     console.log(theme.defaultAlgorithm(seed))
-    const projectStore = useProjectStore()
 
     return {
       fontSize: `${seed.fontSize}px`,
-      projectStore,
       createProjectModalVisible: false,
       projectForm: {
         name: '',
@@ -106,8 +104,8 @@ export default {
           const { ipcRenderer } = window.electron
           const { filePath } = await ipcRenderer.invoke('create-project-file', projectObj)
           if (filePath) {
-            this.projectStore.setPath(filePath)
-            this.projectStore.setProject(projectObj)
+            this.setPath(filePath)
+            this.setProject(projectObj)
             this.createProjectModalVisible = false
           }
         }
