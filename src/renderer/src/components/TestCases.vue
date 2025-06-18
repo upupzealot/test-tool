@@ -49,10 +49,10 @@
     <!-- Test List -->
     <VueDraggable
       class="test-list"
-      v-model="currentGroup.test.children"
+      v-model="currentGroupNode.test.children"
     >
       <div
-        v-for="test in currentGroup.test.children"
+        v-for="test in currentGroupNode.test.children"
         :class="test.id === currentNode?.id ? ['test-item', 'active'] : ['test-item']"
       >
         <!-- <div class="handler"><HolderOutlined /></div> -->
@@ -78,9 +78,6 @@ import { HomeOutlined, PlusOutlined, FolderOutlined } from '@ant-design/icons-vu
 import TestForm from './TestForm.vue'
 import { Test } from './types'
 
-import ShortUniqueId from 'short-unique-id'
-const uid = new ShortUniqueId({ length: 10 })
-
 export default {
   components: { VueDraggable, HomeOutlined, PlusOutlined, FolderOutlined, TestForm },
   data() {
@@ -97,7 +94,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['project', 'currentGroup', 'currentPaths', 'currentNode'])
+    ...mapState(useProjectStore, ['project', 'currentGroupNode', 'currentPaths', 'currentNode'])
   },
   methods: {
     async createTest() {
@@ -113,12 +110,13 @@ export default {
       try {
         const testObj = (await testForm.validate()) as Test
         if (testObj) {
-          testObj.id = uid.rnd()
-          this.project.tests.push(testObj)
-          console.log(this.project)
+          this.projectStore.createNode(this.currentGroupNode.id, testObj)
+          this.projectStore.updateTestTree()
           this.createModalVisible = false
         }
-      } catch (err) {}
+      } catch (err) {
+        console.error(err)
+      }
     },
     async onSelectTestNode(testId: string) {
       this.projectStore.updateTestTree()

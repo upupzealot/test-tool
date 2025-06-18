@@ -74,8 +74,8 @@ export default {
       createProjectModalVisible: false,
       projectForm: {
         name: '',
-        tests: []
-      } as Project,
+        children: []
+      } as unknown as Project,
       projectFormLoading: false
     }
   },
@@ -104,7 +104,7 @@ export default {
       }
     },
     async createProject() {
-      this.projectForm = { name: '', tests: [] }
+      this.projectForm = { name: '', desc: '' } as unknown as Project
       this.createProjectModalVisible = true
     },
     async onCancel() {
