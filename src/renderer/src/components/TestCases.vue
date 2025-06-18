@@ -1,14 +1,29 @@
 <template>
-  <div style="width: 240px">
+  <!-- <div style="width: 240px">
     <TestTreeList
+      mode="path"
       :currentNode="currentNode"
       :currentGroup="currentGroupNode"
-      :pathNodes="currentPaths"
+      :getNode="getNode"
+      @selectNode="onSelectNode"
+      @enterGroup="onEnterGroup"
+      @createNode="onCreateNode"
+    />
+  </div> -->
+
+  <div style="width: 480px">
+    <TestTreeDoubleList
+      :currentNode="currentNode"
+      :currentGroup="currentGroupNode"
+      :getNode="getNode"
       @selectNode="onSelectNode"
       @enterGroup="onEnterGroup"
       @createNode="onCreateNode"
     />
   </div>
+
+  <div>currentNode: {{ currentNode?.test.name }}</div>
+  <div>currentGroup:{{ currentGroupNode?.test.name }}</div>
 </template>
 
 <script lang="ts">
@@ -17,23 +32,23 @@ import { useProjectStore } from '../store'
 
 import { Test } from './types'
 import TestTreeList from './TestTreeList.vue'
+import TestTreeDoubleList from './TestTreeDoubleList.vue'
 
 export default {
   components: {
-    TestTreeList
-  },
-  data() {
-    const projectStore = useProjectStore()
-
-    return {
-      projectStore
-    }
+    TestTreeList,
+    TestTreeDoubleList
   },
   computed: {
     ...mapState(useProjectStore, ['currentGroupNode', 'currentPaths', 'currentNode'])
   },
   methods: {
-    ...mapActions(useProjectStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
+    ...mapActions(useProjectStore, [
+      'getNode',
+      'setCurrentNodeId',
+      'setCurrentGroupId',
+      'createNode'
+    ]),
     async onSelectNode(testId: string) {
       this.setCurrentNodeId(testId)
     },
@@ -44,7 +59,7 @@ export default {
       }
     },
     async onCreateNode(parentId: string, testObj: Test) {
-      this.projectStore.createNode(parentId, testObj)
+      this.createNode(parentId, testObj)
     }
   }
 }

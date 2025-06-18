@@ -2,11 +2,20 @@
   <!-- Header -->
   <div class="test-header">
     <div>
-      <a-breadcrumb>
+      <a-breadcrumb v-if="mode === 'path'">
         <a-breadcrumb-item v-for="pathNode in pathNodes">
           <a @click="$emit('enterGroup', pathNode.test.id)">
             <HomeOutlined v-if="pathNode.id === '-'" />
             <span v-else>{{ pathNode.test.name }}</span>
+          </a>
+        </a-breadcrumb-item>
+      </a-breadcrumb>
+
+      <a-breadcrumb v-if="mode === 'last'">
+        <a-breadcrumb-item>
+          <a>
+            <FolderOutlined />
+            <span>{{ ` ${currentGroup.test.name}` }}</span>
           </a>
         </a-breadcrumb-item>
       </a-breadcrumb>
@@ -94,6 +103,10 @@ export default defineComponent({
     TestForm
   },
   props: {
+    mode: {
+      type: String as PropType<'path' | 'last'>,
+      defaultValue: 'path'
+    },
     currentNode: {
       type: [Object, null] as PropType<TestNode | null>,
       required: true
@@ -102,8 +115,8 @@ export default defineComponent({
       type: Object as PropType<TestNode>,
       required: true
     },
-    pathNodes: {
-      type: Array as PropType<Array<TestNode>>,
+    getNode: {
+      type: Function as PropType<(string) => TestNode>,
       required: true
     }
   },
@@ -116,6 +129,11 @@ export default defineComponent({
         desc: '',
         children: []
       } as unknown as Test
+    }
+  },
+  computed: {
+    pathNodes() {
+      return this.currentGroup.paths.map(this.getNode)
     }
   },
   methods: {
