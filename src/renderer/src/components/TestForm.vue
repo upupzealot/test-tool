@@ -23,8 +23,8 @@
       :rules="[{ required: true, message: '请选择类型' }]"
     >
       <a-radio-group v-model:value="form.type">
-        <a-radio-button value="group"><FolderOutlined /> 测试组</a-radio-button>
-        <a-radio-button value="case"><CodeOutlined /> 测试用例</a-radio-button>
+        <a-radio value="case"><CodeOutlined /> 测试用例</a-radio>
+        <a-radio value="group"><FolderOutlined /> 测试组</a-radio>
       </a-radio-group>
     </a-form-item>
     <a-form-item

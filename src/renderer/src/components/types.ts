@@ -5,21 +5,21 @@ export interface Test {
   desc?: string
 }
 
-export interface TestNode<T extends Test> {
-  id: string
-  paths: string[]
-  test: T
-}
-
 export interface TestGroup extends Test {
   children: Test[]
 }
 
 export interface TestCase extends Test {}
 
+export interface TestNode {
+  id: string
+  paths: string[]
+  test: TestCase | TestGroup
+}
+
 export interface Project extends TestGroup {
   id: '-'
   name: string
   desc?: string
-  children: Test[]
+  children: (TestCase | TestGroup)[]
 }

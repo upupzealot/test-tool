@@ -24,22 +24,22 @@ export const useProjectStore = defineStore('project', {
     }) as {
       filePath: string
       project: Project
-      testNodeMap: Map<string, TestNode<Test>>
+      testNodeMap: Map<string, TestNode>
       currentNodeId: string
       currentGroupId: string
     },
   getters: {
-    currentNode(): TestNode<Test> | null {
+    currentNode(): TestNode | null {
       if (this.currentNodeId) {
         return this.testNodeMap[this.currentNodeId]
       } else {
         return null
       }
     },
-    currentGroupNode(): TestNode<TestGroup> {
+    currentGroupNode(): TestNode {
       return this.testNodeMap[this.currentGroupId || '-']
     },
-    currentPaths(): TestNode<TestGroup>[] {
+    currentPaths(): TestNode[] {
       return this.currentGroupNode.paths.map((path) => this.testNodeMap[path])
     }
   },
@@ -56,7 +56,7 @@ export const useProjectStore = defineStore('project', {
       this.updateTestTree()
     },
     updateTestTree() {
-      const testNodeMap = {} as Map<string, TestNode<Test>>
+      const testNodeMap = {} as Map<string, TestNode>
       testNodeMap['-'] = {
         id: '-',
         paths: ['-'],
@@ -66,8 +66,8 @@ export const useProjectStore = defineStore('project', {
           name: '-',
           children: this.project.children
         } as Test
-      } as TestNode<Test>
-      let arr: TestNode<Test>[] = this.project.children.map((test) => ({
+      } as TestNode
+      let arr: TestNode[] = this.project.children.map((test) => ({
         id: test.id,
         paths: ['-', test.id],
         test
@@ -77,9 +77,8 @@ export const useProjectStore = defineStore('project', {
         testNodeMap[testNode.id] = testNode
 
         if (testNode.test.type === 'group') {
-          console.log(11111, testNode)
           arr = arr.concat(
-            (testNode as TestNode<TestGroup>).test.children.map((childTest) => ({
+            (testNode.test as TestGroup).children.map((childTest) => ({
               id: childTest.id,
               paths: [...testNode.paths, childTest.id],
               test: childTest
@@ -89,15 +88,24 @@ export const useProjectStore = defineStore('project', {
       }
       this.testNodeMap = testNodeMap
     },
+    getNode(id: string): TestNode {
+      return this.testNodeMap[id]
+    },
     setCurrentNodeId(testId: string) {
       this.currentNodeId = testId
     },
     setCurrentGroupId(testId: string) {
-      this.currentNodeId = ''
-      this.currentGroupId = testId
+      const groupNode = this.testNodeMap[testId] as TestNode
+      if (groupNode.test.type === 'group') {
+        this.currentNodeId = ''
+        this.currentGroupId = testId
+      }
     },
-    createNode(parentId: string, testObj: { name: string; type: 'group' | 'case'; desc?: string }) {
-      const parentNode = this.testNodeMap[parentId] as TestNode<TestGroup>
+    createNode(
+      parentId: string,
+      testObj: { name: string; type: 'group' | 'case'; desc?: string }
+    ) {
+      const parentNode = this.testNodeMap[parentId] as TestNode
       if (!parentNode) {
         return console.error('父节点不存在')
       }
@@ -117,10 +125,9 @@ export const useProjectStore = defineStore('project', {
         id: test.id,
         paths: [...parentNode.paths, test.id],
         test
-      } as TestNode<Test>
+      } as TestNode
       this.testNodeMap[testNode.id] = testNode
-
-      parentNode.test.children.push(test)
+      ;(parentNode.test as TestGroup).children.push(test)
       this.updateTestTree()
     }
   }
