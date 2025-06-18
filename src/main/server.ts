@@ -46,4 +46,9 @@ export default function init(ipcMain: Electron.IpcMain): void {
     const [filePath, projectObj] = args
     return await writeProject(filePath, projectObj)
   })
+
+  ipcMain.handle('get-browser-paths', async () => {
+    const chromePaths = require('chrome-paths')
+    return chromePaths
+  })
 }

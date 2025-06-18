@@ -20,13 +20,25 @@ export const useProjectStore = defineStore('project', {
       // edit state
       testNodeMap: {},
       currentNodeId: '-',
-      currentGroupId: '-'
+      currentGroupId: '-',
+
+      // settings
+      browserType: 'chromium',
+      browserPathMap: {
+        chromium: '',
+        chrome: ''
+      }
     }) as {
       filePath: string
       project: Project
       testNodeMap: Map<string, TestNode>
       currentNodeId: string
       currentGroupId: string
+      browserType: 'chromium' | 'chrome'
+      browserPathMap: {
+        chromium: string
+        chrome: string
+      }
     },
   getters: {
     currentNode(): TestNode | null {
@@ -129,6 +141,42 @@ export const useProjectStore = defineStore('project', {
       this.testNodeMap[testNode.id] = testNode
       ;(parentNode.test as TestGroup).children.push(test)
       this.updateTestTree()
+    },
+    async initBrowserSelection() {
+      const browserType = await conf.get('browserType')
+      this.browserType = (browserType as 'chromium' | 'chrome') || 'chromium'
+
+      const { ipcRenderer } = window.electron
+      const browserPathMap = (await ipcRenderer.invoke('get-browser-paths')) as {
+        chromium: string
+        chrome: string
+      }
+      let chromiumPath = (await conf.get('chromiumPath')) as string
+      let chromePath = (await conf.get('chromePath')) as string
+      if (!chromiumPath) {
+        chromiumPath = browserPathMap.chromium || ''
+        await conf.set('chromiumPath', chromiumPath)
+      }
+      if (!chromePath) {
+        chromePath = browserPathMap.chrome || ''
+        await conf.set('chromePath', chromePath)
+      }
+      this.browserPathMap = {
+        chromium: chromiumPath,
+        chrome: chromePath
+      }
+    },
+    async setBrowserType(type: 'chromium' | 'chrome') {
+      this.browserType = type
+      await conf.set('browserType', type)
+    },
+    async updateBrowserPathMap() {
+      const { ipcRenderer } = window.electron
+      const browserPathMap = await ipcRenderer.invoke('get-browser-paths')
+
+      await conf.set('chromiumPath', browserPathMap.chromium)
+      await conf.set('chromePath', browserPathMap.chrome)
+      this.browserPathMap = browserPathMap
     }
   }
 })

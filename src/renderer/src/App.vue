@@ -16,11 +16,20 @@
         <a-tab-pane
           key="test-cases"
           tab="测试用例"
-          force-render
         >
           <TestCases />
         </a-tab-pane>
+
+        <template #rightExtra>
+          <a-button
+            type="link"
+            @click="activeTab = 'settings'"
+          >
+            <SettingOutlined /> 设置
+          </a-button>
+        </template>
       </a-tabs>
+      <Settings v-if="activeTab === 'settings'" />
     </div>
   </div>
 </template>
@@ -29,16 +38,18 @@
 import { mapState } from 'pinia'
 import { useProjectStore } from './store'
 
+import { SettingOutlined } from '@ant-design/icons-vue'
 import HeaderMenu from './components/Menu.vue'
 import ProjectInfo from './components/ProjectInfo.vue'
 import TestCases from './components/TestCases.vue'
+import Settings from './components/Settings.vue'
 
 export default {
   // eslint-disable-next-line vue/no-reserved-component-names
-  components: { HeaderMenu, ProjectInfo, TestCases },
+  components: { HeaderMenu, SettingOutlined, ProjectInfo, TestCases, Settings },
   data() {
     return {
-      activeTab: 'project-info'
+      activeTab: 'test-cases'
     }
   },
   computed: {

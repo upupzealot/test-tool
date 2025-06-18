@@ -41,12 +41,6 @@
         </a-button>
       </template>
     </a-modal>
-
-    <a-button
-      type="link"
-      style="float: right"
-      ><SettingOutlined />Settings</a-button
-    >
   </div>
 </template>
 
@@ -55,7 +49,7 @@ import { Conf } from 'electron-conf/renderer'
 const conf = new Conf()
 
 import { theme } from 'ant-design-vue'
-import { FolderOpenOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons-vue'
+import { FolderOpenOutlined, PlusOutlined } from '@ant-design/icons-vue'
 
 import { mapState, mapActions } from 'pinia'
 import { useProjectStore } from '../store'
@@ -64,7 +58,7 @@ import ProjectForm from './ProjectForm.vue'
 import { Project } from './types'
 
 export default {
-  components: { FolderOpenOutlined, PlusOutlined, SettingOutlined, ProjectForm },
+  components: { FolderOpenOutlined, PlusOutlined, ProjectForm },
   data() {
     const seed = theme.defaultSeed
     console.log(theme.defaultAlgorithm(seed))
@@ -83,7 +77,10 @@ export default {
     const { ipcRenderer } = window.electron
     const lastOpen = await conf.get('lastOpen')
     if (lastOpen) {
-      const { filePath, projectObj } = await ipcRenderer.invoke('read-project-file', lastOpen)
+      const { filePath, projectObj } = await ipcRenderer.invoke(
+        'read-project-file',
+        lastOpen
+      )
       if (projectObj) {
         await this.setPath(filePath)
         this.setProject(projectObj)
