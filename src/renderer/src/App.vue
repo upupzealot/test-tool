@@ -17,7 +17,7 @@
           key="test-cases"
           tab="测试用例"
         >
-          <TestCases />
+          <TestCollection />
         </a-tab-pane>
 
         <template #rightExtra>
@@ -41,12 +41,12 @@ import { useProjectStore } from './store'
 import { SettingOutlined } from '@ant-design/icons-vue'
 import HeaderMenu from './components/Menu.vue'
 import ProjectInfo from './components/ProjectInfo.vue'
-import TestCases from './components/TestCases.vue'
+import TestCollection from './components/TestCollection.vue'
 import Settings from './components/Settings.vue'
 
 export default {
   // eslint-disable-next-line vue/no-reserved-component-names
-  components: { HeaderMenu, SettingOutlined, ProjectInfo, TestCases, Settings },
+  components: { HeaderMenu, SettingOutlined, ProjectInfo, TestCollection, Settings },
   data() {
     return {
       activeTab: 'test-cases'
