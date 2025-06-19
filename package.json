@@ -30,6 +30,7 @@
     "fs-extra": "^11.3.0",
     "lodash": "^4.17.21",
     "pinia": "^3.0.3",
+    "puppeteer-core": "^24.10.1",
     "short-unique-id": "^5.3.2",
     "vue-draggable-plus": "^0.6.0"
   },

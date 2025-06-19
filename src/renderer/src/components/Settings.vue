@@ -49,7 +49,27 @@
         </template>
       </a-input-search>
     </a-form-item>
+    <a-form-item label="测试浏览器">
+      <a-input-search
+        v-model:value="testUrl"
+        placeholder="https://www.baidu.com/"
+        @search="updateBrowserPathMap"
+      >
+        <template #enterButton>
+          <a-button
+            :loading="testing"
+            @click="testBrowser"
+          >
+            {{ testing ? '测试中' : '开始测试' }}
+          </a-button>
+        </template>
+      </a-input-search>
+    </a-form-item>
   </a-form>
+  <div>BrowserPath: {{ bPath }}</div>
+  <div>
+    BrowserBorder: {{ bBorder ? `${bBorder.width}px, ${bBorder.height}px` : null }}
+  </div>
 </template>
 
 <script lang="ts">
@@ -64,14 +84,16 @@ export default {
     return {
       ChromeIcon,
       ChromiumIcon,
-      form: {}
+      form: {},
+      testUrl: '',
+      testing: false
     }
   },
   async mounted() {
     await this.initBrowserSelection()
   },
   computed: {
-    ...mapState(useProjectStore, ['browserType', 'browserPathMap']),
+    ...mapState(useProjectStore, ['browserType', 'browserPathMap', 'browserBorder']),
     bType: {
       get() {
         return this.browserType
@@ -87,14 +109,32 @@ export default {
       set(value) {
         this.browserPathMap[this.browserType] = value
       }
+    },
+    bBorder() {
+      return this.browserBorder[this.browserType]
     }
   },
   methods: {
     ...mapActions(useProjectStore, [
       'setBrowserType',
       'initBrowserSelection',
-      'updateBrowserPathMap'
-    ])
+      'updateBrowserPathMap',
+      'setBrowserBorder'
+    ]),
+    async testBrowser() {
+      const testUrl = this.testUrl || 'https://www.baidu.com/'
+
+      const { ipcRenderer } = window.electron
+      this.testing = true
+      try {
+        const testResult = await ipcRenderer.invoke('test-browser', this.bPath, testUrl)
+        this.setBrowserBorder(testResult.window, testResult.viewport)
+        this.testing = false
+      } catch (err) {
+        console.error('测试失败', err)
+        this.testing = false
+      }
+    }
   }
 }
 </script>

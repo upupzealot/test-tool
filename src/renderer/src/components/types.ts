@@ -23,3 +23,8 @@ export interface Project extends TestGroup {
   desc?: string
   children: (TestCase | TestGroup)[]
 }
+
+export interface Dimension {
+  width: number
+  height: number
+}

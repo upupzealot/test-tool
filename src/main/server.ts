@@ -1,5 +1,8 @@
 import fs from 'fs-extra'
 import { dialog } from 'electron'
+import puppeteer from 'puppeteer-core'
+
+import delay from './delay'
 
 async function writeProject(filePath, projectObj) {
   await fs.writeJSON(filePath, projectObj)
@@ -50,5 +53,51 @@ export default function init(ipcMain: Electron.IpcMain): void {
   ipcMain.handle('get-browser-paths', async () => {
     const chromePaths = require('chrome-paths')
     return chromePaths
+  })
+
+  ipcMain.handle('test-browser', async (__, ...args) => {
+    const [browserPath, testUrl] = args
+
+    const windowWidth = 640
+    const windowHeight = 640
+    const browser = await puppeteer.launch({
+      headless: false,
+      executablePath: browserPath,
+      defaultViewport: null,
+      args: [`--window-size=${windowWidth},${windowHeight}`]
+    })
+    const [page] = await browser.pages()
+    page.on('close', () => {
+      browser.close()
+    })
+    await page.goto(testUrl)
+    await delay(1500)
+    const dimensions = await page.evaluate(() => {
+      return {
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
+    })
+
+    await page.setViewport(dimensions)
+    setTimeout(async () => {
+      await page.close()
+    }, 1500)
+
+    return new Promise((resolve, reject) => {
+      browser.on('disconnected', () => {
+        return resolve({
+          window: {
+            width: windowWidth,
+            height: windowHeight
+          },
+          viewport: dimensions
+        })
+      })
+
+      setTimeout(() => {
+        reject('测试超时')
+      }, 5000)
+    })
   })
 }

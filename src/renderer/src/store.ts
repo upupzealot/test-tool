@@ -2,7 +2,7 @@ import { Conf } from 'electron-conf/renderer'
 const conf = new Conf()
 
 import { defineStore } from 'pinia'
-import { Project, Test, TestGroup, TestNode } from './components/types'
+import { Dimension, Project, Test, TestGroup, TestNode } from './components/types'
 
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
@@ -27,6 +27,10 @@ export const useProjectStore = defineStore('project', {
       browserPathMap: {
         chromium: '',
         chrome: ''
+      },
+      browserBorder: {
+        chromium: null,
+        chrome: null
       }
     }) as {
       filePath: string
@@ -38,6 +42,10 @@ export const useProjectStore = defineStore('project', {
       browserPathMap: {
         chromium: string
         chrome: string
+      }
+      browserBorder: {
+        chromium: null | Dimension
+        chrome: null | Dimension
       }
     },
   getters: {
@@ -165,6 +173,14 @@ export const useProjectStore = defineStore('project', {
         chromium: chromiumPath,
         chrome: chromePath
       }
+
+      const chromiumBorderStr = (await conf.get('chromiumBorder')) as string
+      const chromeBorderStr = (await conf.get('chromiumBorder')) as string
+      const browserBorder = {
+        chromium: chromiumBorderStr ? (JSON.parse(chromiumBorderStr) as Dimension) : null,
+        chrome: chromeBorderStr ? (JSON.parse(chromeBorderStr) as Dimension) : null
+      }
+      this.browserBorder = browserBorder
     },
     async setBrowserType(type: 'chromium' | 'chrome') {
       this.browserType = type
@@ -177,6 +193,15 @@ export const useProjectStore = defineStore('project', {
       await conf.set('chromiumPath', browserPathMap.chromium)
       await conf.set('chromePath', browserPathMap.chrome)
       this.browserPathMap = browserPathMap
+    },
+    async setBrowserBorder(win: Dimension, viewport: Dimension) {
+      const browserBorder = {
+        width: win.width - viewport.width,
+        height: win.height - viewport.height
+      }
+      this.browserBorder[this.browserType] = browserBorder
+
+      await conf.set(`${this.browserType}Border`, JSON.stringify(browserBorder))
     }
   }
 })
