@@ -82,8 +82,8 @@ export default defineComponent({
     }
   },
   methods: {
-    async onSelectNode1(testId: string) {
-      const selectedNode = this.getNode(testId)
+    async onSelectNode1(nodeId: string) {
+      const selectedNode = this.getNode(nodeId)
       this.currentNode1 = selectedNode
       if (selectedNode.type === 'group') {
         this.currentGroup2 = selectedNode as GroupNode
@@ -92,15 +92,15 @@ export default defineComponent({
       } else {
         this.currentGroup2 = null
       }
-      this.$emit('selectNode', testId)
+      this.$emit('selectNode', nodeId)
     },
-    async onSelectNode2(testId: string) {
-      const selectedNode = this.getNode(testId)
+    async onSelectNode2(nodeId: string) {
+      const selectedNode = this.getNode(nodeId)
       this.currentNode2 = selectedNode
-      this.$emit('selectNode', testId)
+      this.$emit('selectNode', nodeId)
     },
-    async onEnterGroup(testId: string) {
-      const selectedNode = this.getNode(testId)
+    async onEnterGroup(groupNodeId: string) {
+      const selectedNode = this.getNode(groupNodeId)
       if (selectedNode.type !== 'group') {
         return
       }
@@ -108,7 +108,7 @@ export default defineComponent({
       this.currentGroup1 = selectedNode as GroupNode
       this.currentNode2 = null
       this.currentGroup2 = null
-      this.$emit('enterGroup', testId)
+      this.$emit('enterGroup', groupNodeId)
     },
     async onCreateNode(parentId: string, testObj: Test) {
       this.$emit('createNode', parentId, testObj)

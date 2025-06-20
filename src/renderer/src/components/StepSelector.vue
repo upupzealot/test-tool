@@ -4,77 +4,34 @@
     direction="vertical"
     class="step-selector"
   >
-    <div class="step">
+    <div
+      v-for="step in steps"
+      :class="[
+        'step',
+        step.push ? 'push' : '',
+        step.key === currentStepId ? 'active' : ''
+      ]"
+      @click="setCurrentStepId(step.key)"
+    >
       <a-tag
         :bordered="false"
-        color="orange"
+        :color="step.key === 'children' ? 'green' : 'orange'"
       >
-        <PlaySquareFilled /> 开始
+        <PlaySquareFilled v-if="step.key === 'before'" />
+        <RightSquareFilled v-if="step.key === 'beforeEach'" />
+        <CodeFilled v-if="step.key === 'children'" />
+        <LeftSquareFilled v-if="step.key === 'afterEach'" />
+        <PlaySquareFilled
+          style="transform: scale(-1, 1)"
+          v-if="step.key === 'after'"
+        />
+        {{ step.name }}
       </a-tag>
       <a-typography-text
         type="secondary"
         class="desc"
       >
-        进入测试组时执行
-      </a-typography-text>
-    </div>
-    <div class="step push">
-      <a-tag
-        :bordered="false"
-        color="orange"
-      >
-        <RightSquareFilled /> 每次开始
-      </a-tag>
-      <a-typography-text
-        type="secondary"
-        class="desc"
-      >
-        每个用例开始前执行
-      </a-typography-text>
-    </div>
-    <div class="step push">
-      <a-tag
-        :bordered="false"
-        color="green"
-      >
-        <CodeFilled /> 测试用例
-      </a-tag>
-      <a-typography-text
-        type="secondary"
-        class="desc"
-      >
-        子测试组：N 个
-        <br />
-        测试用例：M 个
-      </a-typography-text>
-    </div>
-    <div class="step push">
-      <a-tag
-        :bordered="false"
-        color="orange"
-      >
-        <LeftSquareFilled /> 每次结束
-      </a-tag>
-      <a-typography-text
-        type="secondary"
-        class="desc"
-      >
-        每个用例结束后执行
-      </a-typography-text>
-    </div>
-    <div class="step">
-      <a-tag
-        :bordered="false"
-        color="orange"
-      >
-        <PlaySquareFilled style="transform: scale(-1, 1)" />
-        结束
-      </a-tag>
-      <a-typography-text
-        type="secondary"
-        class="desc"
-      >
-        测试组执行结束后执行
+        {{ step.desc }}
       </a-typography-text>
     </div>
   </a-space>
@@ -82,6 +39,8 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+import { useProjectStore } from '@renderer/store'
+
 import {
   CodeFilled,
   FolderOutlined,
@@ -90,8 +49,9 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { TestNode } from './types'
+import { GroupNode } from './types'
 import ActionEditor from './ActionEditor.vue'
+import { mapActions, mapState } from 'pinia'
 
 export default defineComponent({
   components: {
@@ -103,15 +63,53 @@ export default defineComponent({
     ActionEditor
   },
   props: {
-    node: {
-      type: Object as PropType<TestNode>,
+    group: {
+      type: Object as PropType<GroupNode>,
       required: true
     }
   },
-  computed: {
-    test() {
-      return this.node.test
+  data() {
+    return {
+      steps: [
+        {
+          key: 'before',
+          name: '开始',
+          desc: '进入测试组时执行'
+        },
+        {
+          key: 'beforeEach',
+          push: true,
+          name: '每次开始',
+          desc: '每个用例开始前执行'
+        },
+        {
+          key: 'children',
+          push: true,
+          name: '子测试组和测试用例',
+          desc: '子测试组：N 个\n测试用例：M 个'
+        },
+        {
+          key: 'afterEach',
+          push: true,
+          name: '每次结束',
+          desc: '每个用例结束后执行'
+        },
+        {
+          key: 'after',
+          name: '结束',
+          desc: '测试组执行结束后执行'
+        }
+      ]
     }
+  },
+  computed: {
+    ...mapState(useProjectStore, ['currentStepId']),
+    test() {
+      return this.group.test
+    }
+  },
+  methods: {
+    ...mapActions(useProjectStore, ['setCurrentStepId'])
   }
 })
 </script>
@@ -124,6 +122,9 @@ export default defineComponent({
   border: #eee 1px solid;
   cursor: pointer;
 }
+.step-selector .step.active {
+  background-color: aliceblue;
+}
 .step-selector .step.push {
   margin-left: 25px;
 }
@@ -134,5 +135,6 @@ export default defineComponent({
   font-size: 12px;
   display: block;
   padding: 4px 8px;
+  white-space: pre-wrap;
 }
 </style>

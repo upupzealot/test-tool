@@ -25,8 +25,9 @@
         />
       </div> -->
 
-      <div>currentNode: {{ currentNode?.name }}</div>
-      <div>currentGroup:{{ currentGroupNode?.name }}</div>
+      <div>Node: {{ currentNode?.name }}</div>
+      <div>Group: {{ currentGroupNode?.name }}</div>
+      <div>Step: {{ currentStepId }}</div>
     </div>
     <div
       class="detail"
@@ -53,7 +54,12 @@ export default {
     TestNode
   },
   computed: {
-    ...mapState(useProjectStore, ['currentGroupNode', 'currentPaths', 'currentNode'])
+    ...mapState(useProjectStore, [
+      'currentGroupNode',
+      'currentPaths',
+      'currentNode',
+      'currentStepId'
+    ])
   },
   methods: {
     ...mapActions(useProjectStore, [
@@ -62,13 +68,13 @@ export default {
       'setCurrentGroupId',
       'createNode'
     ]),
-    async onSelectNode(testId: string) {
-      this.setCurrentNodeId(testId)
+    async onSelectNode(nodeId: string) {
+      this.setCurrentNodeId(nodeId)
     },
-    async onEnterGroup(testId: string) {
-      const { test } = this.getNode(testId)
-      if (test.type === 'group') {
-        this.setCurrentGroupId(testId)
+    async onEnterGroup(groupNodeId: string) {
+      const group = this.getNode(groupNodeId)
+      if (group.type === 'group') {
+        this.setCurrentGroupId(groupNodeId)
       }
     },
     async onCreateNode(parentId: string, testObj: Test) {

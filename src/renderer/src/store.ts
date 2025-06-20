@@ -28,6 +28,7 @@ export const useProjectStore = defineStore('project', {
       testNodeMap: {},
       currentNodeId: '-',
       currentGroupId: '-',
+      currentStepId: '',
 
       // settings
       browserType: 'chromium',
@@ -45,6 +46,7 @@ export const useProjectStore = defineStore('project', {
       testNodeMap: Map<string, TestNode>
       currentNodeId: string
       currentGroupId: string
+      currentStepId: string
       browserType: 'chromium' | 'chrome'
       browserPathMap: {
         chromium: string
@@ -123,15 +125,22 @@ export const useProjectStore = defineStore('project', {
     getNode(id: string): TestNode {
       return this.testNodeMap[id]
     },
-    setCurrentNodeId(testId: string) {
-      this.currentNodeId = testId
-    },
-    setCurrentGroupId(testId: string) {
-      const groupNode = this.testNodeMap[testId] as TestNode
-      if (groupNode.type === 'group') {
-        this.currentNodeId = ''
-        this.currentGroupId = testId
+    setCurrentNodeId(nodeId: string) {
+      if (nodeId !== this.currentNodeId) {
+        this.currentNodeId = nodeId
+        this.currentStepId = ''
       }
+    },
+    setCurrentGroupId(groupNodeId: string) {
+      const groupNode = this.testNodeMap[groupNodeId] as TestNode
+      if (groupNode.type === 'group' && groupNodeId !== this.currentGroupId) {
+        this.currentNodeId = ''
+        this.currentGroupId = groupNodeId
+        this.currentStepId = ''
+      }
+    },
+    async setCurrentStepId(stepId: string) {
+      this.currentStepId = stepId
     },
     createNode(
       parentId: string,

@@ -1,7 +1,7 @@
 <template>
   <!-- 标题区域 -->
-  <div class="container">
-    <div class="title">
+  <div class="detail-container">
+    <div class="detail-title">
       <FolderOutlined />
       {{ test.name }}
     </div>
@@ -13,11 +13,14 @@
     </a-typography-text>
     <a-divider style="margin: 10px 0" />
 
-    <!-- 测试组侧边栏 -->
-    <div style="display: flex; flex-direction: row; padding: 5px 0">
+    <!-- 测试详情 -->
+    <div class="detail-content">
       <!-- 步骤选择器 -->
-      <div class="step-selector-container">
-        <StepSelector :node="node" />
+      <div
+        class="step-selector-container"
+        v-if="node.type === 'group'"
+      >
+        <StepSelector :group="node as GroupNode" />
       </div>
 
       <!-- 动作编辑器 -->
@@ -38,7 +41,7 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { TestNode } from './types'
+import { GroupNode, TestNode } from './types'
 import StepSelector from './StepSelector.vue'
 import ActionEditor from './ActionEditor.vue'
 
@@ -67,15 +70,21 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.container {
+.detail-container {
   border: #eee 1px solid;
   margin-left: -1px;
   padding: 10px 15px;
 }
 
-.container .title {
+.detail-container .detail-title {
   font-weight: bold;
   font-size: 16px;
+}
+
+.detail-container .detail-content {
+  display: flex;
+  flex-direction: row;
+  padding: 5px 0;
 }
 
 .step-selector-container {
