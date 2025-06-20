@@ -1,8 +1,12 @@
 <template>
-  <div style="display: flex; flex-direction: row">
-    <div style="flex: 1">
+  <div class="tree-row">
+    <div
+      class="tree-col"
+      :style="{ width: `${colWidth}px` }"
+    >
       <TestTreeList
         mode="path"
+        :colWidth="colWidth"
         :currentNode="currentNode1"
         :currentGroup="currentGroup1"
         :getNode="getNode"
@@ -11,10 +15,14 @@
         @createNode="onCreateNode"
       />
     </div>
-    <div style="flex: 1; margin-left: -1px">
+    <div
+      v-if="currentGroup2"
+      class="tree-col"
+      :style="{ width: `${colWidth}px` }"
+    >
       <TestTreeList
-        v-if="currentGroup2"
         mode="last"
+        :colWidth="colWidth"
         :currentNode="currentNode"
         :currentGroup="currentGroup2"
         :getNode="getNode"
@@ -37,9 +45,9 @@ export default defineComponent({
     TestTreeList
   },
   props: {
-    mode: {
-      type: String as PropType<'path' | 'last'>,
-      defaultValue: 'path'
+    colWidth: {
+      type: Number as PropType<number>,
+      defaultValue: 200
     },
     currentNode: {
       type: [Object, null] as PropType<TestNode | null>,
@@ -108,3 +116,16 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="css" scoped>
+.tree-row {
+  display: flex;
+  flex-direction: row;
+}
+.tree-col {
+  flex: 1;
+}
+.tree-col:not(:first-child) {
+  margin-left: -1px;
+}
+</style>

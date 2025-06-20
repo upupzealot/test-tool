@@ -6,6 +6,7 @@
         v-model:activeKey="activeTab"
         size="small"
         v-if="project && project.name"
+        style="flex: 1"
       >
         <a-tab-pane
           key="project-info"
@@ -57,15 +58,9 @@ export default {
   }
 }
 </script>
-
+<style lang="css"></style>
 <style lang="css" scoped>
 .root {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-
   display: flex;
   flex-direction: column;
 }
@@ -73,6 +68,8 @@ export default {
   flex: 0;
 }
 .content {
+  flex: 1;
   padding: 0 15px;
+  display: flex;
 }
 </style>

@@ -1,29 +1,40 @@
 <template>
-  <!-- <div style="width: 240px">
-    <TestTreeList
-      mode="path"
-      :currentNode="currentNode"
-      :currentGroup="currentGroupNode"
-      :getNode="getNode"
-      @selectNode="onSelectNode"
-      @enterGroup="onEnterGroup"
-      @createNode="onCreateNode"
-    />
-  </div> -->
+  <div class="collection">
+    <div class="menu">
+      <div style="width: 200px">
+        <TestTreeList
+          mode="path"
+          :currentNode="currentNode"
+          :currentGroup="currentGroupNode"
+          :getNode="getNode"
+          @selectNode="onSelectNode"
+          @enterGroup="onEnterGroup"
+          @createNode="onCreateNode"
+        />
+      </div>
 
-  <div style="width: 480px">
-    <TestTreeDoubleList
-      :currentNode="currentNode"
-      :currentGroup="currentGroupNode"
-      :getNode="getNode"
-      @selectNode="onSelectNode"
-      @enterGroup="onEnterGroup"
-      @createNode="onCreateNode"
-    />
+      <!-- <div style="">
+        <TestTreeDoubleList
+          :colWidth="160"
+          :currentNode="currentNode"
+          :currentGroup="currentGroupNode"
+          :getNode="getNode"
+          @selectNode="onSelectNode"
+          @enterGroup="onEnterGroup"
+          @createNode="onCreateNode"
+        />
+      </div> -->
+
+      <div>currentNode: {{ currentNode?.test.name }}</div>
+      <div>currentGroup:{{ currentGroupNode?.test.name }}</div>
+    </div>
+    <div
+      class="detail"
+      v-if="currentNode"
+    >
+      <TestNode :node="currentNode" />
+    </div>
   </div>
-
-  <div>currentNode: {{ currentNode?.test.name }}</div>
-  <div>currentGroup:{{ currentGroupNode?.test.name }}</div>
 </template>
 
 <script lang="ts">
@@ -33,11 +44,13 @@ import { useProjectStore } from '../store'
 import { Test } from './types'
 import TestTreeList from './TestTreeList.vue'
 import TestTreeDoubleList from './TestTreeDoubleList.vue'
+import TestNode from './TestNode.vue'
 
 export default {
   components: {
     TestTreeList,
-    TestTreeDoubleList
+    TestTreeDoubleList,
+    TestNode
   },
   computed: {
     ...mapState(useProjectStore, ['currentGroupNode', 'currentPaths', 'currentNode'])
@@ -64,3 +77,18 @@ export default {
   }
 }
 </script>
+<style lang="css" scoped>
+.collection {
+  flex: 1;
+  width: 100%;
+  display: flex;
+}
+
+.collection .menu {
+  flex: 0;
+}
+
+.collection .detail {
+  flex: 1;
+}
+</style>

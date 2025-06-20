@@ -1,6 +1,6 @@
 <template>
   <!-- Header -->
-  <div class="test-header">
+  <div class="tree-header">
     <div>
       <a-breadcrumb v-if="mode === 'path'">
         <a-breadcrumb-item v-for="pathNode in pathNodes">
@@ -61,7 +61,7 @@
   >
     <div
       v-for="test in (currentGroup.test as TestGroup).children"
-      :class="test.id === currentNode?.id ? ['test-item', 'active'] : ['test-item']"
+      :class="test.id === currentNode?.id ? ['tree-item', 'active'] : ['tree-item']"
     >
       <!-- <div class="handler"><HolderOutlined /></div> -->
       <div
@@ -103,6 +103,10 @@ export default defineComponent({
     TestForm
   },
   props: {
+    colWidth: {
+      type: Number as PropType<number>,
+      defaultValue: 200
+    },
     mode: {
       type: String as PropType<'path' | 'last'>,
       defaultValue: 'path'
@@ -162,7 +166,7 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.test-header {
+.tree-header {
   border: #eee 1px solid;
   padding: 5px 0px 5px 15px;
   display: flex;
@@ -170,9 +174,8 @@ export default defineComponent({
   justify-content: space-between;
   align-items: center;
 }
-/* .test-header .create-btn {
-} */
-.test-item {
+
+.tree-item {
   border: #eee 1px solid;
   padding: 5px 5px 5px 15px;
   cursor: pointer;
@@ -182,23 +185,23 @@ export default defineComponent({
   align-items: center;
   margin-top: -1px;
 }
-.test-item.active {
+.tree-item.active {
   background-color: aliceblue;
 }
 
-.test-item .handler {
+.tree-item .handler {
   flex: 0;
   margin: 8px;
   cursor: move;
 }
-.test-item .content {
+.tree-item .content {
   flex: 1;
 }
 
-.test-item .title {
+.tree-item .title {
   font-weight: bold;
 }
-.test-item .desc {
+.tree-item .desc {
   color: #999;
   font-size: 12px;
 }
