@@ -37,7 +37,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 
-import { Test, TestNode } from './types'
+import { GroupNode, Test, TestNode } from './types'
 import TestTreeList from './TestTreeList.vue'
 
 export default defineComponent({
@@ -54,7 +54,7 @@ export default defineComponent({
       required: true
     },
     currentGroup: {
-      type: Object as PropType<TestNode>,
+      type: Object as PropType<GroupNode>,
       required: true
     },
     getNode: {
@@ -72,8 +72,8 @@ export default defineComponent({
     } as {
       currentNode1: TestNode | null
       currentNode2: TestNode | null
-      currentGroup1: TestNode
-      currentGroup2: TestNode | null
+      currentGroup1: GroupNode
+      currentGroup2: GroupNode | null
     }
   },
   computed: {
@@ -85,8 +85,8 @@ export default defineComponent({
     async onSelectNode1(testId: string) {
       const selectedNode = this.getNode(testId)
       this.currentNode1 = selectedNode
-      if (selectedNode.test.type === 'group') {
-        this.currentGroup2 = selectedNode
+      if (selectedNode.type === 'group') {
+        this.currentGroup2 = selectedNode as GroupNode
         this.currentNode1 = selectedNode
         this.$emit('enterGroup', selectedNode.id)
       } else {
@@ -101,11 +101,11 @@ export default defineComponent({
     },
     async onEnterGroup(testId: string) {
       const selectedNode = this.getNode(testId)
-      if (selectedNode.test.type !== 'group') {
+      if (selectedNode.type !== 'group') {
         return
       }
       this.currentNode1 = null
-      this.currentGroup1 = selectedNode
+      this.currentGroup1 = selectedNode as GroupNode
       this.currentNode2 = null
       this.currentGroup2 = null
       this.$emit('enterGroup', testId)

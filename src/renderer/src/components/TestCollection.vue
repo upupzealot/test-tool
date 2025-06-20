@@ -25,8 +25,8 @@
         />
       </div> -->
 
-      <div>currentNode: {{ currentNode?.test.name }}</div>
-      <div>currentGroup:{{ currentGroupNode?.test.name }}</div>
+      <div>currentNode: {{ currentNode?.name }}</div>
+      <div>currentGroup:{{ currentGroupNode?.name }}</div>
     </div>
     <div
       class="detail"

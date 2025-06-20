@@ -4,9 +4,9 @@
     <div>
       <a-breadcrumb v-if="mode === 'path'">
         <a-breadcrumb-item v-for="pathNode in pathNodes">
-          <a @click="$emit('enterGroup', pathNode.test.id)">
+          <a @click="$emit('enterGroup', pathNode.id)">
             <HomeOutlined v-if="pathNode.id === '-'" />
-            <span v-else>{{ pathNode.test.name }}</span>
+            <span v-else>{{ pathNode.name }}</span>
           </a>
         </a-breadcrumb-item>
       </a-breadcrumb>
@@ -15,7 +15,7 @@
         <a-breadcrumb-item>
           <a>
             <FolderOutlined />
-            <span>{{ ` ${currentGroup.test.name}` }}</span>
+            <span>{{ ` ${currentGroup.name}` }}</span>
           </a>
         </a-breadcrumb-item>
       </a-breadcrumb>
@@ -57,24 +57,24 @@
   <!-- Test List -->
   <VueDraggable
     class="test-list"
-    v-model="(currentGroup.test as TestGroup).children"
+    v-model="currentGroup.children"
   >
     <div
-      v-for="test in (currentGroup.test as TestGroup).children"
-      :class="test.id === currentNode?.id ? ['tree-item', 'active'] : ['tree-item']"
+      v-for="testNode in currentGroup.children"
+      :class="testNode.id === currentNode?.id ? ['tree-item', 'active'] : ['tree-item']"
     >
       <!-- <div class="handler"><HolderOutlined /></div> -->
       <div
         class="content"
-        @click="$emit('selectNode', test.id)"
-        @dblclick="$emit('enterGroup', test.id)"
+        @click="$emit('selectNode', testNode.id)"
+        @dblclick="$emit('enterGroup', testNode.id)"
       >
         <div class="title">
-          <FolderOutlined v-if="test.type === 'group'" />
-          <CodeOutlined v-if="test.type === 'case'" />
-          {{ test.name }}
+          <FolderOutlined v-if="testNode.type === 'group'" />
+          <CodeOutlined v-if="testNode.type === 'case'" />
+          {{ testNode.name }}
         </div>
-        <div class="desc">{{ test.desc }}</div>
+        <div class="desc">{{ testNode.desc }}</div>
       </div>
     </div>
   </VueDraggable>
@@ -91,7 +91,7 @@ import {
 } from '@ant-design/icons-vue'
 
 import TestForm from './TestForm.vue'
-import { Test, TestNode, TestGroup } from './types'
+import { Test, TestNode, GroupNode } from './types'
 
 export default defineComponent({
   components: {
@@ -116,7 +116,7 @@ export default defineComponent({
       required: true
     },
     currentGroup: {
-      type: Object as PropType<TestNode>,
+      type: Object as PropType<GroupNode>,
       required: true
     },
     getNode: {

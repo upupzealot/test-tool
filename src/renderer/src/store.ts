@@ -2,7 +2,14 @@ import { Conf } from 'electron-conf/renderer'
 const conf = new Conf()
 
 import { defineStore } from 'pinia'
-import { Dimension, Project, Test, TestGroup, TestNode } from './components/types'
+import {
+  Dimension,
+  GroupNode,
+  Project,
+  Test,
+  TestGroup,
+  TestNode
+} from './components/types'
 
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
@@ -56,7 +63,7 @@ export const useProjectStore = defineStore('project', {
         return null
       }
     },
-    currentGroupNode(): TestNode {
+    currentGroupNode(): GroupNode {
       return this.testNodeMap[this.currentGroupId || '-']
     },
     currentPaths(): TestNode[] {
@@ -77,33 +84,38 @@ export const useProjectStore = defineStore('project', {
     },
     updateTestTree() {
       const testNodeMap = {} as Map<string, TestNode>
-      testNodeMap['-'] = {
+      const rootNode = {
         id: '-',
+        type: 'group',
+        name: '-',
         paths: ['-'],
+        children: [],
         test: {
           id: '-',
           type: 'group',
           name: '-',
           children: this.project.children
         } as Test
-      } as TestNode
-      let arr: TestNode[] = this.project.children.map((test) => ({
-        id: test.id,
-        paths: ['-', test.id],
-        test
-      }))
+      } as TestGroup
+      let arr = [rootNode] as TestNode[]
       while (arr.length) {
         const testNode = arr.shift()!
         testNodeMap[testNode.id] = testNode
 
-        if (testNode.test.type === 'group') {
-          arr = arr.concat(
-            (testNode.test as TestGroup).children.map((childTest) => ({
-              id: childTest.id,
-              paths: [...testNode.paths, childTest.id],
-              test: childTest
-            }))
+        if (testNode.type === 'group') {
+          const childrenNodes = (testNode.test as TestGroup).children.map(
+            (childTest) =>
+              ({
+                id: childTest.id,
+                name: childTest.name,
+                desc: childTest.desc,
+                type: childTest.type,
+                paths: [...testNode.paths, childTest.id],
+                test: childTest
+              }) as TestNode
           )
+          testNode.children = childrenNodes
+          arr = arr.concat(childrenNodes)
         }
       }
       this.testNodeMap = testNodeMap
@@ -116,7 +128,7 @@ export const useProjectStore = defineStore('project', {
     },
     setCurrentGroupId(testId: string) {
       const groupNode = this.testNodeMap[testId] as TestNode
-      if (groupNode.test.type === 'group') {
+      if (groupNode.type === 'group') {
         this.currentNodeId = ''
         this.currentGroupId = testId
       }
@@ -129,7 +141,7 @@ export const useProjectStore = defineStore('project', {
       if (!parentNode) {
         return console.error('父节点不存在')
       }
-      if (parentNode.test.type !== 'group') {
+      if (parentNode.type !== 'group') {
         return console.error('父节点类型不为测试组')
       }
 
@@ -140,14 +152,21 @@ export const useProjectStore = defineStore('project', {
       if (test.type === 'group') {
         ;(test as TestGroup).children = []
       }
+      ;(parentNode.test as TestGroup).children.push(test)
 
       const testNode = {
         id: test.id,
+        name: test.name,
+        desc: test.desc,
         paths: [...parentNode.paths, test.id],
         test
       } as TestNode
+      if (testNode.type === 'group') {
+        ;(testNode as GroupNode).children = []
+      }
       this.testNodeMap[testNode.id] = testNode
-      ;(parentNode.test as TestGroup).children.push(test)
+      parentNode.children.push(testNode)
+
       this.updateTestTree()
     },
     async initBrowserSelection() {
