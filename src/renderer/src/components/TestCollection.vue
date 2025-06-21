@@ -1,39 +1,34 @@
 <template>
   <div class="collection">
-    <div class="menu">
-      <div style="width: 200px">
-        <TestTreeList
-          mode="path"
-          :currentNode="currentNode"
-          :currentGroup="currentGroupNode"
-          :getNode="getNode"
-          @selectNode="onSelectNode"
-          @enterGroup="onEnterGroup"
-          @createNode="onCreateNode"
-        />
-      </div>
-
-      <!-- <div style="">
-        <TestTreeDoubleList
-          :colWidth="160"
-          :currentNode="currentNode"
-          :currentGroup="currentGroupNode"
-          :getNode="getNode"
-          @selectNode="onSelectNode"
-          @enterGroup="onEnterGroup"
-          @createNode="onCreateNode"
-        />
-      </div> -->
-
-      <div>Node: {{ currentNode?.name }}</div>
-      <div>Group: {{ currentGroupNode?.name }}</div>
-      <div>Step: {{ currentStepId }}</div>
+    <div class="header">
+      <TestTreeHeader
+        :currentGroup="currentGroupNode"
+        :getNode="getNode"
+        @enterGroup="onEnterGroup"
+        @createNode="onCreateNode"
+      />
     </div>
-    <div
-      class="detail"
-      v-if="currentNode"
-    >
-      <TestNode :node="currentNode" />
+    <div class="body">
+      <div class="menu">
+        <div style="width: 200px">
+          <TestTreeList
+            :currentNode="currentNode"
+            :currentGroup="currentGroupNode"
+            :getNode="getNode"
+            @selectNode="onSelectNode"
+            @enterGroup="onEnterGroup"
+          />
+        </div>
+        <div>Group: {{ currentGroupNode?.name }}</div>
+        <div>Node: {{ currentNode?.name }}</div>
+        <div>Step: {{ currentStepId }}</div>
+      </div>
+      <div
+        class="detail"
+        v-if="currentNode"
+      >
+        <TestNode :node="currentNode" />
+      </div>
     </div>
   </div>
 </template>
@@ -43,23 +38,18 @@ import { mapActions, mapState } from 'pinia'
 import { useProjectStore } from '../store'
 
 import { Test } from './types'
+import TestTreeHeader from './TestTreeHeader.vue'
 import TestTreeList from './TestTreeList.vue'
-import TestTreeDoubleList from './TestTreeDoubleList.vue'
 import TestNode from './TestNode.vue'
 
 export default {
   components: {
+    TestTreeHeader,
     TestTreeList,
-    TestTreeDoubleList,
     TestNode
   },
   computed: {
-    ...mapState(useProjectStore, [
-      'currentGroupNode',
-      'currentPaths',
-      'currentNode',
-      'currentStepId'
-    ])
+    ...mapState(useProjectStore, ['currentGroupNode', 'currentNode', 'currentStepId'])
   },
   methods: {
     ...mapActions(useProjectStore, [
@@ -88,12 +78,23 @@ export default {
   flex: 1;
   width: 100%;
   display: flex;
+  flex-direction: column;
+}
+
+.collection .header {
+  flex: 0;
+}
+.collection .body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  margin-top: -1px;
 }
 
 .collection .menu {
   flex: 0;
+  width: 200px;
 }
-
 .collection .detail {
   flex: 1;
 }
