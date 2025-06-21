@@ -6,6 +6,7 @@ import {
   Dimension,
   GroupNode,
   Project,
+  StepId,
   Test,
   TestGroup,
   TestNode
@@ -46,7 +47,7 @@ export const useProjectStore = defineStore('project', {
       testNodeMap: Map<string, TestNode>
       currentNodeId: string
       currentGroupId: string
-      currentStepId: string
+      currentStepId: StepId
       browserType: 'chromium' | 'chrome'
       browserPathMap: {
         chromium: string
@@ -139,7 +140,7 @@ export const useProjectStore = defineStore('project', {
         this.currentStepId = ''
       }
     },
-    async setCurrentStepId(stepId: string) {
+    async setCurrentStepId(stepId: StepId) {
       this.currentStepId = stepId
     },
     createNode(

@@ -49,7 +49,7 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { GroupNode } from './types'
+import { StepId, GroupNode } from './types'
 import ActionEditor from './ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
 
@@ -99,7 +99,12 @@ export default defineComponent({
           name: '结束',
           desc: '测试组执行结束后执行'
         }
-      ]
+      ] as {
+        key: StepId
+        push?: boolean
+        name: string
+        desc: string
+      }[]
     }
   },
   computed: {

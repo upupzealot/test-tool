@@ -30,6 +30,7 @@
           </a-button>
         </template>
       </a-tabs>
+
       <Settings v-if="activeTab === 'settings'" />
     </div>
   </div>
@@ -71,5 +72,6 @@ export default {
   flex: 1;
   padding: 0 15px;
   display: flex;
+  flex-direction: column;
 }
 </style>
