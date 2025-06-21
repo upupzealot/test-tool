@@ -4,15 +4,26 @@ export interface Test {
   name: string
   desc?: string
 }
+export type StepId = '' | 'before' | 'beforeEach' | 'after' | 'afterEach' | 'children'
+export interface Action {
+  id: string
+  desc?: string
+  operations: Operation[]
+}
+export interface Operation {
+  id: string
+  type: string
+  params: any
+}
 export interface TestGroup extends Test {
-  before?: any
-  beforeEach?: any
-  after?: any
-  afterEach?: any
+  before?: Action
+  beforeEach?: Action
+  after?: Action
+  afterEach?: Action
   children: Test[]
 }
 export interface TestCase extends Test {
-  actions: any[]
+  action: Action
 }
 
 export interface TestNode {

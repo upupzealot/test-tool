@@ -23,21 +23,25 @@
         <StepSelector :group="currentGroupNode" />
       </div>
 
-      <!-- 动作编辑器 -->
       <TestTreeList
         v-if="currentStepId === 'children'"
-        class=""
         style="flex: 1; margin-left: -1px"
-        :currentNode="currentNode"
+        :currentNode="childNode"
         :currentGroup="currentGroupNode"
         @selectNode="onSelectNode"
         @enterGroup="onEnterGroup"
       />
+      <!-- 动作编辑器 -->
       <div
         class="action-editor-container"
-        v-else
+        v-if="
+          currentNode?.type === 'case' || (currentStepId && currentStepId !== 'children')
+        "
       >
-        <ActionEditor />
+        <ActionEditor
+          :node="currentNode!"
+          :stepId="currentStepId"
+        />
       </div>
     </div>
   </div>
@@ -80,13 +84,13 @@ export default defineComponent({
   },
   data() {
     return {
-      currentNode: null
+      childNode: null
     } as {
-      currentNode: TestNode | null
+      childNode: TestNode | null
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['currentStepId']),
+    ...mapState(useProjectStore, ['currentNode', 'currentStepId']),
     currentGroupNode(): GroupNode {
       return this.node as GroupNode
     }
@@ -95,7 +99,7 @@ export default defineComponent({
     ...mapActions(useProjectStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
     async onSelectNode(nodeId: string) {
       // this.setCurrentNodeId(nodeId)
-      this.currentNode = this.getNode(nodeId)
+      this.childNode = this.getNode(nodeId)
     },
     async onEnterGroup(groupNodeId: string) {
       const node = this.getNode(groupNodeId)
