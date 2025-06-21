@@ -3,13 +3,13 @@
   <div class="detail-container">
     <div class="detail-title">
       <FolderOutlined />
-      {{ test.name }}
+      {{ node.name }}
     </div>
     <a-typography-text
       type="secondary"
       class="desc"
     >
-      {{ test.desc }}
+      {{ node.desc }}
     </a-typography-text>
     <a-divider style="margin: 10px 0" />
 
@@ -20,11 +20,23 @@
         class="step-selector-container"
         v-if="node.type === 'group'"
       >
-        <StepSelector :group="node as GroupNode" />
+        <StepSelector :group="currentGroupNode" />
       </div>
 
       <!-- 动作编辑器 -->
-      <div class="action-editor-container">
+      <TestTreeList
+        v-if="currentStepId === 'children'"
+        class=""
+        style="flex: 1; margin-left: -1px"
+        :currentNode="currentNode"
+        :currentGroup="currentGroupNode"
+        @selectNode="onSelectNode"
+        @enterGroup="onEnterGroup"
+      />
+      <div
+        class="action-editor-container"
+        v-else
+      >
         <ActionEditor />
       </div>
     </div>
@@ -41,9 +53,13 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
+import { useProjectStore } from '@renderer/store'
+
 import { GroupNode, TestNode } from './types'
 import StepSelector from './StepSelector.vue'
+import TestTreeList from './TestTreeList.vue'
 import ActionEditor from './ActionEditor.vue'
+import { mapActions, mapState } from 'pinia'
 
 export default defineComponent({
   components: {
@@ -53,6 +69,7 @@ export default defineComponent({
     PlaySquareFilled,
     RightSquareFilled,
     StepSelector,
+    TestTreeList,
     ActionEditor
   },
   props: {
@@ -61,9 +78,38 @@ export default defineComponent({
       required: true
     }
   },
+  data() {
+    return {
+      currentNode: null
+    } as {
+      currentNode: TestNode | null
+    }
+  },
   computed: {
-    test() {
-      return this.node.test
+    ...mapState(useProjectStore, ['currentStepId']),
+    currentGroupNode(): GroupNode {
+      return this.node as GroupNode
+    }
+  },
+  methods: {
+    ...mapActions(useProjectStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
+    async onSelectNode(nodeId: string) {
+      // this.setCurrentNodeId(nodeId)
+      this.currentNode = this.getNode(nodeId)
+    },
+    async onEnterGroup(groupNodeId: string) {
+      const node = this.getNode(groupNodeId)
+      const paths = node.paths
+      const parentId = paths[paths.length - 2]
+      const parentNode = this.getNode(parentId)
+      console.log(node.name, parentNode.name)
+      if (node.type === 'group') {
+        this.setCurrentGroupId(parentId)
+        this.setCurrentNodeId(groupNodeId)
+      } else {
+        this.setCurrentGroupId(parentId)
+        this.setCurrentNodeId(groupNodeId)
+      }
     }
   }
 })
