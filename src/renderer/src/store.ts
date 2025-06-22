@@ -1,6 +1,7 @@
 import { Conf } from 'electron-conf/renderer'
 const conf = new Conf()
 
+import { toRaw } from 'vue'
 import { defineStore } from 'pinia'
 import {
   Dimension,
@@ -84,6 +85,11 @@ export const useProjectStore = defineStore('project', {
     setProject(project: Project) {
       this.project = project
       this.updateTestTree()
+    },
+    async saveProject() {
+      const { ipcRenderer } = window.electron
+      const projectObj = JSON.parse(JSON.stringify(this.project))
+      await ipcRenderer.invoke('update-project-file', this.filePath, projectObj)
     },
     updateTestTree() {
       const testNodeMap = {} as Map<string, TestNode>

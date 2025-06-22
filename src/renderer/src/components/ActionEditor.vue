@@ -4,6 +4,7 @@
       <Operation
         v-for="operation in action?.operations"
         :operation="operation"
+        @delete="onDeleteOperation(operation.id)"
       />
     </template>
     <div
@@ -19,12 +20,6 @@
       >
         {{ option.label }}
       </a-tag>
-    </div>
-
-    <div v-if="!(action && action.operations)">
-      <div>{{ node?.name }}</div>
-      <div>{{ stepId }}</div>
-      <div>{{ !!action }}</div>
     </div>
   </div>
 </template>
@@ -66,7 +61,7 @@ export default defineComponent({
     }
   },
   computed: {
-    action(): Action | undefined {
+    action(): Action {
       if (this.node.type === 'group') {
         return (this.node.test as TestGroup)[this.stepId]
       } else {
@@ -100,6 +95,11 @@ export default defineComponent({
         type,
         params: {}
       })
+    },
+    onDeleteOperation(operationId: string) {
+      this.action.operations = this.action.operations.filter(
+        (operation) => operation.id !== operationId
+      )
     }
   }
 })

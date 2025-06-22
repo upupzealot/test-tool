@@ -1,59 +1,54 @@
 <template>
   <ProjectForm
     ref="projectForm"
-    :form="projectForm"
+    :form="project"
     :file-path="filePath"
   />
-  <a-button
-    type="primary"
-    style="float: right"
-    @click="saveProject"
+  <a-popover
+    title="全局保存快捷键"
+    placement="leftTop"
   >
-    保存
-  </a-button>
+    <template #content>
+      <p>
+        <a-typography-text keyboard>^Ctrl</a-typography-text>+<a-typography-text keyboard
+          >S</a-typography-text
+        >或<a-typography-text keyboard>⌘Command</a-typography-text>+<a-typography-text
+          keyboard
+          >S</a-typography-text
+        >进行全局保存
+      </p>
+    </template>
+    <a-button
+      type="primary"
+      style="float: right"
+      @click="onSaveProject"
+    >
+      保存
+    </a-button>
+  </a-popover>
 </template>
 
 <script lang="ts">
-import _ from 'lodash'
-import { toRaw } from 'vue'
-import { mapState } from 'pinia'
+import { mapActions, mapState } from 'pinia'
+import { message } from 'ant-design-vue'
 
 import { useProjectStore } from '../store'
 import ProjectForm from './ProjectForm.vue'
 
 export default {
   components: { ProjectForm },
-  data() {
-    const projectStore = useProjectStore()
-
-    return {
-      projectStore,
-      projectForm: {
-        name: '',
-        tests: []
-      }
-    }
-  },
   computed: {
     ...mapState(useProjectStore, ['filePath', 'project'])
   },
-  watch: {
-    projectStore: {
-      deep: true,
-      immediate: true,
-      handler() {
-        this.projectForm = _.cloneDeep(toRaw(this.projectStore.project))
-      }
-    }
-  },
   methods: {
-    async saveProject() {
-      const projectForm = this.$refs['projectForm'] as typeof ProjectForm
-      const projectObj = await projectForm.validate()
-      if (this.filePath && projectObj) {
-        this.projectStore.setProject(projectObj)
-        const { ipcRenderer } = window.electron
-        await ipcRenderer.invoke('update-project-file', this.filePath, projectObj)
+    ...mapActions(useProjectStore, ['saveProject']),
+    async onSaveProject() {
+      try {
+        await this.saveProject()
+        message.success('保存成功')
+      } catch (err) {
+        message.error('保存失败')
+        console.error(err)
       }
     }
   }

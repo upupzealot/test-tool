@@ -19,13 +19,10 @@
             @enterGroup="onEnterGroup"
           />
         </div>
-        <div>Group: {{ currentGroupNode?.name }}</div>
-        <div>Node: {{ currentNode?.name }}</div>
-        <div>Step: {{ currentStepId }}</div>
       </div>
       <div
         class="detail"
-        v-if="currentNode"
+        v-if="currentNode && currentNode.id !== '-'"
       >
         <TestNode :node="currentNode" />
       </div>

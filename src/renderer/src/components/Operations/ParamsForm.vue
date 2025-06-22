@@ -11,7 +11,10 @@
       :rules="[{ required: true }]"
       @change="validate"
     >
-      <a-select v-model:value="operation.params.assertType">
+      <a-select
+        v-model:value="operation.params.assertType"
+        style="min-width: 95px"
+      >
         <a-select-option value="elementExist">元素存在</a-select-option>
         <a-select-option value="elementCount">元素数量</a-select-option>
       </a-select>

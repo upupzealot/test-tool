@@ -37,9 +37,10 @@
 </template>
 
 <script lang="ts">
-import { mapState } from 'pinia'
+import { mapActions, mapState } from 'pinia'
 import { useProjectStore } from './store'
 
+import { message } from 'ant-design-vue'
 import { SettingOutlined } from '@ant-design/icons-vue'
 import HeaderMenu from './components/Menu.vue'
 import ProjectInfo from './components/ProjectInfo.vue'
@@ -56,6 +57,22 @@ export default {
   },
   computed: {
     ...mapState(useProjectStore, ['project'])
+  },
+  mounted() {
+    document.onkeydown = async (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        try {
+          await this.saveProject()
+          message.success('保存成功')
+        } catch (err) {
+          message.error('保存失败')
+          console.error(err)
+        }
+      }
+    }
+  },
+  methods: {
+    ...mapActions(useProjectStore, ['saveProject'])
   }
 }
 </script>
