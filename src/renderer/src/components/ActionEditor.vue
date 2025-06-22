@@ -115,7 +115,7 @@ export default defineComponent({
   flex: 0;
   border: #eee 1px solid;
   min-height: 46px;
-  padding: 10px 15px 10px 44px;
+  padding: 10px 20px 10px 44px;
 }
 .operation:not(:first-child) {
   margin-top: -1px;

@@ -83,7 +83,7 @@ export default defineComponent({
   color: red;
   font-size: 12px;
   top: 2px;
-  right: 2px;
+  right: 4px;
   cursor: pointer;
 }
 .operation:hover .delete-btn {
