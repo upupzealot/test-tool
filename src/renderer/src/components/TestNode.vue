@@ -2,15 +2,36 @@
   <!-- 标题区域 -->
   <div class="detail-container">
     <div class="detail-title">
-      <FolderOutlined />
-      {{ node.name }}
+      <div class="title">
+        <FolderOutlined v-if="node.type === 'group'" />
+        <CodeOutlined v-if="node.type === 'case'" />
+        {{ node.name }}
+        <div>
+          <a-typography-text
+            type="secondary"
+            class="desc"
+          >
+            {{ node.desc }}
+          </a-typography-text>
+        </div>
+      </div>
+      <div
+        class="btn"
+        v-if="node.type === 'case'"
+      >
+        <a-button
+          shape="circle"
+          size="large"
+          :loading="running"
+          @click="runCase"
+        >
+          <template #icon>
+            <RightOutlined />
+          </template>
+        </a-button>
+      </div>
     </div>
-    <a-typography-text
-      type="secondary"
-      class="desc"
-    >
-      {{ node.desc }}
-    </a-typography-text>
+
     <a-divider style="margin: 10px 0" />
 
     <!-- 测试详情 -->
@@ -33,7 +54,11 @@
       />
       <!-- 动作编辑器 -->
       <div
-        class="action-editor-container"
+        :class="
+          currentNode?.type === 'group'
+            ? ['action-editor-container', 'group']
+            : ['action-editor-container']
+        "
         v-if="
           currentNode?.type === 'case' || (currentStepId && currentStepId !== 'children')
         "
@@ -50,8 +75,10 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import {
-  CodeFilled,
+  CodeOutlined,
   FolderOutlined,
+  RightOutlined,
+  CodeFilled,
   LeftSquareFilled,
   PlaySquareFilled,
   RightSquareFilled
@@ -59,16 +86,19 @@ import {
 
 import { useProjectStore } from '@renderer/store'
 
-import { GroupNode, TestNode } from './types'
+import { GroupNode, TestCase, TestNode } from './types'
 import StepSelector from './StepSelector.vue'
 import TestTreeList from './TestTreeList.vue'
 import ActionEditor from './ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
+import ActionRunner from './Operations/ActionRunner'
 
 export default defineComponent({
   components: {
-    CodeFilled,
+    CodeOutlined,
     FolderOutlined,
+    RightOutlined,
+    CodeFilled,
     LeftSquareFilled,
     PlaySquareFilled,
     RightSquareFilled,
@@ -84,9 +114,11 @@ export default defineComponent({
   },
   data() {
     return {
-      childNode: null
+      childNode: null,
+      running: false
     } as {
       childNode: TestNode | null
+      running: boolean
     }
   },
   computed: {
@@ -114,6 +146,13 @@ export default defineComponent({
         this.setCurrentGroupId(parentId)
         this.setCurrentNodeId(groupNodeId)
       }
+    },
+    async runCase() {
+      const kase = this.node.test as TestCase
+      const runner = new ActionRunner(kase.action)
+      const pass = await runner.run()
+      console.log('run case:', kase.action.operations)
+      console.log('passed:', pass)
     }
   }
 })
@@ -127,8 +166,17 @@ export default defineComponent({
 }
 
 .detail-container .detail-title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.detail-container .detail-title .title {
+  flex: 1;
   font-weight: bold;
   font-size: 16px;
+}
+.detail-container .detail-title .btn {
+  flex: 0;
 }
 
 .detail-container .detail-content {
@@ -143,6 +191,8 @@ export default defineComponent({
 
 .action-editor-container {
   flex: 1;
+}
+.action-editor-container.group {
   border: #eee 1px solid;
   margin-left: -1px;
   padding: 10px 15px;

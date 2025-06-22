@@ -1,6 +1,6 @@
 import fs from 'fs-extra'
 import { dialog } from 'electron'
-import puppeteer from 'puppeteer-core'
+import puppeteer, { Browser, Page } from 'puppeteer-core'
 
 import delay from './delay'
 
@@ -99,5 +99,26 @@ export default function init(ipcMain: Electron.IpcMain): void {
         reject('测试超时')
       }, 5000)
     })
+  })
+
+  let browser: Browser
+  let page: Page
+  ipcMain.handle('test-operation--launch', async (__, ...args) => {
+    const [browserPath] = args
+
+    const windowWidth = 640
+    const windowHeight = 640
+    browser = await puppeteer.launch({
+      headless: false,
+      executablePath: browserPath,
+      defaultViewport: null,
+      args: [`--window-size=${windowWidth},${windowHeight}`]
+    })
+    page = (await browser.pages())[0]
+  })
+  ipcMain.handle('test-operation--goto', async (__, ...args) => {
+    const [url] = args
+    console.log('goto', url)
+    await page.goto(url)
   })
 }

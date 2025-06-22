@@ -1,7 +1,6 @@
 import { Conf } from 'electron-conf/renderer'
 const conf = new Conf()
 
-import { toRaw } from 'vue'
 import { defineStore } from 'pinia'
 import {
   Dimension,
@@ -60,6 +59,9 @@ export const useProjectStore = defineStore('project', {
       }
     },
   getters: {
+    browserPath(): string {
+      return this.browserPathMap[this.browserType]
+    },
     currentNode(): TestNode | null {
       if (this.currentNodeId) {
         return this.testNodeMap[this.currentNodeId]
