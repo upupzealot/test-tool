@@ -3,14 +3,12 @@
     <template v-if="action && action.operations">
       <Operation
         v-for="operation in action?.operations"
+        :action="action"
         :operation="operation"
         @delete="onDeleteOperation(operation.id)"
       />
     </template>
-    <div
-      class="operation"
-      style="padding-left: 15px"
-    >
+    <div class="operation add-btn-panel">
       插入指令：
       <a-tag
         v-for="option in OperationOptions"
@@ -115,12 +113,15 @@ export default defineComponent({
   flex: 0;
   border: #eee 1px solid;
   min-height: 46px;
-  padding: 10px 20px 10px 44px;
+  padding: 30px 20px 10px 10px;
 }
 .operation:not(:first-child) {
   margin-top: -1px;
 }
-.operation-container .add-btn {
+.operation.add-btn-panel {
+  padding: 10px 15px;
+}
+.operation.add-btn-panel .add-btn {
   cursor: pointer;
 }
 </style>

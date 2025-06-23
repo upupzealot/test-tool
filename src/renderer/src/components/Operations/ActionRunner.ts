@@ -22,19 +22,22 @@ export default class ActionRunner {
     for (let i = 0; i < operations.length; i++) {
       const operation = operations[i]
       try {
-        if (operation.type === 'goto') {
-          await this.goto(operation.params)
-        }
-      } catch {
+        await this.operate(operation.type, operation.params)
+      } catch (err) {
+        console.error(err)
         pass = false
         return pass
       }
     }
+
+    await ipcRenderer.invoke('test-operation--close')
+
     return pass
   }
 
-  async goto(params) {
+  async operate(operationType: string, params: any) {
     const { ipcRenderer } = window.electron
-    await ipcRenderer.invoke('test-operation--goto', params.url)
+    const paramsObj = JSON.parse(JSON.stringify(params))
+    await ipcRenderer.invoke(`test-operation--${operationType}`, paramsObj)
   }
 }

@@ -6,7 +6,28 @@
     >
       {{ option.label }}
     </a-tag>
-    <ParamsForm :operation="operation" />
+    <FormGoto
+      v-if="operation.type === 'goto'"
+      :operation="operation"
+    />
+    <FormInput
+      v-if="operation.type === 'input'"
+      :operation="operation"
+    />
+    <FormClick
+      v-if="operation.type === 'click'"
+      :operation="operation"
+    />
+    <FormLookup
+      v-if="operation.type === 'lookup'"
+      :operation="operation"
+    />
+    <FormAssert
+      v-if="operation.type === 'assert'"
+      :action="action"
+      :operation="operation"
+    />
+    <!-- <ParamsForm :operation="operation" /> -->
     <div
       class="delete-btn"
       @click="showDeleteConfirm"
@@ -22,13 +43,28 @@ import { createVNode, defineComponent, PropType } from 'vue'
 import { Modal } from 'ant-design-vue'
 import { CloseOutlined, WarningOutlined } from '@ant-design/icons-vue'
 
-import { Operation } from '../types'
+import { Action, Operation } from '../types'
 import { OperationOptionMap } from './OperationOptions'
-import ParamsForm from './ParamsForm.vue'
+import FormGoto from './FormGoto.vue'
+import FormInput from './FormInput.vue'
+import FormClick from './FormClick.vue'
+import FormLookup from './FormLookup.vue'
+import FormAssert from './FormAssert.vue'
 
 export default defineComponent({
-  components: { ParamsForm, CloseOutlined },
+  components: {
+    FormGoto,
+    FormInput,
+    FormClick,
+    FormLookup,
+    FormAssert,
+    CloseOutlined
+  },
   props: {
+    action: {
+      type: Object as PropType<Action>,
+      required: true
+    },
     operation: {
       type: Object as PropType<Operation>,
       required: true
@@ -62,6 +98,15 @@ export default defineComponent({
 })
 </script>
 
+<style lang="css">
+.operation form.ant-form .ant-form-item {
+  margin-bottom: 10px;
+}
+.operation form.ant-form {
+  margin-bottom: -5px;
+}
+</style>
+
 <style lang="css" scoped>
 .operation-tag {
   position: absolute;
@@ -69,13 +114,6 @@ export default defineComponent({
   left: 0;
 }
 
-.operation form.ant-form {
-  margin-bottom: -34px;
-}
-
-.operation form.ant-form .ant-form-item:last-child {
-  margin-bottom: 10px;
-}
 .operation .delete-btn {
   display: none;
 

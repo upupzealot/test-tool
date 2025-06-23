@@ -103,6 +103,7 @@ export default function init(ipcMain: Electron.IpcMain): void {
 
   let browser: Browser
   let page: Page
+  let variables = {}
   ipcMain.handle('test-operation--launch', async (__, ...args) => {
     const [browserPath] = args
 
@@ -116,9 +117,65 @@ export default function init(ipcMain: Electron.IpcMain): void {
     })
     page = (await browser.pages())[0]
   })
+  ipcMain.handle('test-operation--close', async () => {
+    await browser.close()
+  })
+
   ipcMain.handle('test-operation--goto', async (__, ...args) => {
-    const [url] = args
-    console.log('goto', url)
+    const [{ url }] = args
     await page.goto(url)
+    return { pass: true }
+  })
+  ipcMain.handle('test-operation--input', async (__, ...args) => {
+    const [{ locator, text }] = args
+    const count = await page.$$eval(locator, async ($elements) => {
+      return $elements.length
+    })
+    if (count === 1) {
+      // ;($elements[0] as HTMLInputElement).value = text
+      await page.type(locator, text)
+      return { pass: true }
+    } else {
+      return { pass: false, message: '匹配不唯一' }
+    }
+  })
+  ipcMain.handle('test-operation--click', async (__, ...args) => {
+    const [{ locator }] = args
+    const count = await page.$$eval(locator, async ($elements) => {
+      return $elements.length
+    })
+    if (count === 1) {
+      await page.click(locator)
+      return { pass: true }
+    } else {
+      return { pass: false, message: '匹配不唯一' }
+    }
+  })
+  ipcMain.handle('test-operation--lookup', async (__, ...args) => {
+    const [{ locator, attribute, output }] = args
+    const value = await page.$$eval(
+      locator,
+      ($elements, attribute) => {
+        if (attribute === 'count') {
+          return $elements.length
+        }
+      },
+      attribute
+    )
+    variables[output] = value
+    return { pass: true, variables }
+  })
+  ipcMain.handle('test-operation--assert', async (__, ...args) => {
+    const [{ variable, compareOpt, num }] = args
+    const value = variables[variable]
+    if (compareOpt === '=') {
+      return { pass: value === num }
+    } else if (compareOpt === '>') {
+      return { pass: value > num }
+    } else if (compareOpt === '<') {
+      return { pass: value < num }
+    } else {
+      return { pass: false, message: `未识别的比较符号：${compareOpt}` }
+    }
   })
 }

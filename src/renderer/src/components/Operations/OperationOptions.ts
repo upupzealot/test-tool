@@ -1,4 +1,4 @@
-type OperationOption = {
+export type OperationOption = {
   key: string
   label: string
   color: string
@@ -19,6 +19,11 @@ const OperationOptions = [
     key: 'input',
     label: '输入',
     color: 'cyan'
+  },
+  {
+    key: 'lookup',
+    label: '获取',
+    color: 'blue'
   },
   {
     key: 'assert',
