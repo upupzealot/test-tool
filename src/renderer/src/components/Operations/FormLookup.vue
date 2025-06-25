@@ -14,7 +14,7 @@
     </a-form-item>
 
     <a-form-item
-      label="输出属性"
+      label="获取属性"
       name="attribute"
       :rules="[{ required: true }]"
       @change="validate"
@@ -25,7 +25,7 @@
     </a-form-item>
 
     <a-form-item
-      label="输出变量"
+      label="存至变量"
       name="output"
       :rules="[{ required: true }]"
       @change="validate"

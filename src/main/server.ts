@@ -140,16 +140,35 @@ export default function init(ipcMain: Electron.IpcMain): void {
     }
   })
   ipcMain.handle('test-operation--click', async (__, ...args) => {
-    const [{ locator }] = args
-    const count = await page.$$eval(locator, async ($elements) => {
-      return $elements.length
-    })
-    if (count === 1) {
-      await page.click(locator)
-      return { pass: true }
-    } else {
-      return { pass: false, message: '匹配不唯一' }
+    const [{ selectorPreset, selector, textOpt, text }] = args
+    let query = selector
+    if (selectorPreset !== 'custom') {
+      // TODO
     }
+    const result = await page.$$eval(
+      query,
+      async ($elements, textOpt, text) => {
+        const $target = $elements.filter(($el) => {
+          if (textOpt === 'equals') {
+            return $el.textContent?.trim() === text
+          } else {
+            // TODO
+            return false
+          }
+        })
+
+        if ($target.length === 1) {
+          ;($target[0] as HTMLElement).click()
+          return { pass: true }
+        } else {
+          return { pass: false, message: '匹配不唯一' }
+        }
+      },
+      textOpt,
+      text
+    )
+
+    return result
   })
   ipcMain.handle('test-operation--lookup', async (__, ...args) => {
     const [{ locator, attribute, output }] = args

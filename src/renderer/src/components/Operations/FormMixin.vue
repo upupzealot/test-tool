@@ -11,6 +11,11 @@ export default {
       required: true
     }
   },
+  computed: {
+    params() {
+      return this.operation.params
+    }
+  },
   methods: {
     async validate() {
       await (this.$refs['paramsForm'] as typeof Form).validate()
