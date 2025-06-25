@@ -22,12 +22,20 @@
       v-if="operation.type === 'lookup'"
       :operation="operation"
     />
+    <FormPageLookup
+      v-if="operation.type === 'lookup:page'"
+      :operation="operation"
+    />
     <FormAssert
       v-if="operation.type === 'assert'"
       :action="action"
       :operation="operation"
     />
-    <!-- <ParamsForm :operation="operation" /> -->
+    <FormAssertText
+      v-if="operation.type === 'assert:text'"
+      :action="action"
+      :operation="operation"
+    />
     <div
       class="delete-btn"
       @click="showDeleteConfirm"
@@ -49,7 +57,9 @@ import FormGoto from './FormGoto.vue'
 import FormInput from './FormInput.vue'
 import FormClick from './FormClick.vue'
 import FormLookup from './FormLookup.vue'
+import FormPageLookup from './FormPageLookup.vue'
 import FormAssert from './FormAssert.vue'
+import FormAssertText from './FormAssertText.vue'
 
 export default defineComponent({
   components: {
@@ -57,7 +67,9 @@ export default defineComponent({
     FormInput,
     FormClick,
     FormLookup,
+    FormPageLookup,
     FormAssert,
+    FormAssertText,
     CloseOutlined
   },
   props: {

@@ -149,10 +149,16 @@ export default function init(ipcMain: Electron.IpcMain): void {
       query,
       async ($elements, textOpt, text) => {
         const $target = $elements.filter(($el) => {
+          const value = $el.textContent?.trim()
           if (textOpt === 'equals') {
-            return $el.textContent?.trim() === text
+            return value === text
+          } else if (textOpt === 'includes') {
+            return value?.includes(text)
+          } else if (textOpt === 'startsWith') {
+            return value?.startsWith(text)
+          } else if (textOpt === 'endsWith') {
+            return value?.endsWith(text)
           } else {
-            // TODO
             return false
           }
         })
@@ -184,6 +190,22 @@ export default function init(ipcMain: Electron.IpcMain): void {
     variables[output] = value
     return { pass: true, variables }
   })
+  ipcMain.handle('test-operation--lookup:page', async (__, ...args) => {
+    const [{ attribute, output }] = args
+    const value = await page.evaluate((attribute) => {
+      if (attribute === 'url') {
+        return window.location.href
+      } else if (attribute === 'title') {
+        return document.title
+      } else {
+        return undefined
+      }
+    }, attribute)
+    if (value) {
+      variables[output] = value
+    }
+    return { pass: true, variables }
+  })
   ipcMain.handle('test-operation--assert', async (__, ...args) => {
     const [{ variable, compareOpt, num }] = args
     const value = variables[variable]
@@ -195,6 +217,21 @@ export default function init(ipcMain: Electron.IpcMain): void {
       return { pass: value < num }
     } else {
       return { pass: false, message: `未识别的比较符号：${compareOpt}` }
+    }
+  })
+  ipcMain.handle('test-operation--assert:text', async (__, ...args) => {
+    const [{ variable, textOpt, text }] = args
+    const value = variables[variable] as string
+    if (textOpt === 'equals') {
+      return { pass: value === text }
+    } else if (textOpt === 'includes') {
+      return { pass: value.includes(text) }
+    } else if (textOpt === 'startsWith') {
+      return { pass: value.startsWith(text) }
+    } else if (textOpt === 'endsWith') {
+      return { pass: value.endsWith(text) }
+    } else {
+      return { pass: false, message: `未识别的比较符号：${textOpt}` }
     }
   })
 }

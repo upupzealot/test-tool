@@ -26,8 +26,18 @@ const OperationOptions = [
     color: 'blue'
   },
   {
+    key: 'lookup:page',
+    label: '获取:页面',
+    color: 'blue'
+  },
+  {
     key: 'assert',
     label: '断言',
+    color: 'red'
+  },
+  {
+    key: 'assert:text',
+    label: '断言:文本',
     color: 'red'
   }
 ] as OperationOption[]

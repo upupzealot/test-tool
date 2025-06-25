@@ -10,7 +10,7 @@
       :rules="[{ required: true }]"
       @change="validate"
     >
-      <a-select v-model:value="operation.params.variable">
+      <a-select v-model:value="params.variable">
         <a-select-option
           v-for="variable in variables"
           :value="variable"
@@ -21,24 +21,13 @@
     </a-form-item>
 
     <a-form-item
-      label="数值比较"
-      name="num"
+      label="文本比较"
       :rules="[{ required: true }]"
       @change="validate"
     >
-      <a-input-number v-model:value="operation.params.num">
-        <template #addonBefore>
-          <a-select
-            v-model:value="operation.params.compareOpt"
-            style="width: 46px"
-          >
-            <template #suffixIcon></template>
-            <a-select-option value="=">=</a-select-option>
-            <a-select-option value=">">></a-select-option>
-            <a-select-option value="<"><</a-select-option>
-          </a-select>
-        </template>
-      </a-input-number>
+      <div class="locator-item">
+        <ItemTextOpt :params="params" />
+      </div>
     </a-form-item>
   </a-form>
 </template>
@@ -47,9 +36,11 @@
 import { PropType } from 'vue'
 import { Action } from '../types'
 import FormMixin from './FormMixin.vue'
+import ItemTextOpt from './ItemTextOpt.vue'
 
 export default {
   mixins: [FormMixin],
+  components: { ItemTextOpt },
   props: {
     action: {
       type: Object as PropType<Action>,
