@@ -31,6 +31,11 @@ const OperationOpts = [
     color: 'blue'
   },
   {
+    key: 'wait',
+    label: '等待',
+    color: 'default'
+  },
+  {
     key: 'assert',
     label: '断言',
     color: 'red'

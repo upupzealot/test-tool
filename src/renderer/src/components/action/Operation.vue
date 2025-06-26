@@ -26,6 +26,10 @@
       v-if="operation.type === 'lookup:page'"
       :operation="operation"
     />
+    <FormWait
+      v-if="operation.type === 'wait'"
+      :operation="operation"
+    />
     <FormAssert
       v-if="operation.type === 'assert'"
       :action="action"
@@ -53,6 +57,7 @@ import FormInput from './forms/Input.vue'
 import FormClick from './forms/Click.vue'
 import FormLookup from './forms/Lookup.vue'
 import FormPageLookup from './forms/PageLookup.vue'
+import FormWait from './forms/Wait.vue'
 import FormAssert from './forms/Assert.vue'
 
 export default defineComponent({
@@ -62,6 +67,7 @@ export default defineComponent({
     FormClick,
     FormLookup,
     FormPageLookup,
+    FormWait,
     FormAssert,
     CloseOutlined
   },

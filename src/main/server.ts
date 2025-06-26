@@ -206,6 +206,11 @@ export default function init(ipcMain: Electron.IpcMain): void {
     }
     return { pass: true, variables }
   })
+  ipcMain.handle('test-operation--wait', async (__, ...args) => {
+    const [{ wait }] = args
+    await delay(wait)
+    return { pass: true }
+  })
   ipcMain.handle('test-operation--assert', async (__, ...args) => {
     const [{ variable, numOpt, num, textOpt, text }] = args
     const value = variables[variable]
