@@ -34,11 +34,6 @@ const OperationOpts = [
     key: 'assert',
     label: '断言',
     color: 'red'
-  },
-  {
-    key: 'assert:text',
-    label: '断言:文本',
-    color: 'red'
   }
 ] as OperationOption[]
 export default OperationOpts

@@ -34,6 +34,7 @@ export default {
 }
 .text-opt .select {
   flex: 0;
+  min-width: 65px;
 }
 .text-opt .input {
   flex: 1;

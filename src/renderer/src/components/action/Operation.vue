@@ -31,11 +31,6 @@
       :action="action"
       :operation="operation"
     />
-    <FormAssertText
-      v-if="operation.type === 'assert:text'"
-      :action="action"
-      :operation="operation"
-    />
     <div
       class="delete-btn"
       @click="showDeleteConfirm"
@@ -59,7 +54,6 @@ import FormClick from './forms/Click.vue'
 import FormLookup from './forms/Lookup.vue'
 import FormPageLookup from './forms/PageLookup.vue'
 import FormAssert from './forms/Assert.vue'
-import FormAssertText from './forms/AssertText.vue'
 
 export default defineComponent({
   components: {
@@ -69,7 +63,6 @@ export default defineComponent({
     FormLookup,
     FormPageLookup,
     FormAssert,
-    FormAssertText,
     CloseOutlined
   },
   props: {

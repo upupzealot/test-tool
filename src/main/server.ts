@@ -207,31 +207,38 @@ export default function init(ipcMain: Electron.IpcMain): void {
     return { pass: true, variables }
   })
   ipcMain.handle('test-operation--assert', async (__, ...args) => {
-    const [{ variable, compareOpt, num }] = args
+    const [{ variable, numOpt, num, textOpt, text }] = args
     const value = variables[variable]
-    if (compareOpt === '=') {
-      return { pass: value === num }
-    } else if (compareOpt === '>') {
-      return { pass: value > num }
-    } else if (compareOpt === '<') {
-      return { pass: value < num }
+
+    console.log(value, text)
+    if (numOpt) {
+      if (numOpt === '=') {
+        return { pass: value === num }
+      } else if (numOpt === '>') {
+        return { pass: value > num }
+      } else if (numOpt === '>=') {
+        return { pass: value >= num }
+      } else if (numOpt === '<') {
+        return { pass: value < num }
+      } else if (numOpt === '<=') {
+        return { pass: value <= num }
+      } else {
+        return { pass: false, message: `未识别的比较符号：${numOpt}` }
+      }
+    } else if (textOpt) {
+      if (textOpt === 'equals') {
+        return { pass: value === text }
+      } else if (textOpt === 'includes') {
+        return { pass: value.includes(text) }
+      } else if (textOpt === 'startsWith') {
+        return { pass: value.startsWith(text) }
+      } else if (textOpt === 'endsWith') {
+        return { pass: value.endsWith(text) }
+      } else {
+        return { pass: false, message: `未识别的比较符号：${textOpt}` }
+      }
     } else {
-      return { pass: false, message: `未识别的比较符号：${compareOpt}` }
-    }
-  })
-  ipcMain.handle('test-operation--assert:text', async (__, ...args) => {
-    const [{ variable, textOpt, text }] = args
-    const value = variables[variable] as string
-    if (textOpt === 'equals') {
-      return { pass: value === text }
-    } else if (textOpt === 'includes') {
-      return { pass: value.includes(text) }
-    } else if (textOpt === 'startsWith') {
-      return { pass: value.startsWith(text) }
-    } else if (textOpt === 'endsWith') {
-      return { pass: value.endsWith(text) }
-    } else {
-      return { pass: false, message: `未识别的比较符号：${textOpt}` }
+      return { pass: false, message: '未识别的比较类型' }
     }
   })
 }
