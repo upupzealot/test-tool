@@ -28,8 +28,8 @@
 </template>
 
 <script lang="ts">
-import FormMixin from './FormMixin.vue'
+import _Mixin from './_Mixin.vue'
 export default {
-  mixins: [FormMixin]
+  mixins: [_Mixin]
 }
 </script>

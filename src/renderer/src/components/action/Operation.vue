@@ -52,14 +52,14 @@ import { Modal } from 'ant-design-vue'
 import { CloseOutlined, WarningOutlined } from '@ant-design/icons-vue'
 
 import { Action, Operation } from '../types'
-import { OperationOptionMap } from './OperationOptions'
-import FormGoto from './FormGoto.vue'
-import FormInput from './FormInput.vue'
-import FormClick from './FormClick.vue'
-import FormLookup from './FormLookup.vue'
-import FormPageLookup from './FormPageLookup.vue'
-import FormAssert from './FormAssert.vue'
-import FormAssertText from './FormAssertText.vue'
+import { OperationOptMap } from './OperationOpts'
+import FormGoto from './forms/Goto.vue'
+import FormInput from './forms/Input.vue'
+import FormClick from './forms/Click.vue'
+import FormLookup from './forms/Lookup.vue'
+import FormPageLookup from './forms/PageLookup.vue'
+import FormAssert from './forms/Assert.vue'
+import FormAssertText from './forms/AssertText.vue'
 
 export default defineComponent({
   components: {
@@ -85,7 +85,7 @@ export default defineComponent({
   emits: ['delete'],
   computed: {
     option() {
-      return OperationOptionMap[this.operation.type]
+      return OperationOptMap[this.operation.type]
     }
   },
   methods: {

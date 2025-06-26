@@ -89,9 +89,9 @@ import { useProjectStore } from '@renderer/store'
 import { GroupNode, TestCase, TestNode } from './types'
 import StepSelector from './StepSelector.vue'
 import TestTreeList from './TestTreeList.vue'
-import ActionEditor from './ActionEditor.vue'
+import ActionEditor from './action/ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
-import ActionRunner from './Operations/ActionRunner'
+import ActionRunner from './action/ActionRunner'
 
 export default defineComponent({
   components: {

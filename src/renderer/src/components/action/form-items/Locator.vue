@@ -30,7 +30,7 @@
     </div>
     <div class="locator-item">
       <div class="locator-item-label">文本</div>
-      <ItemTextOpt
+      <TextOpt
         class="locator-item-control"
         :params="params"
       />
@@ -39,10 +39,10 @@
 </template>
 
 <script>
-import ItemTextOpt from './ItemTextOpt.vue'
+import TextOpt from './TextOpt.vue'
 
 export default {
-  components: { ItemTextOpt },
+  components: { TextOpt },
   props: {
     params: {
       type: Object,

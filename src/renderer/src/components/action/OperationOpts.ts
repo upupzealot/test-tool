@@ -4,7 +4,7 @@ export type OperationOption = {
   color: string
 }
 
-const OperationOptions = [
+const OperationOpts = [
   {
     key: 'goto',
     label: '跳转',
@@ -41,11 +41,11 @@ const OperationOptions = [
     color: 'red'
   }
 ] as OperationOption[]
-export default OperationOptions
+export default OperationOpts
 
-export const OperationOptionMap: {
+export const OperationOptMap: {
   [key: string]: OperationOption
 } = {}
-OperationOptions.forEach((option) => {
-  OperationOptionMap[option.key] = option
+OperationOpts.forEach((option) => {
+  OperationOptMap[option.key] = option
 })

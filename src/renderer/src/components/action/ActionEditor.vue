@@ -11,7 +11,7 @@
     <div class="operation add-btn-panel">
       插入指令：
       <a-tag
-        v-for="option in OperationOptions"
+        v-for="option in OperationOpts"
         :color="option.color"
         class="add-btn"
         @click="addOperation(option.key)"
@@ -33,9 +33,9 @@ import {
   TestCase,
   TestGroup,
   TestNode
-} from './types'
-import OperationOptions, { OperationOptionMap } from './Operations/OperationOptions'
-import Operation from './Operations/Operation.vue'
+} from '../types'
+import OperationOpts, { OperationOptMap } from './OperationOpts'
+import Operation from './Operation.vue'
 
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
@@ -54,8 +54,8 @@ export default defineComponent({
   },
   data() {
     return {
-      OperationOptions,
-      OperationOptionMap
+      OperationOpts,
+      OperationOptMap
     }
   },
   computed: {

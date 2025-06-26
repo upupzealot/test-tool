@@ -50,7 +50,7 @@ import {
 } from '@ant-design/icons-vue'
 
 import { StepId, GroupNode } from './types'
-import ActionEditor from './ActionEditor.vue'
+import ActionEditor from './action/ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
 
 export default defineComponent({
