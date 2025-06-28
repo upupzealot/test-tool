@@ -42,8 +42,8 @@ import { useProjectStore } from './store'
 
 import { message } from 'ant-design-vue'
 import { SettingOutlined } from '@ant-design/icons-vue'
-import HeaderMenu from './components/Menu.vue'
-import ProjectInfo from './components/ProjectInfo.vue'
+import HeaderMenu from './components/project/Menu.vue'
+import ProjectInfo from './components/project/ProjectInfo.vue'
 import TestCollection from './components/TestCollection.vue'
 import Settings from './components/Settings.vue'
 

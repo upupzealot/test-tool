@@ -122,7 +122,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['currentNode', 'currentStepId']),
+    ...mapState(useProjectStore, ['project', 'currentNode', 'currentStepId']),
     currentGroupNode(): GroupNode {
       return this.node as GroupNode
     }
@@ -149,7 +149,7 @@ export default defineComponent({
     },
     async runCase() {
       const kase = this.node.test as TestCase
-      const runner = new ActionRunner(kase.action)
+      const runner = new ActionRunner(this.project, kase.action)
       const pass = await runner.run()
       console.log('run case:', kase.action.operations)
       console.log('passed:', pass)

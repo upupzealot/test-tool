@@ -102,10 +102,22 @@ export default function init(ipcMain: Electron.IpcMain): void {
   })
 
   let browser: Browser
+  let presetLocators: {
+    [key: string]: {
+      key: string
+      label: string
+      locator: string
+    }
+  } = {}
   let page: Page
-  let variables = {}
+  let variables: {
+    [key: string]: any
+  } = {}
   ipcMain.handle('test-operation--launch', async (__, ...args) => {
-    const [browserPath] = args
+    const [browserPath, projectConf] = args
+    projectConf.presetLocators.forEach((preset) => {
+      presetLocators[preset.key] = preset
+    })
 
     const windowWidth = 640
     const windowHeight = 640
@@ -143,7 +155,7 @@ export default function init(ipcMain: Electron.IpcMain): void {
     const [{ selectorPreset, selector, textOpt, text }] = args
     let query = selector
     if (selectorPreset !== 'custom') {
-      // TODO
+      query = presetLocators[selectorPreset].locator
     }
     const result = await page.$$eval(
       query,

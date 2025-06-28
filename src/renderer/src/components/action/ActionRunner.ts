@@ -1,11 +1,13 @@
 import { useProjectStore } from '@renderer/store'
 
-import { Action } from '../types'
+import { Action, Project } from '../types'
 
 export default class ActionRunner {
+  project: Project
   action: Action
 
-  constructor(action: Action) {
+  constructor(project: Project, action: Action) {
+    this.project = project
     this.action = action
   }
 
@@ -18,7 +20,9 @@ export default class ActionRunner {
     await store.initBrowserSelection()
     const { browserPath } = store
     const { ipcRenderer } = window.electron
-    await ipcRenderer.invoke('test-operation--launch', browserPath)
+
+    const configObj = JSON.parse(JSON.stringify(this.project.config))
+    await ipcRenderer.invoke('test-operation--launch', browserPath, configObj)
 
     for (let i = 0; i < operations.length; i++) {
       const operation = operations[i]

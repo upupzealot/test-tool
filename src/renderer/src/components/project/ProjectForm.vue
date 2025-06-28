@@ -3,6 +3,7 @@
     ref="projectForm"
     :model="form"
     :layout="'horizontal'"
+    size="small"
     :colon="false"
     :label-align="'right'"
     :label-col="{
@@ -27,7 +28,7 @@
         v-model:value="filePath"
       />
     </a-form-item>
-    <a-divider v-if="filePath"></a-divider>
+    <a-divider orientation="left">基本信息</a-divider>
     <a-form-item
       label="项目名称"
       name="name"
@@ -44,6 +45,8 @@
         :auto-size="{ minRows: 2, maxRows: 5 }"
       />
     </a-form-item>
+    <a-divider orientation="left">项目配置</a-divider>
+    <ProjectConf :form="form" />
   </a-form>
 </template>
 
@@ -51,9 +54,11 @@
 import { Form } from 'ant-design-vue'
 import { defineComponent, PropType, toRaw } from 'vue'
 
-import { Project } from './types'
+import { Project } from '../types'
+import ProjectConf from './ProjectConf.vue'
 
 export default defineComponent({
+  components: { ProjectConf },
   props: {
     form: {
       type: Object as PropType<Project>,

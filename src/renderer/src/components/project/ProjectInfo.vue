@@ -32,7 +32,7 @@
 import { mapActions, mapState } from 'pinia'
 import { message } from 'ant-design-vue'
 
-import { useProjectStore } from '../store'
+import { useProjectStore } from '../../store'
 import ProjectForm from './ProjectForm.vue'
 
 export default {

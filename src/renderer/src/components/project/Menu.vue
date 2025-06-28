@@ -52,10 +52,10 @@ import { theme } from 'ant-design-vue'
 import { FolderOpenOutlined, PlusOutlined } from '@ant-design/icons-vue'
 
 import { mapState, mapActions } from 'pinia'
-import { useProjectStore } from '../store'
+import { useProjectStore } from '../../store'
 
 import ProjectForm from './ProjectForm.vue'
-import { Project } from './types'
+import { Project } from '../types'
 
 export default {
   components: { FolderOpenOutlined, PlusOutlined, ProjectForm },

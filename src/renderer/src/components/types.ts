@@ -49,6 +49,13 @@ export interface Project extends TestGroup {
   id: '-'
   name: string
   desc?: string
+  config: {
+    presetLocators: {
+      key: string
+      label: string
+      locator: string
+    }[]
+  }
   children: (TestCase | TestGroup)[]
 }
 
