@@ -163,7 +163,7 @@ export const useProjectStore = defineStore('project', {
     async setCurrentStepId(stepId: StepId) {
       this.currentStepId = stepId
     },
-    execute(action: ActionExecution) {
+    executeAction(action: ActionExecution) {
       this.activeTab = 'test-execution'
       this.executingAction = action
     },

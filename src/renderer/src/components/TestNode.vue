@@ -1,73 +1,36 @@
 <template>
-  <!-- 标题区域 -->
-  <div class="detail-container">
-    <div class="detail-title">
-      <div class="title">
-        <FolderOutlined v-if="node.type === 'group'" />
-        <CodeOutlined v-if="node.type === 'case'" />
-        {{ node.name }}
-        <div>
-          <a-typography-text
-            type="secondary"
-            class="desc"
-          >
-            {{ node.desc }}
-          </a-typography-text>
-        </div>
-      </div>
-      <div
-        class="btn"
-        v-if="node.type === 'case'"
-      >
-        <a-button
-          shape="circle"
-          size="large"
-          :loading="running"
-          @click="runCase"
-        >
-          <template #icon>
-            <RightOutlined />
-          </template>
-        </a-button>
-      </div>
+  <div class="detail-content">
+    <!-- 步骤选择器 -->
+    <div
+      class="step-selector-container"
+      v-if="node.type === 'group'"
+    >
+      <StepSelector :group="currentGroupNode" />
     </div>
 
-    <a-divider style="margin: 10px 0" />
-
-    <!-- 测试详情 -->
-    <div class="detail-content">
-      <!-- 步骤选择器 -->
-      <div
-        class="step-selector-container"
-        v-if="node.type === 'group'"
-      >
-        <StepSelector :group="currentGroupNode" />
-      </div>
-
-      <TestTreeList
-        v-if="currentStepId === 'children'"
-        style="flex: 1; margin-left: -1px"
-        :currentNode="childNode"
-        :currentGroup="currentGroupNode"
-        @selectNode="onSelectNode"
-        @enterGroup="onEnterGroup"
+    <TestTreeList
+      v-if="currentStepId === 'children'"
+      style="flex: 1; margin-left: -1px"
+      :currentNode="childNode"
+      :currentGroup="currentGroupNode"
+      @selectNode="onSelectNode"
+      @enterGroup="onEnterGroup"
+    />
+    <!-- 动作编辑器 -->
+    <div
+      :class="
+        currentNode?.type === 'group'
+          ? ['action-editor-container', 'group']
+          : ['action-editor-container']
+      "
+      v-if="
+        currentNode?.type === 'case' || (currentStepId && currentStepId !== 'children')
+      "
+    >
+      <ActionEditor
+        :node="currentNode!"
+        :stepId="currentStepId"
       />
-      <!-- 动作编辑器 -->
-      <div
-        :class="
-          currentNode?.type === 'group'
-            ? ['action-editor-container', 'group']
-            : ['action-editor-container']
-        "
-        v-if="
-          currentNode?.type === 'case' || (currentStepId && currentStepId !== 'children')
-        "
-      >
-        <ActionEditor
-          :node="currentNode!"
-          :stepId="currentStepId"
-        />
-      </div>
     </div>
   </div>
 </template>
@@ -75,9 +38,6 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import {
-  CodeOutlined,
-  FolderOutlined,
-  RightOutlined,
   CodeFilled,
   LeftSquareFilled,
   PlaySquareFilled,
@@ -86,18 +46,14 @@ import {
 
 import { useProjectStore } from '@renderer/store'
 
-import { GroupNode, TestCase, TestNode } from './types'
+import { GroupNode, TestNode } from './types'
 import StepSelector from './StepSelector.vue'
 import TestTreeList from './TestTreeList.vue'
 import ActionEditor from './action/ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
-import ActionRunner from './action/ActionRunner'
 
 export default defineComponent({
   components: {
-    CodeOutlined,
-    FolderOutlined,
-    RightOutlined,
     CodeFilled,
     LeftSquareFilled,
     PlaySquareFilled,
@@ -114,33 +70,20 @@ export default defineComponent({
   },
   data() {
     return {
-      childNode: null,
-      running: false
+      childNode: null
     } as {
       childNode: TestNode | null
-      running: boolean
     }
   },
   computed: {
-    ...mapState(useProjectStore, [
-      'project',
-      'currentNode',
-      'currentStepId',
-      'executingAction'
-    ]),
+    ...mapState(useProjectStore, ['currentNode', 'currentStepId']),
     currentGroupNode(): GroupNode {
       return this.node as GroupNode
     }
   },
   methods: {
-    ...mapActions(useProjectStore, [
-      'getNode',
-      'setCurrentNodeId',
-      'setCurrentGroupId',
-      'execute'
-    ]),
+    ...mapActions(useProjectStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
     async onSelectNode(nodeId: string) {
-      // this.setCurrentNodeId(nodeId)
       this.childNode = this.getNode(nodeId)
     },
     async onEnterGroup(groupNodeId: string) {
@@ -156,59 +99,28 @@ export default defineComponent({
         this.setCurrentGroupId(parentId)
         this.setCurrentNodeId(groupNodeId)
       }
-    },
-    async runCase() {
-      const kase = this.node.test as TestCase
-      const actionObj = JSON.parse(JSON.stringify(kase.action))
-      this.execute(actionObj)
-      const runner = new ActionRunner(this.project, this.executingAction!)
-      this.running = true
-      const pass = await runner.run()
-      this.running = false
-      console.log('run case:', actionObj)
-      console.log('passed:', pass)
     }
   }
 })
 </script>
 
 <style lang="css" scoped>
-.detail-container {
-  border: #eee 1px solid;
+.detail-content {
+  display: flex;
+  flex-direction: row;
   margin-left: -1px;
-  padding: 10px 15px;
-}
-
-.detail-container .detail-title {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-.detail-container .detail-title .title {
-  flex: 1;
-  font-weight: bold;
-  font-size: 16px;
-}
-.detail-container .detail-title .btn {
-  flex: 0;
-}
-
-.detail-container .detail-content {
-  display: flex;
-  flex-direction: row;
-  padding: 5px 0;
 }
 
 .step-selector-container {
   flex: 0;
+  border: #eee 1px solid;
+  padding: 10px 15px;
 }
 
 .action-editor-container {
   flex: 1;
 }
 .action-editor-container.group {
-  border: #eee 1px solid;
   margin-left: -1px;
-  padding: 10px 15px;
 }
 </style>
