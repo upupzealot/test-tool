@@ -11,6 +11,7 @@ import {
   TestGroup,
   TestNode
 } from './components/types'
+import { ActionExecution } from './components/execution/types'
 
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
@@ -26,10 +27,15 @@ export const useProjectStore = defineStore('project', {
       },
 
       // edit state
+      activeTab: 'test-cases',
       testNodeMap: {},
       currentNodeId: '-',
       currentGroupId: '-',
       currentStepId: '',
+
+      // execution
+      executing: false,
+      executingAction: null,
 
       // settings
       browserType: 'chromium',
@@ -44,10 +50,13 @@ export const useProjectStore = defineStore('project', {
     }) as {
       filePath: string
       project: Project
+      activeTab: string
       testNodeMap: Map<string, TestNode>
       currentNodeId: string
       currentGroupId: string
       currentStepId: StepId
+      executing: boolean
+      executingAction: null | ActionExecution
       browserType: 'chromium' | 'chrome'
       browserPathMap: {
         chromium: string
@@ -83,6 +92,9 @@ export const useProjectStore = defineStore('project', {
     },
     async getPath() {
       return await conf.get('lastOpen')
+    },
+    setActiveTab(activeTab: string) {
+      this.activeTab = activeTab
     },
     setProject(project: Project) {
       this.project = project
@@ -150,6 +162,10 @@ export const useProjectStore = defineStore('project', {
     },
     async setCurrentStepId(stepId: StepId) {
       this.currentStepId = stepId
+    },
+    execute(action: ActionExecution) {
+      this.activeTab = 'test-execution'
+      this.executingAction = action
     },
     createNode(
       parentId: string,

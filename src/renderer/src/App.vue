@@ -3,7 +3,7 @@
     <HeaderMenu class="header" />
     <div class="content">
       <a-tabs
-        v-model:activeKey="activeTab"
+        v-model:activeKey="currentTab"
         size="small"
         v-if="project && project.name"
         style="flex: 1"
@@ -20,18 +20,24 @@
         >
           <TestCollection />
         </a-tab-pane>
+        <a-tab-pane
+          key="test-execution"
+          tab="执行情况"
+        >
+          <TestExecution />
+        </a-tab-pane>
 
         <template #rightExtra>
           <a-button
             type="link"
-            @click="activeTab = 'settings'"
+            @click="currentTab = 'settings'"
           >
             <SettingOutlined /> 设置
           </a-button>
         </template>
       </a-tabs>
 
-      <Settings v-if="activeTab === 'settings'" />
+      <Settings v-if="currentTab === 'settings'" />
     </div>
   </div>
 </template>
@@ -45,18 +51,29 @@ import { SettingOutlined } from '@ant-design/icons-vue'
 import HeaderMenu from './components/project/Menu.vue'
 import ProjectInfo from './components/project/ProjectInfo.vue'
 import TestCollection from './components/TestCollection.vue'
+import TestExecution from './components/execution/TestExecution.vue'
 import Settings from './components/Settings.vue'
 
 export default {
   // eslint-disable-next-line vue/no-reserved-component-names
-  components: { HeaderMenu, SettingOutlined, ProjectInfo, TestCollection, Settings },
-  data() {
-    return {
-      activeTab: 'test-cases'
-    }
+  components: {
+    HeaderMenu,
+    SettingOutlined,
+    ProjectInfo,
+    TestCollection,
+    TestExecution,
+    Settings
   },
   computed: {
-    ...mapState(useProjectStore, ['project'])
+    ...mapState(useProjectStore, ['project', 'activeTab']),
+    currentTab: {
+      get() {
+        return this.activeTab
+      },
+      set(activeTab: string) {
+        this.setActiveTab(activeTab)
+      }
+    }
   },
   mounted() {
     document.onkeydown = async (e) => {
@@ -72,7 +89,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useProjectStore, ['saveProject'])
+    ...mapActions(useProjectStore, ['saveProject', 'setActiveTab'])
   }
 }
 </script>

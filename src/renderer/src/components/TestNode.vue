@@ -122,13 +122,23 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['project', 'currentNode', 'currentStepId']),
+    ...mapState(useProjectStore, [
+      'project',
+      'currentNode',
+      'currentStepId',
+      'executingAction'
+    ]),
     currentGroupNode(): GroupNode {
       return this.node as GroupNode
     }
   },
   methods: {
-    ...mapActions(useProjectStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
+    ...mapActions(useProjectStore, [
+      'getNode',
+      'setCurrentNodeId',
+      'setCurrentGroupId',
+      'execute'
+    ]),
     async onSelectNode(nodeId: string) {
       // this.setCurrentNodeId(nodeId)
       this.childNode = this.getNode(nodeId)
@@ -149,9 +159,13 @@ export default defineComponent({
     },
     async runCase() {
       const kase = this.node.test as TestCase
-      const runner = new ActionRunner(this.project, kase.action)
+      const actionObj = JSON.parse(JSON.stringify(kase.action))
+      this.execute(actionObj)
+      const runner = new ActionRunner(this.project, this.executingAction!)
+      this.running = true
       const pass = await runner.run()
-      console.log('run case:', kase.action.operations)
+      this.running = false
+      console.log('run case:', actionObj)
       console.log('passed:', pass)
     }
   }

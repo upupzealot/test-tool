@@ -1,19 +1,20 @@
 import { useProjectStore } from '@renderer/store'
 
-import { Action, Project } from '../types'
+import { Project } from '../types'
+import { ActionExecution } from '../execution/types'
 
 export default class ActionRunner {
   project: Project
-  action: Action
+  action: ActionExecution
 
-  constructor(project: Project, action: Action) {
+  constructor(project: Project, action: ActionExecution) {
     this.project = project
     this.action = action
   }
 
   async run(): Promise<boolean> {
     const { operations } = this.action
-    let pass = true
+    let actionPass = true
     let message
 
     const store = useProjectStore()
@@ -26,28 +27,34 @@ export default class ActionRunner {
 
     for (let i = 0; i < operations.length; i++) {
       const operation = operations[i]
+      const startAt = Date.now()
       try {
         const result = await this.operate(operation.type, operation.params)
-        pass = pass && result.pass
-        if (!pass) {
+        operation.time = Date.now() - startAt
+        operation.pass = result.pass
+
+        actionPass = actionPass && result.pass
+        if (!result.pass) {
           message = `test${i + 1}(${operation.type}) failed: ${result.message}`
           break
         }
       } catch (err) {
         console.error(err)
-        pass = false
-        return pass
+        operation.time = Date.now() - startAt
+        operation.pass = false
+        actionPass = false
+        return actionPass
       }
     }
 
-    if (pass) {
+    if (actionPass) {
       console.log('test passed!')
       await ipcRenderer.invoke('test-operation--close')
     } else {
       console.log(message)
     }
 
-    return pass
+    return actionPass
   }
 
   async operate(operationType: string, params: any) {
