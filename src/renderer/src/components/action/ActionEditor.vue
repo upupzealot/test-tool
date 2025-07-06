@@ -21,10 +21,24 @@
           size="large"
           class="action-btn"
           :loading="running"
-          @click="execute"
+          :disabled="!action?.operations.length"
+          @click="onExecuteAction"
         >
           <template #icon>
             <RightOutlined />
+          </template>
+        </a-button>
+
+        <a-button
+          shape="circle"
+          size="large"
+          class="action-btn"
+          :loading="running"
+          :disabled="!action?.operations.length"
+          @click="onExecuteNode"
+        >
+          <template #icon>
+            <DoubleRightOutlined />
           </template>
         </a-button>
       </div>
@@ -56,7 +70,12 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { mapActions, mapState } from 'pinia'
-import { CodeOutlined, FolderOutlined, RightOutlined } from '@ant-design/icons-vue'
+import {
+  CodeOutlined,
+  FolderOutlined,
+  RightOutlined,
+  DoubleRightOutlined
+} from '@ant-design/icons-vue'
 
 import { useProjectStore } from '@renderer/store'
 import {
@@ -76,7 +95,13 @@ import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
 
 export default defineComponent({
-  components: { CodeOutlined, FolderOutlined, RightOutlined, Operation },
+  components: {
+    CodeOutlined,
+    FolderOutlined,
+    RightOutlined,
+    DoubleRightOutlined,
+    Operation
+  },
   props: {
     node: {
       type: Object as PropType<TestNode>,
@@ -95,7 +120,12 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['project', 'executingAction']),
+    ...mapState(useProjectStore, [
+      'project',
+      'currentNode',
+      'currentPaths',
+      'executingAction'
+    ]),
     action(): Action {
       if (this.node.type === 'group') {
         return (this.node.test as TestGroup)[this.stepId]
@@ -105,7 +135,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions(useProjectStore, ['executeAction']),
+    ...mapActions(useProjectStore, ['executeAction', 'executeCase']),
     addOperation(type: string) {
       let action = this.action
       if (!action) {
@@ -137,7 +167,7 @@ export default defineComponent({
         (operation) => operation.id !== operationId
       )
     },
-    async execute() {
+    async onExecuteAction() {
       const actionObj = JSON.parse(JSON.stringify(this.action))
       this.executeAction(actionObj)
       const runner = new ActionRunner(this.project, this.executingAction!)
@@ -146,6 +176,19 @@ export default defineComponent({
       this.running = false
       console.log('run case:', actionObj)
       console.log('passed:', pass)
+    },
+    async onExecuteNode() {
+      if (this.currentNode?.type === 'case') {
+        const kase = this.currentNode.test as TestCase
+        const pathNodes = [...this.currentPaths]
+        this.executeCase(kase, pathNodes)
+
+        // const runner = new ActionRunner(this.project, this.executingAction!)
+        // this.running = true
+        // const pass = await runner.run()
+        // this.running = false
+        // console.log('passed:', pass)
+      }
     }
   }
 })

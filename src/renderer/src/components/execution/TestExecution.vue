@@ -40,8 +40,9 @@
           v-if="operation.time >= 0"
           type="secondary"
           class="desc"
+          style="margin-left: 5px"
         >
-          用时{{ operation.time }}ms
+          用时: {{ operation.time }} ms
         </a-typography-text>
       </div>
     </div>

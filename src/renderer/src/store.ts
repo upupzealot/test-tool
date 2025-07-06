@@ -8,10 +8,11 @@ import {
   Project,
   StepId,
   Test,
+  TestCase,
   TestGroup,
   TestNode
 } from './components/types'
-import { ActionExecution } from './components/execution/types'
+import { ActionExecution, CaseExecution } from './components/execution/types'
 
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
@@ -166,6 +167,25 @@ export const useProjectStore = defineStore('project', {
     executeAction(action: ActionExecution) {
       this.activeTab = 'test-execution'
       this.executingAction = action
+    },
+    executeCase(kase: TestCase, pathNodes: TestNode[]) {
+      const caseExecutionObj = JSON.parse(JSON.stringify(kase)) as CaseExecution
+      const pathExecutionObjs = pathNodes.map((node) =>
+        JSON.parse(JSON.stringify(node))
+      ) as GroupNode[]
+      caseExecutionObj.beforeActions = []
+      caseExecutionObj.beforeEachActions = []
+      pathExecutionObjs.forEach((pathNode) => {
+        if (pathNode.test.before) {
+          caseExecutionObj.beforeActions.push(pathNode.test.before as ActionExecution)
+        }
+        if (pathNode.test.beforeEach) {
+          caseExecutionObj.beforeEachActions.push(
+            pathNode.test.beforeEach as ActionExecution
+          )
+        }
+      })
+      console.log(11111, caseExecutionObj)
     },
     createNode(
       parentId: string,
