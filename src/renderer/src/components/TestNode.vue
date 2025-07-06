@@ -44,7 +44,7 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { useProjectStore } from '@renderer/store'
+import { useStateStore } from '@renderer/store/state'
 
 import { GroupNode, TestNode } from './types'
 import StepSelector from './StepSelector.vue'
@@ -76,13 +76,13 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['currentNode', 'currentStepId']),
+    ...mapState(useStateStore, ['currentNode', 'currentStepId']),
     currentGroupNode(): GroupNode {
       return this.node as GroupNode
     }
   },
   methods: {
-    ...mapActions(useProjectStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
+    ...mapActions(useStateStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
     async onSelectNode(nodeId: string) {
       this.childNode = this.getNode(nodeId)
     },

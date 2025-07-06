@@ -52,7 +52,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapState } from 'pinia'
-import { useProjectStore } from '@renderer/store'
+import { useExecutionStore } from '@renderer/store/execution'
 import { ActionExecution } from './types'
 import { OperationOptMap } from '../action/OperationOpts'
 import {
@@ -69,7 +69,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['executingAction']),
+    ...mapState(useExecutionStore, ['executingAction']),
     action() {
       return this.executingAction as ActionExecution
     }

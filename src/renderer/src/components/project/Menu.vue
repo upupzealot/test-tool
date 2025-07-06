@@ -52,7 +52,8 @@ import { theme } from 'ant-design-vue'
 import { FolderOpenOutlined, PlusOutlined } from '@ant-design/icons-vue'
 
 import { mapState, mapActions } from 'pinia'
-import { useProjectStore } from '../../store'
+import { useProjectStore } from '../../store/project'
+import { useStateStore } from '../../store/state'
 
 import ProjectForm from './ProjectForm.vue'
 import { Project } from '../types'
@@ -84,6 +85,7 @@ export default {
       if (projectObj) {
         await this.setPath(filePath)
         this.setProject(projectObj)
+        this.updateTestTree(projectObj)
       }
     }
   },
@@ -92,12 +94,14 @@ export default {
   },
   methods: {
     ...mapActions(useProjectStore, ['setPath', 'setProject']),
+    ...mapActions(useStateStore, ['updateTestTree']),
     async openProjectFile() {
       const { ipcRenderer } = window.electron
       const { filePath, projectObj } = await ipcRenderer.invoke('open-project-file')
       if (projectObj) {
         await this.setPath(filePath)
         this.setProject(projectObj)
+        this.updateTestTree(projectObj)
       }
     },
     async createProject() {
@@ -117,6 +121,7 @@ export default {
           if (filePath) {
             await this.setPath(filePath)
             this.setProject(projectObj)
+            this.updateTestTree(projectObj)
             this.createProjectModalVisible = false
           }
         }

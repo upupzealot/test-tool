@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { useProjectStore } from '@renderer/store'
+import { useStateStore } from '@renderer/store/state'
 
 import {
   CodeFilled,
@@ -108,13 +108,13 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, ['currentStepId']),
+    ...mapState(useStateStore, ['currentStepId']),
     test() {
       return this.group.test
     }
   },
   methods: {
-    ...mapActions(useProjectStore, ['setCurrentStepId'])
+    ...mapActions(useStateStore, ['setCurrentStepId'])
   }
 })
 </script>

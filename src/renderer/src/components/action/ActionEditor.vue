@@ -77,7 +77,9 @@ import {
   DoubleRightOutlined
 } from '@ant-design/icons-vue'
 
-import { useProjectStore } from '@renderer/store'
+import { useProjectStore } from '@renderer/store/project'
+import { useStateStore } from '@renderer/store/state'
+import { useExecutionStore } from '@renderer/store/execution'
 import {
   Action,
   CaseNode,
@@ -120,12 +122,9 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useProjectStore, [
-      'project',
-      'currentNode',
-      'currentPaths',
-      'executingAction'
-    ]),
+    ...mapState(useProjectStore, ['project']),
+    ...mapState(useStateStore, ['currentNode', 'currentPaths']),
+    ...mapState(useExecutionStore, ['executingAction']),
     action(): Action {
       if (this.node.type === 'group') {
         return (this.node.test as TestGroup)[this.stepId]
@@ -135,7 +134,8 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions(useProjectStore, ['executeAction', 'executeCase']),
+    ...mapActions(useStateStore, ['setActiveTab']),
+    ...mapActions(useExecutionStore, ['executeAction', 'executeCase']),
     addOperation(type: string) {
       let action = this.action
       if (!action) {
@@ -169,6 +169,7 @@ export default defineComponent({
     },
     async onExecuteAction() {
       const actionObj = JSON.parse(JSON.stringify(this.action))
+      this.setActiveTab('test-execution')
       this.executeAction(actionObj)
       const runner = new ActionRunner(this.project, this.executingAction!)
       this.running = true

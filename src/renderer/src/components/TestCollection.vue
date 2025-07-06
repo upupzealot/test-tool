@@ -32,7 +32,8 @@
 
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
-import { useProjectStore } from '../store'
+import { useProjectStore } from '../store/project'
+import { useStateStore } from '../store/state'
 
 import { Test } from './types'
 import TestTreeHeader from './TestTreeHeader.vue'
@@ -46,14 +47,16 @@ export default {
     TestNode
   },
   computed: {
-    ...mapState(useProjectStore, ['currentGroupNode', 'currentNode', 'currentStepId'])
+    ...mapState(useProjectStore, ['project']),
+    ...mapState(useStateStore, ['currentGroupNode', 'currentNode', 'currentStepId'])
   },
   methods: {
-    ...mapActions(useProjectStore, [
+    ...mapActions(useStateStore, [
       'getNode',
       'setCurrentNodeId',
       'setCurrentGroupId',
-      'createNode'
+      'createNode',
+      'updateTestTree'
     ]),
     async onSelectNode(nodeId: string) {
       this.setCurrentNodeId(nodeId)
@@ -66,6 +69,7 @@ export default {
     },
     async onCreateNode(parentId: string, testObj: Test) {
       this.createNode(parentId, testObj)
+      this.updateTestTree(this.project)
     }
   }
 }

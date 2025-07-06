@@ -1,4 +1,4 @@
-import { useProjectStore } from '@renderer/store'
+import { useSettingsStore } from '@renderer/store/settings'
 
 import { Project } from '../types'
 import { ActionExecution } from '../execution/types'
@@ -17,7 +17,7 @@ export default class ActionRunner {
     let actionPass = true
     let message
 
-    const store = useProjectStore()
+    const store = useSettingsStore()
     await store.initBrowserSelection()
     const { browserPath } = store
     const { ipcRenderer } = window.electron

@@ -74,7 +74,7 @@
 
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
-import { useProjectStore } from '../store'
+import { useSettingsStore } from '../store/settings'
 
 import ChromeIcon from '../assets/Chrome.png'
 import ChromiumIcon from '../assets/Chromium.png'
@@ -93,7 +93,7 @@ export default {
     await this.initBrowserSelection()
   },
   computed: {
-    ...mapState(useProjectStore, ['browserType', 'browserPathMap', 'browserBorder']),
+    ...mapState(useSettingsStore, ['browserType', 'browserPathMap', 'browserBorder']),
     bType: {
       get() {
         return this.browserType
@@ -115,7 +115,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useProjectStore, [
+    ...mapActions(useSettingsStore, [
       'setBrowserType',
       'initBrowserSelection',
       'updateBrowserPathMap',

@@ -44,7 +44,8 @@
 
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
-import { useProjectStore } from './store'
+import { useProjectStore } from './store/project'
+import { useStateStore } from './store/state'
 
 import { message } from 'ant-design-vue'
 import { SettingOutlined } from '@ant-design/icons-vue'
@@ -65,7 +66,8 @@ export default {
     Settings
   },
   computed: {
-    ...mapState(useProjectStore, ['project', 'activeTab']),
+    ...mapState(useProjectStore, ['project']),
+    ...mapState(useStateStore, ['activeTab']),
     currentTab: {
       get() {
         return this.activeTab
@@ -89,7 +91,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(useProjectStore, ['saveProject', 'setActiveTab'])
+    ...mapActions(useProjectStore, ['saveProject']),
+    ...mapActions(useStateStore, ['setActiveTab'])
   }
 }
 </script>
