@@ -91,6 +91,7 @@ import {
 } from '../types'
 import OperationOpts, { OperationOptMap } from './OperationOpts'
 import ActionRunner from './ActionRunner'
+import CaseRunner from './CaseRunner'
 import Operation from './Operation.vue'
 
 import ShortUniqueId from 'short-unique-id'
@@ -124,7 +125,7 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['project']),
     ...mapState(useStateStore, ['currentNode', 'currentPaths']),
-    ...mapState(useExecutionStore, ['executingAction']),
+    ...mapState(useExecutionStore, ['executingAction', 'executingCase']),
     action(): Action {
       if (this.node.type === 'group') {
         return (this.node.test as TestGroup)[this.stepId]
@@ -171,9 +172,14 @@ export default defineComponent({
       const actionObj = JSON.parse(JSON.stringify(this.action))
       this.setActiveTab('test-execution')
       this.executeAction(actionObj)
+
       const runner = new ActionRunner(this.project, this.executingAction!)
       this.running = true
+      await runner.launch()
       const pass = await runner.run()
+      if (pass) {
+        await runner.close()
+      }
       this.running = false
       console.log('run case:', actionObj)
       console.log('passed:', pass)
@@ -184,11 +190,15 @@ export default defineComponent({
         const pathNodes = [...this.currentPaths]
         this.executeCase(kase, pathNodes)
 
-        // const runner = new ActionRunner(this.project, this.executingAction!)
-        // this.running = true
-        // const pass = await runner.run()
-        // this.running = false
-        // console.log('passed:', pass)
+        const runner = new CaseRunner(this.project, this.executingCase!)
+        this.running = true
+        await runner.launch()
+        const pass = await runner.run()
+        if (pass) {
+          await runner.close()
+        }
+        this.running = false
+        console.log('passed:', pass)
       }
     }
   }

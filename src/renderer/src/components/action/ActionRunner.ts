@@ -12,11 +12,7 @@ export default class ActionRunner {
     this.action = action
   }
 
-  async run(): Promise<boolean> {
-    const { operations } = this.action
-    let actionPass = true
-    let message
-
+  async launch() {
     const store = useSettingsStore()
     await store.initBrowserSelection()
     const { browserPath } = store
@@ -24,6 +20,17 @@ export default class ActionRunner {
 
     const configObj = JSON.parse(JSON.stringify(this.project.config))
     await ipcRenderer.invoke('test-operation--launch', browserPath, configObj)
+  }
+
+  async close() {
+    const { ipcRenderer } = window.electron
+    await ipcRenderer.invoke('test-operation--close')
+  }
+
+  async run(): Promise<boolean> {
+    const { operations } = this.action
+    let actionPass = true
+    let message
 
     for (let i = 0; i < operations.length; i++) {
       const operation = operations[i]
@@ -49,9 +56,8 @@ export default class ActionRunner {
 
     if (actionPass) {
       console.log('test passed!')
-      await ipcRenderer.invoke('test-operation--close')
     } else {
-      console.log(message)
+      console.error(message)
     }
 
     return actionPass

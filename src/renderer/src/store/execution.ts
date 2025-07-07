@@ -7,10 +7,12 @@ export const useExecutionStore = defineStore('execution', {
     ({
       // execution
       executing: false,
-      executingAction: null
+      executingAction: null,
+      executingCase: null
     }) as {
       executing: boolean
       executingAction: null | ActionExecution
+      executingCase: null | CaseExecution
     },
   actions: {
     executeAction(action: ActionExecution) {
@@ -33,7 +35,7 @@ export const useExecutionStore = defineStore('execution', {
           )
         }
       })
-      console.log(11111, caseExecutionObj)
+      this.executingCase = caseExecutionObj
     }
   }
 })
