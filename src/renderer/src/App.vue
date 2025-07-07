@@ -24,7 +24,7 @@
           key="test-execution"
           tab="执行情况"
         >
-          <TestExecution />
+          <ExecutionState />
         </a-tab-pane>
 
         <template #rightExtra>
@@ -52,7 +52,7 @@ import { SettingOutlined } from '@ant-design/icons-vue'
 import HeaderMenu from './components/project/Menu.vue'
 import ProjectInfo from './components/project/ProjectInfo.vue'
 import TestCollection from './components/TestCollection.vue'
-import TestExecution from './components/execution/TestExecution.vue'
+import ExecutionState from './components/execution/ExecutionState.vue'
 import Settings from './components/Settings.vue'
 
 export default {
@@ -62,7 +62,7 @@ export default {
     SettingOutlined,
     ProjectInfo,
     TestCollection,
-    TestExecution,
+    ExecutionState,
     Settings
   },
   computed: {

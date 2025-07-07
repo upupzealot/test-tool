@@ -17,6 +17,10 @@ export interface CaseExecution extends TestCase {
 export interface ActionExecution extends Action {
   // id: string
   // desc?: string
+  nodeId: string
+  nodeName: string
+  nodeDesc?: string
+  stepId: string
   operations: OperationExecution[]
   currentOperationId: string
   pass: boolean

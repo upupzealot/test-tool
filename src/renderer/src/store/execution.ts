@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { GroupNode, TestCase, TestNode } from '../components/types'
+import { Action, GroupNode, TestCase, TestNode } from '../components/types'
 import { ActionExecution, CaseExecution } from '../components/execution/types'
 
 export const useExecutionStore = defineStore('execution', {
@@ -7,18 +7,23 @@ export const useExecutionStore = defineStore('execution', {
     ({
       // execution
       executing: false,
+      mode: 'action',
       executingAction: null,
       executingCase: null
     }) as {
       executing: boolean
+      mode: 'action' | 'case' | 'group'
       executingAction: null | ActionExecution
       executingCase: null | CaseExecution
     },
   actions: {
-    executeAction(action: ActionExecution) {
-      this.executingAction = action
+    executeAction(action: Action) {
+      this.mode = 'action'
+      const actionObj = JSON.parse(JSON.stringify(action))
+      this.executingAction = actionObj
     },
     executeCase(kase: TestCase, pathNodes: TestNode[]) {
+      this.mode = 'case'
       const caseExecutionObj = JSON.parse(JSON.stringify(kase)) as CaseExecution
       const pathExecutionObjs = pathNodes.map((node) =>
         JSON.parse(JSON.stringify(node))
@@ -27,12 +32,24 @@ export const useExecutionStore = defineStore('execution', {
       caseExecutionObj.beforeEachActions = []
       pathExecutionObjs.forEach((pathNode) => {
         if (pathNode.test.before) {
-          caseExecutionObj.beforeActions.push(pathNode.test.before as ActionExecution)
+          const actionObj = JSON.parse(
+            JSON.stringify(pathNode.test.before)
+          ) as ActionExecution
+          actionObj.nodeId = pathNode.id
+          actionObj.nodeName = pathNode.name
+          actionObj.nodeDesc = pathNode.desc
+          actionObj.stepId = 'before'
+          caseExecutionObj.beforeActions.push(actionObj)
         }
         if (pathNode.test.beforeEach) {
-          caseExecutionObj.beforeEachActions.push(
-            pathNode.test.beforeEach as ActionExecution
-          )
+          const actionObj = JSON.parse(
+            JSON.stringify(pathNode.test.beforeEach)
+          ) as ActionExecution
+          actionObj.nodeId = pathNode.id
+          actionObj.nodeName = pathNode.name
+          actionObj.nodeDesc = pathNode.desc
+          actionObj.stepId = 'beforeEach'
+          caseExecutionObj.beforeEachActions.push(actionObj)
         }
       })
       this.executingCase = caseExecutionObj

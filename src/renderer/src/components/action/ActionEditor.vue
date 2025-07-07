@@ -169,9 +169,8 @@ export default defineComponent({
       )
     },
     async onExecuteAction() {
-      const actionObj = JSON.parse(JSON.stringify(this.action))
       this.setActiveTab('test-execution')
-      this.executeAction(actionObj)
+      this.executeAction(this.action)
 
       const runner = new ActionRunner(this.project, this.executingAction!)
       this.running = true
@@ -181,13 +180,14 @@ export default defineComponent({
         await runner.close()
       }
       this.running = false
-      console.log('run case:', actionObj)
+      console.log('run case:', this.action)
       console.log('passed:', pass)
     },
     async onExecuteNode() {
       if (this.currentNode?.type === 'case') {
         const kase = this.currentNode.test as TestCase
         const pathNodes = [...this.currentPaths]
+        this.setActiveTab('test-execution')
         this.executeCase(kase, pathNodes)
 
         const runner = new CaseRunner(this.project, this.executingCase!)
