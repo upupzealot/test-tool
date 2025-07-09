@@ -1,6 +1,6 @@
 <template>
   <div
-    v-for="operation in action.operations"
+    v-for="operation in action?.operations"
     class="operation-execution"
   >
     <div>

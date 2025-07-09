@@ -1,7 +1,7 @@
 <template>
   <div
     class="action-execution"
-    v-if="mode === 'action'"
+    v-if="mode === 'action' && executingAction"
   >
     <ActionExecution :action="executingAction!" />
   </div>
