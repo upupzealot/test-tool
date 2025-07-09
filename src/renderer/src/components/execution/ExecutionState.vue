@@ -10,14 +10,14 @@
       class="action-execution"
       v-for="action in executingCase?.beforeActions"
     >
-      {{ action.nodeName }}: {{ action.stepId }}
+      {{ action.nodeName }}: {{ action.type }}
       <ActionExecution :action="action" />
     </div>
     <div
       class="action-execution"
       v-for="action in executingCase?.beforeEachActions"
     >
-      {{ action.nodeName }}: {{ action.stepId }}
+      {{ action.nodeName }}: {{ action.type }}
       <ActionExecution
         v-for="action in executingCase?.beforeEachActions"
         :action="action"

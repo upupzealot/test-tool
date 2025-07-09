@@ -38,7 +38,7 @@ export const useExecutionStore = defineStore('execution', {
           actionObj.nodeId = pathNode.id
           actionObj.nodeName = pathNode.name
           actionObj.nodeDesc = pathNode.desc
-          actionObj.stepId = 'before'
+          actionObj.type = 'before'
           caseExecutionObj.beforeActions.push(actionObj)
         }
         if (pathNode.test.beforeEach) {
@@ -48,7 +48,7 @@ export const useExecutionStore = defineStore('execution', {
           actionObj.nodeId = pathNode.id
           actionObj.nodeName = pathNode.name
           actionObj.nodeDesc = pathNode.desc
-          actionObj.stepId = 'beforeEach'
+          actionObj.type = 'beforeEach'
           caseExecutionObj.beforeEachActions.push(actionObj)
         }
       })

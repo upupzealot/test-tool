@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import {
   GroupNode,
   Project,
-  StepId,
+  ActionType,
   Test,
   TestGroup,
   TestNode
@@ -19,13 +19,13 @@ export const useStateStore = defineStore('state', {
       testNodeMap: {},
       currentNodeId: '-',
       currentGroupId: '-',
-      currentStepId: ''
+      currentActionType: ''
     }) as {
       activeTab: string
       testNodeMap: Map<string, TestNode>
       currentNodeId: string
       currentGroupId: string
-      currentStepId: StepId
+      currentActionType: ActionType
     },
   getters: {
     currentNode(): TestNode | null {
@@ -90,7 +90,7 @@ export const useStateStore = defineStore('state', {
     setCurrentNodeId(nodeId: string) {
       if (nodeId !== this.currentNodeId) {
         this.currentNodeId = nodeId
-        this.currentStepId = ''
+        this.currentActionType = ''
       }
     },
     setCurrentGroupId(groupNodeId: string) {
@@ -98,11 +98,11 @@ export const useStateStore = defineStore('state', {
       if (groupNode.type === 'group' && groupNodeId !== this.currentGroupId) {
         this.currentNodeId = ''
         this.currentGroupId = groupNodeId
-        this.currentStepId = ''
+        this.currentActionType = ''
       }
     },
-    async setCurrentStepId(stepId: StepId) {
-      this.currentStepId = stepId
+    async setCurrentActionType(actionType: ActionType) {
+      this.currentActionType = actionType
     },
     createNode(
       parentId: string,

@@ -2,36 +2,36 @@
   <a-space
     v-if="test.type === 'group'"
     direction="vertical"
-    class="step-selector"
+    class="action-selector"
   >
     <div
-      v-for="step in steps"
+      v-for="action in actions"
       :class="[
-        'step',
-        step.push ? 'push' : '',
-        step.key === currentStepId ? 'active' : ''
+        'action',
+        action.push ? 'push' : '',
+        action.key === currentActionType ? 'active' : ''
       ]"
-      @click="setCurrentStepId(step.key)"
+      @click="setCurrentActionType(action.key)"
     >
       <a-tag
         :bordered="false"
-        :color="step.key === 'children' ? 'green' : 'orange'"
+        :color="action.key === 'children' ? 'green' : 'orange'"
       >
-        <PlaySquareFilled v-if="step.key === 'before'" />
-        <RightSquareFilled v-if="step.key === 'beforeEach'" />
-        <CodeFilled v-if="step.key === 'children'" />
-        <LeftSquareFilled v-if="step.key === 'afterEach'" />
+        <PlaySquareFilled v-if="action.key === 'before'" />
+        <RightSquareFilled v-if="action.key === 'beforeEach'" />
+        <CodeFilled v-if="action.key === 'children'" />
+        <LeftSquareFilled v-if="action.key === 'afterEach'" />
         <PlaySquareFilled
           style="transform: scale(-1, 1)"
-          v-if="step.key === 'after'"
+          v-if="action.key === 'after'"
         />
-        {{ step.name }}
+        {{ action.name }}
       </a-tag>
       <a-typography-text
         type="secondary"
         class="desc"
       >
-        {{ step.desc }}
+        {{ action.desc }}
       </a-typography-text>
     </div>
   </a-space>
@@ -49,7 +49,7 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { StepId, GroupNode } from './types'
+import { ActionType, GroupNode } from './types'
 import ActionEditor from './action/ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
 
@@ -70,7 +70,7 @@ export default defineComponent({
   },
   data() {
     return {
-      steps: [
+      actions: [
         {
           key: 'before',
           name: '开始',
@@ -100,7 +100,7 @@ export default defineComponent({
           desc: '测试组执行结束后执行'
         }
       ] as {
-        key: StepId
+        key: ActionType
         push?: boolean
         name: string
         desc: string
@@ -108,35 +108,35 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useStateStore, ['currentStepId']),
+    ...mapState(useStateStore, ['currentActionType']),
     test() {
       return this.group.test
     }
   },
   methods: {
-    ...mapActions(useStateStore, ['setCurrentStepId'])
+    ...mapActions(useStateStore, ['setCurrentActionType'])
   }
 })
 </script>
 
 <style lang="css" scoped>
-.step-selector {
+.action-selector {
   min-width: 200px;
 }
-.step-selector .step {
+.action-selector .action {
   border: #eee 1px solid;
   cursor: pointer;
 }
-.step-selector .step.active {
+.action-selector .action.active {
   background-color: aliceblue;
 }
-.step-selector .step.push {
+.action-selector .action.push {
   margin-left: 25px;
 }
-.step-selector .step.push2 {
+.action-selector .action.push2 {
   margin-left: 50px;
 }
-.step-selector .step .desc {
+.action-selector .action .desc {
   font-size: 12px;
   display: block;
   padding: 4px 8px;

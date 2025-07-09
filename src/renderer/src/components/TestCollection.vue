@@ -48,7 +48,7 @@ export default {
   },
   computed: {
     ...mapState(useProjectStore, ['project']),
-    ...mapState(useStateStore, ['currentGroupNode', 'currentNode', 'currentStepId'])
+    ...mapState(useStateStore, ['currentGroupNode', 'currentNode', 'currentActionType'])
   },
   methods: {
     ...mapActions(useStateStore, [

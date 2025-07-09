@@ -1,4 +1,4 @@
-import { Action, Operation, TestCase } from '../types'
+import { Action, ActionType, Operation, TestCase } from '../types'
 
 export type TestState = 'toTest' | 'passed' | 'failed'
 
@@ -20,7 +20,7 @@ export interface ActionExecution extends Action {
   nodeId: string
   nodeName: string
   nodeDesc?: string
-  stepId: string
+  type: ActionType
   operations: OperationExecution[]
   currentOperationId: string
   pass: boolean

@@ -2,14 +2,14 @@
   <div class="detail-content">
     <!-- 步骤选择器 -->
     <div
-      class="step-selector-container"
+      class="action-selector-container"
       v-if="node.type === 'group'"
     >
-      <StepSelector :group="currentGroupNode" />
+      <ActionSelector :group="currentGroupNode" />
     </div>
 
     <TestTreeList
-      v-if="currentStepId === 'children'"
+      v-if="currentActionType === 'children'"
       style="flex: 1; margin-left: -1px"
       :currentNode="childNode"
       :currentGroup="currentGroupNode"
@@ -24,12 +24,13 @@
           : ['action-editor-container']
       "
       v-if="
-        currentNode?.type === 'case' || (currentStepId && currentStepId !== 'children')
+        currentNode?.type === 'case' ||
+        (currentActionType && currentActionType !== 'children')
       "
     >
       <ActionEditor
         :node="currentNode!"
-        :stepId="currentStepId"
+        :actionType="currentActionType"
       />
     </div>
   </div>
@@ -47,7 +48,7 @@ import {
 import { useStateStore } from '@renderer/store/state'
 
 import { GroupNode, TestNode } from './types'
-import StepSelector from './StepSelector.vue'
+import ActionSelector from './ActionSelector.vue'
 import TestTreeList from './TestTreeList.vue'
 import ActionEditor from './action/ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
@@ -58,7 +59,7 @@ export default defineComponent({
     LeftSquareFilled,
     PlaySquareFilled,
     RightSquareFilled,
-    StepSelector,
+    ActionSelector,
     TestTreeList,
     ActionEditor
   },
@@ -76,7 +77,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useStateStore, ['currentNode', 'currentStepId']),
+    ...mapState(useStateStore, ['currentNode', 'currentActionType']),
     currentGroupNode(): GroupNode {
       return this.node as GroupNode
     }
@@ -111,7 +112,7 @@ export default defineComponent({
   margin-left: -1px;
 }
 
-.step-selector-container {
+.action-selector-container {
   flex: 0;
   border: #eee 1px solid;
   padding: 10px 15px;

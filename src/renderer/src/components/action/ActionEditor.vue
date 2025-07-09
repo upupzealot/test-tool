@@ -84,7 +84,7 @@ import {
   Action,
   CaseNode,
   GroupNode,
-  StepId,
+  ActionType,
   TestCase,
   TestGroup,
   TestNode
@@ -110,8 +110,8 @@ export default defineComponent({
       type: Object as PropType<TestNode>,
       required: true
     },
-    stepId: {
-      type: String as PropType<StepId>,
+    actionType: {
+      type: String as PropType<ActionType>,
       required: true
     }
   },
@@ -128,7 +128,7 @@ export default defineComponent({
     ...mapState(useExecutionStore, ['executingAction', 'executingCase']),
     action(): Action {
       if (this.node.type === 'group') {
-        return (this.node.test as TestGroup)[this.stepId]
+        return (this.node.test as TestGroup)[this.actionType]
       } else {
         return (this.node.test as TestCase).action
       }
@@ -145,7 +145,7 @@ export default defineComponent({
           action = {
             id: uid.rnd()
           } as Action
-          group.test[this.stepId] = action
+          group.test[this.actionType] = action
         } else {
           const kase = this.node as CaseNode
           action = {
