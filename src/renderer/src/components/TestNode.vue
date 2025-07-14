@@ -23,10 +23,6 @@
           ? ['action-editor-container', 'group']
           : ['action-editor-container']
       "
-      v-if="
-        currentNode?.type === 'case' ||
-        (currentActionType && currentActionType !== 'children')
-      "
     >
       <ActionEditor
         :node="currentNode!"

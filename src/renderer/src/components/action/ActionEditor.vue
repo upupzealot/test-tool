@@ -1,5 +1,12 @@
 <template>
-  <div class="action-editor">
+  <div
+    v-if="
+      node.type === 'case' ||
+      (node.type === 'group' && actionType && actionType !== 'children')
+    "
+    class="action-editor"
+  >
+    <!-- 标题部分 -->
     <div class="header">
       <div class="info">
         <div class="title">
@@ -15,7 +22,14 @@
         </a-typography-text>
       </div>
 
-      <div class="action-btns">
+      <div
+        v-if="
+          node.type === 'case' ||
+          (node.type === 'group' && actionType && actionType !== 'children')
+        "
+        class="action-btns"
+      >
+        <!-- 单体运行 -->
         <a-button
           shape="circle"
           size="large"
@@ -29,6 +43,7 @@
           </template>
         </a-button>
 
+        <!-- 连 hooks 上下文运行 -->
         <a-button
           shape="circle"
           size="large"
@@ -43,6 +58,8 @@
         </a-button>
       </div>
     </div>
+
+    <!-- 编辑器部分 -->
     <div class="operation-container">
       <template v-if="action && action.operations">
         <Operation
@@ -69,7 +86,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { mapActions, mapState } from 'pinia'
+import { mapActions, mapState, mapWritableState } from 'pinia'
 import {
   CodeOutlined,
   FolderOutlined,
@@ -125,10 +142,14 @@ export default defineComponent({
   computed: {
     ...mapState(useProjectStore, ['project']),
     ...mapState(useStateStore, ['currentNode', 'currentPaths']),
-    ...mapState(useExecutionStore, ['executingAction', 'executingCase']),
-    action(): Action {
+    ...mapWritableState(useExecutionStore, ['mode', 'executingAction', 'executingCase']),
+    action(): Action | null {
       if (this.node.type === 'group') {
-        return (this.node.test as TestGroup)[this.actionType]
+        if (this.actionType !== 'children') {
+          return (this.node.test as TestGroup)[this.actionType]
+        } else {
+          return null
+        }
       } else {
         return (this.node.test as TestCase).action
       }
@@ -136,7 +157,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useStateStore, ['setActiveTab']),
-    ...mapActions(useExecutionStore, ['executeAction', 'executeCase']),
+    ...mapActions(useExecutionStore, ['getActionExecution', 'getCaseExecution']),
     addOperation(type: string) {
       let action = this.action
       if (!action) {
@@ -164,15 +185,26 @@ export default defineComponent({
       })
     },
     onDeleteOperation(operationId: string) {
-      this.action.operations = this.action.operations.filter(
+      const { action } = this
+      if (!action) {
+        return
+      }
+      action.operations = action.operations.filter(
         (operation) => operation.id !== operationId
       )
     },
     async onExecuteAction() {
-      this.setActiveTab('test-execution')
-      this.executeAction(this.action)
+      const { action } = this
+      if (!action) {
+        return
+      }
 
-      const runner = new ActionRunner(this.project, this.executingAction!)
+      this.setActiveTab('test-execution')
+      this.mode = 'action'
+      const actionExecutionObj = this.getActionExecution(action)
+      this.executingAction = actionExecutionObj
+
+      const runner = new ActionRunner(this.project, actionExecutionObj)
       this.running = true
       await runner.launch()
       const pass = await runner.run()
@@ -180,26 +212,33 @@ export default defineComponent({
         await runner.close()
       }
       this.running = false
-      console.log('run case:', this.action)
+      console.log('run case:', action)
       console.log('passed:', pass)
     },
     async onExecuteNode() {
-      if (this.currentNode?.type === 'case') {
-        const kase = this.currentNode.test as TestCase
-        const pathNodes = [...this.currentPaths]
-        this.setActiveTab('test-execution')
-        this.executeCase(kase, pathNodes)
-
-        const runner = new CaseRunner(this.project, this.executingCase!)
-        this.running = true
-        await runner.launch()
-        const pass = await runner.run()
-        if (pass) {
-          await runner.close()
-        }
-        this.running = false
-        console.log('passed:', pass)
+      if (!this.currentNode) {
+        return
+      } else if (this.currentNode?.type === 'case') {
+        await this.onExecuteCase()
       }
+    },
+    async onExecuteCase() {
+      const kase = this.currentNode!.test as TestCase
+      const pathNodes = [...this.currentPaths]
+      this.setActiveTab('test-execution')
+      this.mode = 'case'
+      const kaseExecutionObj = this.getCaseExecution(kase, pathNodes)
+      this.executingCase = kaseExecutionObj
+
+      const runner = new CaseRunner(this.project, kaseExecutionObj)
+      this.running = true
+      await runner.launch()
+      const pass = await runner.run()
+      if (pass) {
+        await runner.close()
+      }
+      this.running = false
+      console.log('passed:', pass)
     }
   }
 })

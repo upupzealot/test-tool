@@ -17,13 +17,11 @@ export const useExecutionStore = defineStore('execution', {
       executingCase: null | CaseExecution
     },
   actions: {
-    executeAction(action: Action) {
-      this.mode = 'action'
+    getActionExecution(action: Action) {
       const actionObj = JSON.parse(JSON.stringify(action))
-      this.executingAction = actionObj
+      return actionObj
     },
-    executeCase(kase: TestCase, pathNodes: TestNode[]) {
-      this.mode = 'case'
+    getCaseExecution(kase: TestCase, pathNodes: TestNode[]): CaseExecution {
       const caseExecutionObj = JSON.parse(JSON.stringify(kase)) as CaseExecution
       const pathExecutionObjs = pathNodes.map((node) =>
         JSON.parse(JSON.stringify(node))
@@ -52,7 +50,7 @@ export const useExecutionStore = defineStore('execution', {
           caseExecutionObj.beforeEachActions.push(actionObj)
         }
       })
-      this.executingCase = caseExecutionObj
+      return caseExecutionObj
     }
   }
 })

@@ -1,30 +1,15 @@
 import { Project } from '../types'
 import { CaseExecution } from '../execution/types'
-import { useSettingsStore } from '@renderer/store/settings'
+
+import Runner from './Runner'
 import ActionRunner from './ActionRunner'
 
-export default class CaseRunner {
-  project: Project
+export default class CaseRunner extends Runner {
   kase: CaseExecution
 
   constructor(project: Project, kase: CaseExecution) {
-    this.project = project
+    super(project)
     this.kase = kase
-  }
-
-  async launch() {
-    const store = useSettingsStore()
-    await store.initBrowserSelection()
-    const { browserPath } = store
-    const { ipcRenderer } = window.electron
-
-    const configObj = JSON.parse(JSON.stringify(this.project.config))
-    await ipcRenderer.invoke('test-operation--launch', browserPath, configObj)
-  }
-
-  async close() {
-    const { ipcRenderer } = window.electron
-    await ipcRenderer.invoke('test-operation--close')
   }
 
   async run(): Promise<boolean> {

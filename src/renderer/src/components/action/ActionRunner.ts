@@ -1,30 +1,14 @@
-import { useSettingsStore } from '@renderer/store/settings'
-
 import { Project } from '../types'
 import { ActionExecution } from '../execution/types'
 
-export default class ActionRunner {
-  project: Project
+import Runner from './Runner'
+
+export default class ActionRunner extends Runner {
   action: ActionExecution
 
   constructor(project: Project, action: ActionExecution) {
-    this.project = project
+    super(project)
     this.action = action
-  }
-
-  async launch() {
-    const store = useSettingsStore()
-    await store.initBrowserSelection()
-    const { browserPath } = store
-    const { ipcRenderer } = window.electron
-
-    const configObj = JSON.parse(JSON.stringify(this.project.config))
-    await ipcRenderer.invoke('test-operation--launch', browserPath, configObj)
-  }
-
-  async close() {
-    const { ipcRenderer } = window.electron
-    await ipcRenderer.invoke('test-operation--close')
   }
 
   async run(): Promise<boolean> {
