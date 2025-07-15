@@ -204,7 +204,8 @@ export default defineComponent({
       const actionExecutionObj = this.getActionExecution(action)
       this.executingAction = actionExecutionObj
 
-      const runner = new ActionRunner(this.project, actionExecutionObj)
+      // 传入 this.executingAction 引入响应式
+      const runner = new ActionRunner(this.project, this.executingAction)
       this.running = true
       await runner.launch()
       const pass = await runner.run()
@@ -230,7 +231,8 @@ export default defineComponent({
       const kaseExecutionObj = this.getCaseExecution(kase, pathNodes)
       this.executingCase = kaseExecutionObj
 
-      const runner = new CaseRunner(this.project, kaseExecutionObj)
+      // 传入 this.executingCase 引入响应式
+      const runner = new CaseRunner(this.project, this.executingCase)
       this.running = true
       await runner.launch()
       const pass = await runner.run()
