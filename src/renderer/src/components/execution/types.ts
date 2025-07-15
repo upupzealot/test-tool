@@ -1,6 +1,14 @@
-import { Action, ActionType, Operation, TestCase } from '../types'
+import { Action, ActionType, Operation, TestCase, TestGroup } from '../types'
 
 export type TestState = 'toTest' | 'passed' | 'failed'
+
+export interface GroupExecution extends TestGroup {
+  // id: string
+  // type: 'case' | 'group'
+  // name: string
+  // desc?: string
+  children: (CaseExecution | GroupExecution)[]
+}
 
 export interface CaseExecution extends TestCase {
   // id: string

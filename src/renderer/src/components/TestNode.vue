@@ -8,14 +8,6 @@
       <ActionSelector :group="currentGroupNode" />
     </div>
 
-    <TestTreeList
-      v-if="currentActionType === 'children'"
-      style="flex: 1; margin-left: -1px"
-      :currentNode="childNode"
-      :currentGroup="currentGroupNode"
-      @selectNode="onSelectNode"
-      @enterGroup="onEnterGroup"
-    />
     <!-- 动作编辑器 -->
     <div
       :class="
@@ -47,7 +39,7 @@ import { GroupNode, TestNode } from './types'
 import ActionSelector from './ActionSelector.vue'
 import TestTreeList from './TestTreeList.vue'
 import ActionEditor from './action/ActionEditor.vue'
-import { mapActions, mapState } from 'pinia'
+import { mapState } from 'pinia'
 
 export default defineComponent({
   components: {
@@ -76,26 +68,6 @@ export default defineComponent({
     ...mapState(useStateStore, ['currentNode', 'currentActionType']),
     currentGroupNode(): GroupNode {
       return this.node as GroupNode
-    }
-  },
-  methods: {
-    ...mapActions(useStateStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
-    async onSelectNode(nodeId: string) {
-      this.childNode = this.getNode(nodeId)
-    },
-    async onEnterGroup(groupNodeId: string) {
-      const node = this.getNode(groupNodeId)
-      const paths = node.paths
-      const parentId = paths[paths.length - 2]
-      const parentNode = this.getNode(parentId)
-      console.log(node.name, parentNode.name)
-      if (node.type === 'group') {
-        this.setCurrentGroupId(parentId)
-        this.setCurrentNodeId(groupNodeId)
-      } else {
-        this.setCurrentGroupId(parentId)
-        this.setCurrentNodeId(groupNodeId)
-      }
     }
   }
 })

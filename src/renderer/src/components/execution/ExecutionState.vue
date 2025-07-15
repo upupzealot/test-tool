@@ -1,54 +1,45 @@
 <template>
-  <div
-    class="action-execution"
-    v-if="mode === 'action' && executingAction"
-  >
+  <template v-if="mode === 'action' && executingAction">
     <ActionExecution :action="executingAction!" />
-  </div>
+  </template>
   <template v-if="mode === 'case'">
-    <div
-      class="action-execution"
-      v-for="action in executingCase?.beforeActions"
-    >
-      {{ action.nodeName }}: {{ action.type }}
-      <ActionExecution :action="action" />
-    </div>
-    <div
-      class="action-execution"
-      v-for="action in executingCase?.beforeEachActions"
-    >
-      {{ action.nodeName }}: {{ action.type }}
-      <ActionExecution
-        v-for="action in executingCase?.beforeEachActions"
-        :action="action"
+    <CaseExecution :kase="executingCase!" />
+  </template>
+  <div
+    v-if="mode === 'group'"
+    style="display: flex; flex-direction: row"
+  >
+    <div style="flex: 0; min-width: 240px">
+      <GroupExecution
+        :group="executingGroup!"
+        :depth="0"
       />
     </div>
-    <div class="action-execution">
-      {{ executingCase?.name }}
-      <ActionExecution :action="executingCase?.action!" />
+    <div
+      v-if="executingCase"
+      style="flex: 1; margin-left: -1px"
+    >
+      <CaseExecution :kase="executingCase!" />
     </div>
-  </template>
+  </div>
 </template>
 
 <script lang="ts">
 import { mapState } from 'pinia'
 import { useExecutionStore } from '@renderer/store/execution'
 import ActionExecution from './ActionExecution.vue'
+import CaseExecution from './CaseExecution.vue'
+import GroupExecution from './GroupExecution.vue'
 
 export default {
-  components: { ActionExecution },
+  components: { ActionExecution, CaseExecution, GroupExecution },
   computed: {
-    ...mapState(useExecutionStore, ['mode', 'executingAction', 'executingCase'])
+    ...mapState(useExecutionStore, [
+      'mode',
+      'executingAction',
+      'executingCase',
+      'executingGroup'
+    ])
   }
 }
 </script>
-
-<style lang="css" scoped>
-.action-execution {
-  border: #eee 1px solid;
-  padding: 10px 15px;
-}
-.action-execution:not(:first-child) {
-  margin-top: -1px;
-}
-</style>

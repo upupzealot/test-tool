@@ -1,11 +1,5 @@
 <template>
-  <div
-    v-if="
-      node.type === 'case' ||
-      (node.type === 'group' && actionType && actionType !== 'children')
-    "
-    class="action-editor"
-  >
+  <div class="action-editor">
     <!-- 标题部分 -->
     <div class="header">
       <div class="info">
@@ -22,15 +16,10 @@
         </a-typography-text>
       </div>
 
-      <div
-        v-if="
-          node.type === 'case' ||
-          (node.type === 'group' && actionType && actionType !== 'children')
-        "
-        class="action-btns"
-      >
+      <div class="action-btns">
         <!-- 单体运行 -->
         <a-button
+          v-if="actionType !== 'children'"
           shape="circle"
           size="large"
           class="action-btn"
@@ -49,7 +38,7 @@
           size="large"
           class="action-btn"
           :loading="running"
-          :disabled="!action?.operations.length"
+          :disabled="!(action?.operations.length || actionType === 'children')"
           @click="onExecuteNode"
         >
           <template #icon>
@@ -59,8 +48,24 @@
       </div>
     </div>
 
+    <!-- 子节点列表 -->
+    <TestTreeList
+      v-if="node.type === 'group' && actionType === 'children'"
+      style="flex: 1; margin-top: -1px"
+      :currentNode="childNode"
+      :currentGroup="group"
+      @selectNode="onSelectNode"
+      @enterGroup="onEnterGroup"
+    />
+
     <!-- 编辑器部分 -->
-    <div class="operation-container">
+    <div
+      v-if="
+        node.type === 'case' ||
+        (node.type === 'group' && actionType && actionType !== 'children')
+      "
+      class="operation-container"
+    >
       <template v-if="action && action.operations">
         <Operation
           v-for="operation in action?.operations"
@@ -109,6 +114,8 @@ import {
 import OperationOpts, { OperationOptMap } from './OperationOpts'
 import ActionRunner from './ActionRunner'
 import CaseRunner from './CaseRunner'
+import GroupRunner from './GroupRunner'
+import TestTreeList from '../TestTreeList.vue'
 import Operation from './Operation.vue'
 
 import ShortUniqueId from 'short-unique-id'
@@ -120,6 +127,7 @@ export default defineComponent({
     FolderOutlined,
     RightOutlined,
     DoubleRightOutlined,
+    TestTreeList,
     Operation
   },
   props: {
@@ -134,6 +142,7 @@ export default defineComponent({
   },
   data() {
     return {
+      childNode: null as TestNode | null,
       OperationOpts,
       OperationOptMap,
       running: false
@@ -141,8 +150,16 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['project']),
-    ...mapState(useStateStore, ['currentNode', 'currentPaths']),
-    ...mapWritableState(useExecutionStore, ['mode', 'executingAction', 'executingCase']),
+    ...mapState(useStateStore, ['currentNode', 'currentGroupNode', 'currentPaths']),
+    ...mapWritableState(useExecutionStore, [
+      'mode',
+      'executingAction',
+      'executingCase',
+      'executingGroup'
+    ]),
+    group() {
+      return this.node as GroupNode
+    },
     action(): Action | null {
       if (this.node.type === 'group') {
         if (this.actionType !== 'children') {
@@ -157,7 +174,29 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useStateStore, ['setActiveTab']),
-    ...mapActions(useExecutionStore, ['getActionExecution', 'getCaseExecution']),
+    ...mapActions(useExecutionStore, [
+      'getActionExecution',
+      'getCaseExecution',
+      'getGroupExecution'
+    ]),
+    ...mapActions(useStateStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
+    async onSelectNode(nodeId: string) {
+      this.childNode = this.getNode(nodeId)
+    },
+    async onEnterGroup(groupNodeId: string) {
+      const node = this.getNode(groupNodeId)
+      const paths = node.paths
+      const parentId = paths[paths.length - 2]
+      const parentNode = this.getNode(parentId)
+      console.log(node.name, parentNode.name)
+      if (node.type === 'group') {
+        this.setCurrentGroupId(parentId)
+        this.setCurrentNodeId(groupNodeId)
+      } else {
+        this.setCurrentGroupId(parentId)
+        this.setCurrentNodeId(groupNodeId)
+      }
+    },
     addOperation(type: string) {
       let action = this.action
       if (!action) {
@@ -203,7 +242,6 @@ export default defineComponent({
       this.mode = 'action'
       const actionExecutionObj = this.getActionExecution(action)
       this.executingAction = actionExecutionObj
-
       // 传入 this.executingAction 引入响应式
       const runner = new ActionRunner(this.project, this.executingAction)
       this.running = true
@@ -221,18 +259,38 @@ export default defineComponent({
         return
       } else if (this.currentNode?.type === 'case') {
         await this.onExecuteCase()
+      } else {
+        // type === 'group'
+        await this.onExecuteGroup()
       }
     },
     async onExecuteCase() {
-      const kase = this.currentNode!.test as TestCase
+      const kaseNode = this.currentNode as CaseNode
       const pathNodes = [...this.currentPaths]
       this.setActiveTab('test-execution')
       this.mode = 'case'
-      const kaseExecutionObj = this.getCaseExecution(kase, pathNodes)
+      const kaseExecutionObj = this.getCaseExecution(kaseNode, pathNodes)
       this.executingCase = kaseExecutionObj
-
       // 传入 this.executingCase 引入响应式
       const runner = new CaseRunner(this.project, this.executingCase)
+      this.running = true
+      await runner.launch()
+      const pass = await runner.run()
+      if (pass) {
+        await runner.close()
+      }
+      this.running = false
+      console.log('passed:', pass)
+    },
+    async onExecuteGroup() {
+      const groupNode = this.currentNode as GroupNode
+      const pathNodes = [...this.currentPaths]
+      this.setActiveTab('test-execution')
+      this.mode = 'group'
+      const groupExecutionObj = this.getGroupExecution(groupNode, pathNodes)
+      this.executingGroup = groupExecutionObj
+      // 传入 this.executingGroup 引入响应式
+      const runner = new GroupRunner(this.project, this.executingGroup)
       this.running = true
       await runner.launch()
       const pass = await runner.run()
