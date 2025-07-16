@@ -37,7 +37,6 @@ import { useStateStore } from '@renderer/store/state'
 
 import { GroupNode, TestNode } from './types'
 import ActionSelector from './ActionSelector.vue'
-import TestTreeList from './TestTreeList.vue'
 import ActionEditor from './action/ActionEditor.vue'
 import { mapState } from 'pinia'
 
@@ -48,7 +47,6 @@ export default defineComponent({
     PlaySquareFilled,
     RightSquareFilled,
     ActionSelector,
-    TestTreeList,
     ActionEditor
   },
   props: {

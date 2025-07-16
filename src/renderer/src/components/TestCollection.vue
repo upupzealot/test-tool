@@ -14,7 +14,9 @@
           <TestTreeList
             :currentNode="currentNode"
             :currentGroup="currentGroupNode"
-            :getNode="getNode"
+            :showCurrentGroup="true"
+            :sortable="true"
+            @sorted="onSorted"
             @selectNode="onSelectNode"
             @enterGroup="onEnterGroup"
           />
@@ -58,6 +60,13 @@ export default {
       'createNode',
       'updateTestTree'
     ]),
+    async onSorted(children) {
+      const ids = children.map((test) => test.id)
+      this.currentGroupNode.test.children.sort((t1, t2) => {
+        return ids.indexOf(t1.id) - ids.indexOf(t2.id)
+      })
+      this.updateTestTree(this.project)
+    },
     async onSelectNode(nodeId: string) {
       this.setCurrentNodeId(nodeId)
     },

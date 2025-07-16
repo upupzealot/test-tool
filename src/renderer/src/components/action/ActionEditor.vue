@@ -19,7 +19,7 @@
       <div class="action-btns">
         <!-- 单体运行 -->
         <a-button
-          v-if="actionType !== 'children'"
+          v-if="node.type === 'case' || actionType !== 'children'"
           shape="circle"
           size="large"
           class="action-btn"
@@ -51,7 +51,6 @@
     <!-- 子节点列表 -->
     <TestTreeList
       v-if="node.type === 'group' && actionType === 'children'"
-      style="flex: 1; margin-top: -1px"
       :currentNode="childNode"
       :currentGroup="group"
       @selectNode="onSelectNode"
@@ -67,12 +66,17 @@
       class="operation-container"
     >
       <template v-if="action && action.operations">
-        <Operation
-          v-for="operation in action?.operations"
-          :action="action"
-          :operation="operation"
-          @delete="onDeleteOperation(operation.id)"
-        />
+        <VueDraggable
+          v-model="action.operations"
+          :handle="'.operation-tag'"
+        >
+          <Operation
+            v-for="operation in action.operations"
+            :action="action"
+            :operation="operation"
+            @delete="onDeleteOperation(operation.id)"
+          />
+        </VueDraggable>
       </template>
       <div class="operation add-btn-panel">
         插入指令：
@@ -98,6 +102,7 @@ import {
   RightOutlined,
   DoubleRightOutlined
 } from '@ant-design/icons-vue'
+import { VueDraggable } from 'vue-draggable-plus'
 
 import { useProjectStore } from '@renderer/store/project'
 import { useStateStore } from '@renderer/store/state'
@@ -128,6 +133,7 @@ export default defineComponent({
     RightOutlined,
     DoubleRightOutlined,
     TestTreeList,
+    VueDraggable,
     Operation
   },
   props: {
@@ -179,22 +185,19 @@ export default defineComponent({
       'getCaseExecution',
       'getGroupExecution'
     ]),
-    ...mapActions(useStateStore, ['getNode', 'setCurrentNodeId', 'setCurrentGroupId']),
+    ...mapActions(useStateStore, [
+      'getNode',
+      'setCurrentNodeId',
+      'setCurrentGroupId',
+      'updateTestTree'
+    ]),
     async onSelectNode(nodeId: string) {
       this.childNode = this.getNode(nodeId)
     },
     async onEnterGroup(groupNodeId: string) {
-      const node = this.getNode(groupNodeId)
-      const paths = node.paths
-      const parentId = paths[paths.length - 2]
-      const parentNode = this.getNode(parentId)
-      console.log(node.name, parentNode.name)
-      if (node.type === 'group') {
-        this.setCurrentGroupId(parentId)
-        this.setCurrentNodeId(groupNodeId)
-      } else {
-        this.setCurrentGroupId(parentId)
-        this.setCurrentNodeId(groupNodeId)
+      const group = this.getNode(groupNodeId)
+      if (group.type === 'group') {
+        this.setCurrentGroupId(groupNodeId)
       }
     },
     addOperation(type: string) {
@@ -317,6 +320,7 @@ export default defineComponent({
 .action-editor .header {
   border: #eee 1px solid;
   padding: 10px 15px;
+  margin-bottom: -1px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -344,7 +348,6 @@ export default defineComponent({
 .action-editor .operation-container {
   border: #eee 1px solid;
   padding: 10px 15px;
-  margin-top: -1px;
 }
 .operation-container .operation {
   position: relative;

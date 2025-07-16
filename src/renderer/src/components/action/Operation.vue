@@ -123,6 +123,7 @@ export default defineComponent({
   position: absolute;
   top: 0;
   left: 0;
+  cursor: move;
 }
 
 .operation .delete-btn {

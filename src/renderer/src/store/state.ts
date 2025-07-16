@@ -90,7 +90,7 @@ export const useStateStore = defineStore('state', {
     setCurrentNodeId(nodeId: string) {
       if (nodeId !== this.currentNodeId) {
         this.currentNodeId = nodeId
-        this.currentActionType = ''
+        this.currentActionType = 'children'
       }
     },
     setCurrentGroupId(groupNodeId: string) {
@@ -98,7 +98,7 @@ export const useStateStore = defineStore('state', {
       if (groupNode.type === 'group' && groupNodeId !== this.currentGroupId) {
         this.currentNodeId = ''
         this.currentGroupId = groupNodeId
-        this.currentActionType = ''
+        this.currentActionType = 'children'
       }
     },
     async setCurrentActionType(actionType: ActionType) {

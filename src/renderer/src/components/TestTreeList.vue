@@ -1,7 +1,33 @@
 <template>
+  <div
+    v-if="showCurrentGroup"
+    :class="currentGroup.id === currentNode?.id ? ['tree-item', 'active'] : ['tree-item']"
+  >
+    <div
+      class="content"
+      @click="$emit('selectNode', currentGroup.id)"
+      @dblclick="$emit('enterGroup', currentGroup.id)"
+    >
+      <template v-if="currentGroup.id === '-'">
+        <div class="title"><HomeOutlined /> 根目录</div>
+        <div class="desc">项目配置</div>
+      </template>
+      <template v-else>
+        <div class="title">
+          <FolderOpenOutlined />
+          {{ currentGroup.name }}
+        </div>
+        <div class="desc">
+          {{ currentGroup.desc }}
+        </div>
+      </template>
+    </div>
+  </div>
   <VueDraggable
-    class="test-list"
+    :class="showCurrentGroup ? ['test-list'] : []"
+    :disabled="!sortable"
     v-model="currentGroup.children"
+    @update="$emit('sorted', currentGroup.children)"
   >
     <div
       v-for="testNode in currentGroup.children"
@@ -27,14 +53,21 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { VueDraggable } from 'vue-draggable-plus'
-import { FolderOutlined, CodeOutlined } from '@ant-design/icons-vue'
+import {
+  HomeOutlined,
+  FolderOutlined,
+  FolderOpenOutlined,
+  CodeOutlined
+} from '@ant-design/icons-vue'
 
 import { TestNode, GroupNode } from './types'
 
 export default defineComponent({
   components: {
     VueDraggable,
+    HomeOutlined,
     FolderOutlined,
+    FolderOpenOutlined,
     CodeOutlined
   },
   props: {
@@ -45,13 +78,29 @@ export default defineComponent({
     currentGroup: {
       type: Object as PropType<GroupNode>,
       required: true
+    },
+    showCurrentGroup: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false
+    },
+    sortable: {
+      type: Boolean as PropType<boolean>,
+      required: false,
+      default: false
     }
   },
-  emits: ['selectNode', 'enterGroup']
+  emits: ['sorted', 'selectNode', 'enterGroup']
 })
 </script>
 
 <style lang="css" scoped>
+.test-list {
+  margin-top: -1px;
+}
+.test-list .tree-item {
+  padding-left: 30px;
+}
 .tree-item {
   border: #eee 1px solid;
   padding: 5px 5px 5px 15px;

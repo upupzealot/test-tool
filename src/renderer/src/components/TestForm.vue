@@ -62,7 +62,7 @@ export default defineComponent({
     },
     mode: {
       type: String as PropType<'create' | 'edit'>,
-      defaultValue: 'create'
+      default: 'create'
     }
   },
   methods: {

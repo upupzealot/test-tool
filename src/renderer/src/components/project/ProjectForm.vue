@@ -45,8 +45,11 @@
         :auto-size="{ minRows: 2, maxRows: 5 }"
       />
     </a-form-item>
-    <a-divider orientation="left">项目配置</a-divider>
-    <ProjectConf :form="form" />
+
+    <template v-if="mode !== 'create'">
+      <a-divider orientation="left">项目配置</a-divider>
+      <ProjectConf :form="form" />
+    </template>
   </a-form>
 </template>
 
@@ -66,11 +69,11 @@ export default defineComponent({
     },
     mode: {
       type: String as PropType<'create' | 'edit'>,
-      defaultValue: 'create'
+      default: 'edit'
     },
     filePath: {
       type: String as PropType<string>,
-      defaultValue: ''
+      default: ''
     }
   },
   methods: {
