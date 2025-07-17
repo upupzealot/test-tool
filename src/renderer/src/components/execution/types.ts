@@ -7,7 +7,11 @@ export interface GroupExecution extends TestGroup {
   // type: 'case' | 'group'
   // name: string
   // desc?: string
+  beforeActions: ActionExecution[]
+  beforeEachActions: ActionExecution[]
   children: (CaseExecution | GroupExecution)[]
+  afterEachActions: ActionExecution[]
+  afterActions: ActionExecution[]
 }
 
 export interface CaseExecution extends TestCase {
@@ -15,11 +19,9 @@ export interface CaseExecution extends TestCase {
   // type: 'case' | 'group'
   // name: string
   // desc?: string
-  beforeActions: ActionExecution[]
   beforeEachActions: ActionExecution[]
   action: ActionExecution
   afterEachActions: ActionExecution[]
-  afterActions: ActionExecution[]
 }
 
 export interface ActionExecution extends Action {

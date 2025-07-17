@@ -13,8 +13,8 @@ export default class CaseRunner extends Runner {
   }
 
   async run(): Promise<boolean> {
-    const { beforeActions, beforeEachActions, action } = this.kase
-    const actionList = [...beforeActions, ...beforeEachActions, action]
+    const { beforeEachActions, action } = this.kase
+    const actionList = [...beforeEachActions, action]
     let pass = true
     for (let i = 0; i < actionList.length; i++) {
       const action = actionList[i]

@@ -3,6 +3,7 @@ import { CaseExecution, GroupExecution } from '../execution/types'
 
 import Runner from './Runner'
 import CaseRunner from './CaseRunner'
+import ActionRunner from './ActionRunner'
 
 export default class GroupRunner extends Runner {
   group: GroupExecution
@@ -14,6 +15,19 @@ export default class GroupRunner extends Runner {
 
   async run(): Promise<boolean> {
     let pass = true
+
+    const { beforeActions } = this.group
+    for (let i = 0; i < this.group.beforeActions.length; i++) {
+      const beforeAction = beforeActions[i]
+      const actionRunner = new ActionRunner(this.project, beforeAction)
+      const result = await actionRunner.run()
+      pass = pass && result
+      if (!pass) {
+        // TODO 后续步骤递归标记成 skip
+        return false
+      }
+    }
+
     for (let i = 0; i < this.group.children.length; i++) {
       const testExecution = this.group.children[i]
       if (testExecution.type === 'case') {
