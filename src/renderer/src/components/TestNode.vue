@@ -16,7 +16,21 @@
           : ['action-editor-container']
       "
     >
+      <!-- 子节点列表 -->
+      <TestTreeList
+        v-if="node.type === 'group' && currentActionType === 'children'"
+        :currentNode="childNode"
+        :currentGroup="currentGroupNode"
+        @selectNode="onSelectNode"
+        @enterGroup="onEnterGroup"
+      />
+
+      <!-- 动作编辑器 -->
       <ActionEditor
+        v-if="
+          node.type === 'case' ||
+          (node.type === 'group' && currentActionType && currentActionType !== 'children')
+        "
         :node="currentNode!"
         :actionType="currentActionType"
       />
@@ -33,12 +47,14 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
+import { mapActions, mapState } from 'pinia'
 import { useStateStore } from '@renderer/store/state'
 
 import { GroupNode, TestNode } from './types'
 import ActionSelector from './ActionSelector.vue'
+import ActionHeader from './action/ActionHeader.vue'
+import TestTreeList from './TestTreeList.vue'
 import ActionEditor from './action/ActionEditor.vue'
-import { mapState } from 'pinia'
 
 export default defineComponent({
   components: {
@@ -47,6 +63,8 @@ export default defineComponent({
     PlaySquareFilled,
     RightSquareFilled,
     ActionSelector,
+    ActionHeader,
+    TestTreeList,
     ActionEditor
   },
   props: {
@@ -63,9 +81,26 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useStateStore, ['currentNode', 'currentActionType']),
+    ...mapState(useStateStore, ['currentNode', 'currentGroupNode', 'currentActionType']),
     currentGroupNode(): GroupNode {
       return this.node as GroupNode
+    }
+  },
+  methods: {
+    ...mapActions(useStateStore, [
+      'getNode',
+      'setCurrentNodeId',
+      'setCurrentGroupId',
+      'updateTestTree'
+    ]),
+    async onSelectNode(nodeId: string) {
+      this.childNode = this.getNode(nodeId)
+    },
+    async onEnterGroup(groupNodeId: string) {
+      const group = this.getNode(groupNodeId)
+      if (group.type === 'group') {
+        this.setCurrentGroupId(groupNodeId)
+      }
     }
   }
 })
@@ -75,13 +110,15 @@ export default defineComponent({
 .detail-content {
   display: flex;
   flex-direction: row;
-  margin-left: -1px;
 }
 
 .action-selector-container {
   flex: 0;
   border: #eee 1px solid;
   padding: 10px 15px;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .action-editor-container {

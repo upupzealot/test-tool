@@ -26,7 +26,16 @@
         class="detail"
         v-if="currentNode && currentNode.id !== '-'"
       >
-        <TestNode :node="currentNode" />
+        <ActionHeader
+          v-if="currentNode"
+          :node="currentNode!"
+          :actionType="currentActionType"
+          style="margin-left: -1px"
+        />
+        <TestNode
+          :node="currentNode"
+          style="margin-left: -1px"
+        />
       </div>
     </div>
   </div>
@@ -39,12 +48,14 @@ import { useStateStore } from '../store/state'
 
 import { Test } from './types'
 import TestTreeHeader from './TestTreeHeader.vue'
+import ActionHeader from './action/ActionHeader.vue'
 import TestTreeList from './TestTreeList.vue'
 import TestNode from './TestNode.vue'
 
 export default {
   components: {
     TestTreeHeader,
+    ActionHeader,
     TestTreeList,
     TestNode
   },
