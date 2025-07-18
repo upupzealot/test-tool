@@ -51,7 +51,7 @@ import { defineComponent, PropType, toRaw } from 'vue'
 import { Form } from 'ant-design-vue'
 import { FolderOutlined, CodeOutlined } from '@ant-design/icons-vue'
 
-import { Test } from './types'
+import { Test } from '../types'
 
 export default defineComponent({
   components: { FolderOutlined, CodeOutlined },

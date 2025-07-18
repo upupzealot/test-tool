@@ -50,8 +50,8 @@ import {
   TestNode
 } from '../types'
 import OperationOpts, { OperationOptMap } from './OperationOpts'
-import ActionHeader from './ActionHeader.vue'
-import TestTreeList from '../TestTreeList.vue'
+import ActionHeader from '../test/TestNodeHeader.vue'
+import TestTreeList from '../test/TestTreeList.vue'
 import Operation from './Operation.vue'
 
 import ShortUniqueId from 'short-unique-id'

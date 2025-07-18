@@ -1,5 +1,5 @@
 <template>
-  <div class="collection">
+  <div class="test-management">
     <div class="header">
       <TestTreeHeader
         :currentGroup="currentGroupNode"
@@ -9,7 +9,7 @@
       />
     </div>
     <div class="body">
-      <div class="menu">
+      <div class="side-tree">
         <div style="width: 200px">
           <TestTreeList
             :currentNode="currentNode"
@@ -23,16 +23,16 @@
         </div>
       </div>
       <div
-        class="detail"
+        class="test-node"
         v-if="currentNode && currentNode.id !== '-'"
       >
-        <ActionHeader
+        <TestNodeHeader
           v-if="currentNode"
           :node="currentNode!"
           :actionType="currentActionType"
           style="margin-left: -1px"
         />
-        <TestNode
+        <TestNodeBody
           :node="currentNode"
           style="margin-left: -1px"
         />
@@ -43,21 +43,21 @@
 
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
-import { useProjectStore } from '../store/project'
-import { useStateStore } from '../store/state'
+import { useProjectStore } from '../../store/project'
+import { useStateStore } from '../../store/state'
 
-import { Test } from './types'
+import { Test } from '../types'
+import TestNodeHeader from './TestNodeHeader.vue'
+import TestNodeBody from './TestNodeBody.vue'
 import TestTreeHeader from './TestTreeHeader.vue'
-import ActionHeader from './action/ActionHeader.vue'
 import TestTreeList from './TestTreeList.vue'
-import TestNode from './TestNode.vue'
 
 export default {
   components: {
+    TestNodeHeader,
+    TestNodeBody,
     TestTreeHeader,
-    ActionHeader,
-    TestTreeList,
-    TestNode
+    TestTreeList
   },
   computed: {
     ...mapState(useProjectStore, ['project']),
@@ -95,28 +95,28 @@ export default {
 }
 </script>
 <style lang="css" scoped>
-.collection {
+.test-management {
   flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.collection .header {
+.test-management .header {
   flex: 0;
 }
-.collection .body {
+.test-management .body {
   flex: 1;
   display: flex;
   flex-direction: row;
   margin-top: -1px;
 }
 
-.collection .menu {
+.test-management .side-tree {
   flex: 0;
   width: 200px;
 }
-.collection .detail {
+.test-management .test-node {
   flex: 1;
 }
 </style>

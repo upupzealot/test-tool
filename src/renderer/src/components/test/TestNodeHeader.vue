@@ -1,5 +1,5 @@
 <template>
-  <div class="action-header">
+  <div class="node-header">
     <div class="info">
       <div class="title">
         <FolderOutlined v-if="node.type === 'group'" />
@@ -70,12 +70,11 @@ import {
   TestGroup,
   TestNode
 } from '../types'
-import OperationOpts, { OperationOptMap } from './OperationOpts'
-import ActionRunner from './ActionRunner'
-import CaseRunner from './CaseRunner'
-import GroupRunner from './GroupRunner'
-import TestTreeList from '../TestTreeList.vue'
-import Operation from './Operation.vue'
+import OperationOpts, { OperationOptMap } from '../action/OperationOpts'
+import ActionRunner from '../action/ActionRunner'
+import CaseRunner from '../action/CaseRunner'
+import GroupRunner from '../action/GroupRunner'
+import TestTreeList from './TestTreeList.vue'
 
 export default defineComponent({
   components: {
@@ -84,8 +83,7 @@ export default defineComponent({
     RightOutlined,
     DoubleRightOutlined,
     TestTreeList,
-    VueDraggable,
-    Operation
+    VueDraggable
   },
   props: {
     node: {
@@ -206,7 +204,7 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.action-header {
+.node-header {
   border: #eee 1px solid;
   padding: 10px 15px;
   margin-bottom: -1px;
@@ -214,15 +212,15 @@ export default defineComponent({
   flex-direction: row;
   justify-content: space-between;
 }
-.action-header .title {
+.node-header .title {
   flex: 1;
   font-weight: bold;
   font-size: 16px;
 }
-.action-header .desc {
+.node-header .desc {
   font-size: 12px;
 }
-.action-header .action-btns {
+.node-header .action-btns {
   flex: 0;
   display: flex;
   flex-direction: row;
@@ -230,7 +228,7 @@ export default defineComponent({
   padding: 0 15px;
   margin-right: -15px;
 }
-.action-header .action-btns .action-btn:not(:last-child) {
+.node-header .action-btns .action-btn:not(:last-child) {
   margin-right: 15px;
 }
 </style>

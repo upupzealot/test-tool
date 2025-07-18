@@ -74,10 +74,10 @@
 
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
-import { useSettingsStore } from '../store/settings'
+import { useSettingsStore } from '../../store/settings'
 
-import ChromeIcon from '../assets/Chrome.png'
-import ChromiumIcon from '../assets/Chromium.png'
+import ChromeIcon from '@renderer/assets/Chrome.png'
+import ChromiumIcon from '@renderer/assets/Chromium.png'
 
 export default {
   data() {

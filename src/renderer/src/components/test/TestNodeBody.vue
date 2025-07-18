@@ -50,11 +50,11 @@ import {
 import { mapActions, mapState } from 'pinia'
 import { useStateStore } from '@renderer/store/state'
 
-import { GroupNode, TestNode } from './types'
+import { GroupNode, TestNode } from '../types'
 import ActionSelector from './ActionSelector.vue'
-import ActionHeader from './action/ActionHeader.vue'
+import ActionHeader from './TestNodeHeader.vue'
 import TestTreeList from './TestTreeList.vue'
-import ActionEditor from './action/ActionEditor.vue'
+import ActionEditor from '../action/ActionEditor.vue'
 
 export default defineComponent({
   components: {

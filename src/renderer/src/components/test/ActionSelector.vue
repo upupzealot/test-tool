@@ -49,8 +49,8 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { ActionType, GroupNode } from './types'
-import ActionEditor from './action/ActionEditor.vue'
+import { ActionType, GroupNode } from '../types'
+import ActionEditor from '../action/ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
 
 export default defineComponent({

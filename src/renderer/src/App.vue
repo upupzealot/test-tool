@@ -18,7 +18,7 @@
           key="test-cases"
           tab="测试用例"
         >
-          <TestCollection />
+          <TestManagement />
         </a-tab-pane>
         <a-tab-pane
           key="test-execution"
@@ -51,9 +51,9 @@ import { message } from 'ant-design-vue'
 import { SettingOutlined } from '@ant-design/icons-vue'
 import HeaderMenu from './components/project/Menu.vue'
 import ProjectInfo from './components/project/ProjectInfo.vue'
-import TestCollection from './components/TestCollection.vue'
+import TestManagement from './components/test/TestManagement.vue'
 import ExecutionState from './components/execution/ExecutionState.vue'
-import Settings from './components/Settings.vue'
+import Settings from './components/settings/Settings.vue'
 
 export default {
   // eslint-disable-next-line vue/no-reserved-component-names
@@ -61,7 +61,7 @@ export default {
     HeaderMenu,
     SettingOutlined,
     ProjectInfo,
-    TestCollection,
+    TestManagement,
     ExecutionState,
     Settings
   },
