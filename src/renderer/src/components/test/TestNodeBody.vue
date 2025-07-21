@@ -16,6 +16,12 @@
           : ['action-editor-container']
       "
     >
+      <!-- 测试组设置 -->
+      <TestSettings
+        v-if="node.type === 'group' && currentActionType === 'settings'"
+        :currentGroup="currentGroupNode"
+      />
+
       <!-- 子节点列表 -->
       <TestTreeList
         v-if="node.type === 'group' && currentActionType === 'children'"
@@ -29,7 +35,10 @@
       <ActionEditor
         v-if="
           node.type === 'case' ||
-          (node.type === 'group' && currentActionType && currentActionType !== 'children')
+          (node.type === 'group' &&
+            currentActionType &&
+            currentActionType !== 'settings' &&
+            currentActionType !== 'children')
         "
         :node="currentNode!"
         :actionType="currentActionType"
@@ -53,6 +62,7 @@ import { useStateStore } from '@renderer/store/state'
 import { GroupNode, TestNode } from '../types'
 import ActionSelector from './ActionSelector.vue'
 import ActionHeader from './TestNodeHeader.vue'
+import TestSettings from './TestSettings.vue'
 import TestTreeList from './TestTreeList.vue'
 import ActionEditor from '../action/ActionEditor.vue'
 
@@ -64,6 +74,7 @@ export default defineComponent({
     RightSquareFilled,
     ActionSelector,
     ActionHeader,
+    TestSettings,
     TestTreeList,
     ActionEditor
   },

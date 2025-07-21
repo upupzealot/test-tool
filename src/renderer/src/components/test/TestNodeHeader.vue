@@ -17,7 +17,9 @@
     <div class="action-btns">
       <!-- 单体运行 -->
       <a-button
-        v-if="node.type === 'case' || actionType !== 'children'"
+        v-if="
+          node.type === 'case' || (actionType !== 'settings' && actionType !== 'children')
+        "
         shape="circle"
         size="large"
         class="action-btn"
@@ -114,7 +116,7 @@ export default defineComponent({
     ]),
     action(): Action | null {
       if (this.node.type === 'group') {
-        if (this.actionType !== 'children') {
+        if (this.actionType !== 'settings' && this.actionType !== 'children') {
           return (this.node.test as TestGroup)[this.actionType]
         } else {
           return null

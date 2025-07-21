@@ -9,8 +9,8 @@
       @dblclick="$emit('enterGroup', currentGroup.id)"
     >
       <template v-if="currentGroup.id === '-'">
-        <div class="title"><HomeOutlined /> 根目录</div>
-        <div class="desc">项目配置</div>
+        <div class="title"><HomeOutlined /> {{ currentGroup.name }}</div>
+        <div class="desc">{{ currentGroup.desc }}</div>
       </template>
       <template v-else>
         <div class="title">

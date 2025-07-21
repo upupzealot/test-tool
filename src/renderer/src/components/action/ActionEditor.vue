@@ -94,7 +94,7 @@ export default defineComponent({
     },
     action(): Action | null {
       if (this.node.type === 'group') {
-        if (this.actionType !== 'children') {
+        if (this.actionType !== 'settings' && this.actionType !== 'children') {
           return (this.node.test as TestGroup)[this.actionType]
         } else {
           return null

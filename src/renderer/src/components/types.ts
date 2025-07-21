@@ -4,7 +4,15 @@ export interface Test {
   name: string
   desc?: string
 }
-export type ActionType = '' | 'before' | 'beforeEach' | 'after' | 'afterEach' | 'children'
+export type ActionType =
+  | ''
+  | 'settings'
+  | 'before'
+  | 'beforeEach'
+  | 'after'
+  | 'afterEach'
+  | 'children'
+
 export interface Action {
   id: string
   desc?: string

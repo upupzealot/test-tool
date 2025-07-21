@@ -24,7 +24,7 @@
       </div>
       <div
         class="test-node"
-        v-if="currentNode && currentNode.id !== '-'"
+        v-if="currentNode"
       >
         <TestNodeHeader
           v-if="currentNode"

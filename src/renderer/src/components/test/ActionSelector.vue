@@ -1,39 +1,44 @@
 <template>
   <a-space
-    v-if="test.type === 'group'"
     direction="vertical"
     class="action-selector"
   >
-    <div
-      v-for="action in actions"
-      :class="[
-        'action',
-        action.push ? 'push' : '',
-        action.key === currentActionType ? 'active' : ''
-      ]"
-      @click="setCurrentActionType(action.key)"
-    >
-      <a-tag
-        :bordered="false"
-        :color="action.key === 'children' ? 'green' : 'orange'"
+    <template v-for="action in actions">
+      <div
+        :class="[
+          'action',
+          action.push ? 'push' : '',
+          action.key === currentActionType ? 'active' : ''
+        ]"
+        @click="setCurrentActionType(action.key)"
       >
-        <PlaySquareFilled v-if="action.key === 'before'" />
-        <RightSquareFilled v-if="action.key === 'beforeEach'" />
-        <CodeFilled v-if="action.key === 'children'" />
-        <LeftSquareFilled v-if="action.key === 'afterEach'" />
-        <PlaySquareFilled
-          style="transform: scale(-1, 1)"
-          v-if="action.key === 'after'"
-        />
-        {{ action.name }}
-      </a-tag>
-      <a-typography-text
-        type="secondary"
-        class="desc"
-      >
-        {{ action.desc }}
-      </a-typography-text>
-    </div>
+        <a-tag
+          :bordered="false"
+          :color="action.color"
+        >
+          <SettingFilled v-if="action.key === 'settings'" />
+          <PlaySquareFilled v-if="action.key === 'before'" />
+          <RightSquareFilled v-if="action.key === 'beforeEach'" />
+          <CodeFilled v-if="action.key === 'children'" />
+          <LeftSquareFilled v-if="action.key === 'afterEach'" />
+          <PlaySquareFilled
+            style="transform: scale(-1, 1)"
+            v-if="action.key === 'after'"
+          />
+          {{ action.name }}
+        </a-tag>
+        <a-typography-text
+          type="secondary"
+          class="desc"
+        >
+          {{ action.desc }}
+        </a-typography-text>
+      </div>
+      <a-divider
+        v-if="action.key === 'settings'"
+        style="margin: 7px 0"
+      />
+    </template>
   </a-space>
 </template>
 
@@ -42,6 +47,7 @@ import { defineComponent, PropType } from 'vue'
 import { useStateStore } from '@renderer/store/state'
 
 import {
+  SettingFilled,
   CodeFilled,
   FolderOutlined,
   LeftSquareFilled,
@@ -55,6 +61,7 @@ import { mapActions, mapState } from 'pinia'
 
 export default defineComponent({
   components: {
+    SettingFilled,
     CodeFilled,
     FolderOutlined,
     LeftSquareFilled,
@@ -72,38 +79,50 @@ export default defineComponent({
     return {
       actions: [
         {
+          key: 'settings',
+          name: '设置',
+          desc: '运行设置',
+          color: 'purple'
+        },
+        {
           key: 'before',
           name: '开始',
-          desc: '进入测试组时执行'
+          desc: '进入测试组时执行',
+          color: 'orange'
         },
         {
           key: 'beforeEach',
           push: true,
           name: '每次开始',
-          desc: '每个用例开始前执行'
+          desc: '每个用例开始前执行',
+          color: 'orange'
         },
         {
           key: 'children',
           push: true,
           name: '子测试组和测试用例',
-          desc: '子测试组：N 个\n测试用例：M 个'
+          desc: '子测试组：N 个\n测试用例：M 个',
+          color: 'green'
         },
         {
           key: 'afterEach',
           push: true,
           name: '每次结束',
-          desc: '每个用例结束后执行'
+          desc: '每个用例结束后执行',
+          color: 'orange'
         },
         {
           key: 'after',
           name: '结束',
-          desc: '测试组执行结束后执行'
+          desc: '测试组执行结束后执行',
+          color: 'orange'
         }
       ] as {
         key: ActionType
         push?: boolean
         name: string
         desc: string
+        color: string
       }[]
     }
   },

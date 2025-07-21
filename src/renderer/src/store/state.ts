@@ -51,7 +51,9 @@ export const useStateStore = defineStore('state', {
       const rootNode = {
         id: '-',
         type: 'group',
-        name: '-',
+        name: project.name,
+        // desc: project.desc,
+        desc: '默认设置',
         paths: ['-'],
         children: [],
         test: {
