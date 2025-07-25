@@ -1,32 +1,23 @@
 <template>
   <div class="detail-content">
     <!-- 步骤选择器 -->
-    <div
-      class="action-selector-container"
-      v-if="node.type === 'group'"
-    >
-      <ActionSelector :group="currentGroupNode" />
+    <div class="action-selector-container">
+      <ActionSelector :node="node" />
     </div>
 
     <!-- 动作编辑器 -->
-    <div
-      :class="
-        currentNode?.type === 'group'
-          ? ['action-editor-container', 'group']
-          : ['action-editor-container']
-      "
-    >
-      <!-- 测试组设置 -->
+    <div class="action-editor-container">
+      <!-- 测试设置 -->
       <TestSettings
-        v-if="node.type === 'group' && currentActionType === 'settings'"
-        :currentGroup="currentGroupNode"
+        v-if="currentActionType === 'settings'"
+        :currentNode="node"
       />
 
       <!-- 子节点列表 -->
       <TestTreeList
         v-if="node.type === 'group' && currentActionType === 'children'"
         :currentNode="childNode"
-        :currentGroup="currentGroupNode"
+        :currentGroup="groupNode"
         @selectNode="onSelectNode"
         @enterGroup="onEnterGroup"
       />
@@ -34,13 +25,11 @@
       <!-- 动作编辑器 -->
       <ActionEditor
         v-if="
-          node.type === 'case' ||
-          (node.type === 'group' &&
-            currentActionType &&
-            currentActionType !== 'settings' &&
-            currentActionType !== 'children')
+          currentActionType &&
+          currentActionType !== 'settings' &&
+          currentActionType !== 'children'
         "
-        :node="currentNode!"
+        :node="node"
         :actionType="currentActionType"
       />
     </div>
@@ -92,18 +81,13 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useStateStore, ['currentNode', 'currentGroupNode', 'currentActionType']),
-    currentGroupNode(): GroupNode {
+    ...mapState(useStateStore, ['currentActionType']),
+    groupNode(): GroupNode {
       return this.node as GroupNode
     }
   },
   methods: {
-    ...mapActions(useStateStore, [
-      'getNode',
-      'setCurrentNodeId',
-      'setCurrentGroupId',
-      'updateTestTree'
-    ]),
+    ...mapActions(useStateStore, ['getNode', 'setCurrentGroupId', 'updateTestTree']),
     async onSelectNode(nodeId: string) {
       this.childNode = this.getNode(nodeId)
     },
@@ -121,6 +105,7 @@ export default defineComponent({
 .detail-content {
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
 }
 
 .action-selector-container {
@@ -131,11 +116,8 @@ export default defineComponent({
   display: flex;
   flex-direction: column;
 }
-
 .action-editor-container {
   flex: 1;
-}
-.action-editor-container.group {
   margin-left: -1px;
 }
 </style>

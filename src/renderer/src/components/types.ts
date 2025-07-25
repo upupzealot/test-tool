@@ -3,10 +3,12 @@ export interface Test {
   type: 'case' | 'group'
   name: string
   desc?: string
+  settings?: TestSettings
 }
 export type ActionType =
   | ''
   | 'settings'
+  | 'operations'
   | 'before'
   | 'beforeEach'
   | 'after'
@@ -28,7 +30,7 @@ export interface TestGroup extends Test {
   beforeEach?: Action
   after?: Action
   afterEach?: Action
-  children: Test[]
+  children: (Test | TestGroup)[]
 }
 export interface TestCase extends Test {
   action: Action
@@ -53,18 +55,31 @@ export interface CaseNode extends TestNode {
   test: TestCase
 }
 
+export interface ProjectConfig {
+  presetLocators: {
+    key: string
+    label: string
+    locator: string
+  }[]
+}
+
+export const DEFAULT_SETTINGS: TestSettings = {
+  delay: 0,
+  retry: 1,
+  timeout: 10 * 1000
+}
+export interface TestSettings {
+  delay?: number
+  retry?: number
+  timeout?: number
+}
+
 export interface Project extends TestGroup {
   id: '-'
-  name: string
-  desc?: string
-  config: {
-    presetLocators: {
-      key: string
-      label: string
-      locator: string
-    }[]
-  }
-  children: (TestCase | TestGroup)[]
+  // name: string
+  // desc?: string
+  // children: (TestCase | TestGroup)[]
+  config: ProjectConfig
 }
 
 export interface Dimension {

@@ -68,6 +68,7 @@ export default {
       'getNode',
       'setCurrentNodeId',
       'setCurrentGroupId',
+      'setCurrentActionType',
       'createNode',
       'updateTestTree'
     ]),
@@ -80,6 +81,13 @@ export default {
     },
     async onSelectNode(nodeId: string) {
       this.setCurrentNodeId(nodeId)
+      // TODO 优化传参
+      const node = this.getNode(nodeId)
+      if (node.type === 'case') {
+        this.setCurrentActionType('operations')
+      } else {
+        this.setCurrentActionType('children')
+      }
     },
     async onEnterGroup(groupNodeId: string) {
       const group = this.getNode(groupNodeId)

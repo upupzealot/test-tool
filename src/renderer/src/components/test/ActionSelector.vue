@@ -5,6 +5,7 @@
   >
     <template v-for="action in actions">
       <div
+        v-if="action.type.includes(node.type)"
         :class="[
           'action',
           action.push ? 'push' : '',
@@ -17,6 +18,7 @@
           :color="action.color"
         >
           <SettingFilled v-if="action.key === 'settings'" />
+          <MenuUnfoldOutlined v-if="action.key === 'operations'" />
           <PlaySquareFilled v-if="action.key === 'before'" />
           <RightSquareFilled v-if="action.key === 'beforeEach'" />
           <CodeFilled v-if="action.key === 'children'" />
@@ -50,12 +52,13 @@ import {
   SettingFilled,
   CodeFilled,
   FolderOutlined,
+  MenuUnfoldOutlined,
   LeftSquareFilled,
   PlaySquareFilled,
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { ActionType, GroupNode } from '../types'
+import { ActionType, TestNode } from '../types'
 import ActionEditor from '../action/ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
 
@@ -64,14 +67,15 @@ export default defineComponent({
     SettingFilled,
     CodeFilled,
     FolderOutlined,
+    MenuUnfoldOutlined,
     LeftSquareFilled,
     PlaySquareFilled,
     RightSquareFilled,
     ActionEditor
   },
   props: {
-    group: {
-      type: Object as PropType<GroupNode>,
+    node: {
+      type: Object as PropType<TestNode>,
       required: true
     }
   },
@@ -82,40 +86,53 @@ export default defineComponent({
           key: 'settings',
           name: '设置',
           desc: '运行设置',
-          color: 'purple'
+          color: 'purple',
+          type: ['case', 'group']
+        },
+        {
+          key: 'operations',
+          name: '测试步骤',
+          desc: '执行测试步骤',
+          color: 'orange',
+          type: ['case']
         },
         {
           key: 'before',
           name: '开始',
           desc: '进入测试组时执行',
-          color: 'orange'
+          color: 'orange',
+          type: ['group']
         },
         {
           key: 'beforeEach',
           push: true,
           name: '每次开始',
           desc: '每个用例开始前执行',
-          color: 'orange'
+          color: 'orange',
+          type: ['group']
         },
         {
           key: 'children',
           push: true,
           name: '子测试组和测试用例',
           desc: '子测试组：N 个\n测试用例：M 个',
-          color: 'green'
+          color: 'green',
+          type: ['group']
         },
         {
           key: 'afterEach',
           push: true,
           name: '每次结束',
           desc: '每个用例结束后执行',
-          color: 'orange'
+          color: 'orange',
+          type: ['group']
         },
         {
           key: 'after',
           name: '结束',
           desc: '测试组执行结束后执行',
-          color: 'orange'
+          color: 'orange',
+          type: ['group']
         }
       ] as {
         key: ActionType
@@ -123,13 +140,14 @@ export default defineComponent({
         name: string
         desc: string
         color: string
+        type: string[]
       }[]
     }
   },
   computed: {
     ...mapState(useStateStore, ['currentActionType']),
     test() {
-      return this.group.test
+      return this.node.test
     }
   },
   methods: {
@@ -140,7 +158,7 @@ export default defineComponent({
 
 <style lang="css" scoped>
 .action-selector {
-  min-width: 200px;
+  min-width: 180px;
 }
 .action-selector .action {
   border: #eee 1px solid;
