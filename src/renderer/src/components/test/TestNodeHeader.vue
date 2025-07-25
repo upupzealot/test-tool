@@ -76,7 +76,6 @@ import OperationOpts, { OperationOptMap } from '../action/OperationOpts'
 import ActionRunner from '../action/ActionRunner'
 import CaseRunner from '../action/CaseRunner'
 import GroupRunner from '../action/GroupRunner'
-import TestTreeList from './TestTreeList.vue'
 
 export default defineComponent({
   components: {
@@ -84,7 +83,6 @@ export default defineComponent({
     FolderOutlined,
     RightOutlined,
     DoubleRightOutlined,
-    TestTreeList,
     VueDraggable
   },
   props: {

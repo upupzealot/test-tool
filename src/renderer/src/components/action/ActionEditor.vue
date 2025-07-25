@@ -51,7 +51,6 @@ import {
 } from '../types'
 import OperationOpts, { OperationOptMap } from './OperationOpts'
 import ActionHeader from '../test/TestNodeHeader.vue'
-import TestTreeList from '../test/TestTreeList.vue'
 import Operation from './Operation.vue'
 
 import ShortUniqueId from 'short-unique-id'
@@ -64,7 +63,6 @@ export default defineComponent({
     RightOutlined,
     DoubleRightOutlined,
     ActionHeader,
-    TestTreeList,
     VueDraggable,
     Operation
   },
@@ -105,12 +103,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions(useStateStore, [
-      'getNode',
-      'setCurrentNodeId',
-      'setCurrentGroupId',
-      'updateTestTree'
-    ]),
+    ...mapActions(useStateStore, ['getNode', 'setCurrentGroupId', 'updateTestTree']),
     async onSelectNode(nodeId: string) {
       this.childNode = this.getNode(nodeId)
     },
