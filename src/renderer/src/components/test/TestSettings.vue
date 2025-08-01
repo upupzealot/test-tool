@@ -12,7 +12,7 @@
       >
         <a-input-number
           v-model:value="settings.delay"
-          :placeholder="parentSettings.delay"
+          :placeholder="`${parentSettings.delay}`"
         >
           <template #addonAfter> ms </template>
         </a-input-number>
@@ -26,7 +26,7 @@
       >
         <a-input-number
           v-model:value="settings.retry"
-          :placeholder="parentSettings.retry"
+          :placeholder="`${parentSettings.retry}`"
         />
         <div class="dot"></div>
       </a-form-item>
@@ -38,7 +38,7 @@
       >
         <a-input-number
           v-model:value="settings.timeout"
-          :placeholder="parentSettings.timeout"
+          :placeholder="`${parentSettings.timeout}`"
         >
           <template #addonAfter> ms </template>
         </a-input-number>
