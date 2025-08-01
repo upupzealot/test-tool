@@ -29,8 +29,8 @@
           currentActionType !== 'settings' &&
           currentActionType !== 'children'
         "
-        :node="node"
-        :actionType="currentActionType"
+        :action="action"
+        @addOperation="onAddOperation"
       />
     </div>
   </div>
@@ -48,12 +48,23 @@ import {
 import { mapActions, mapState } from 'pinia'
 import { useStateStore } from '@renderer/store/state'
 
-import { GroupNode, TestNode } from '../types'
+import {
+  TestCase,
+  TestGroup,
+  TestNode,
+  CaseNode,
+  GroupNode,
+  Action,
+  Operation
+} from '../types'
 import ActionSelector from './ActionSelector.vue'
 import ActionHeader from './TestNodeHeader.vue'
 import TestSettings from './TestSettings.vue'
 import TestTreeList from './TestTreeList.vue'
 import ActionEditor from '../action/ActionEditor.vue'
+
+import ShortUniqueId from 'short-unique-id'
+const uid = new ShortUniqueId({ length: 10 })
 
 export default defineComponent({
   components: {
@@ -84,6 +95,20 @@ export default defineComponent({
     ...mapState(useStateStore, ['currentActionType']),
     groupNode(): GroupNode {
       return this.node as GroupNode
+    },
+    action() {
+      const { type, test } = this.node
+      const actionType = this.currentActionType
+      if (type === 'group') {
+        if (actionType && actionType !== 'settings' && actionType !== 'children') {
+          return (test as TestGroup)[actionType]
+        } else {
+          return null
+        }
+      } else {
+        // type === 'case'
+        return (test as TestCase).action
+      }
     }
   },
   methods: {
@@ -96,6 +121,32 @@ export default defineComponent({
       if (group.type === 'group') {
         this.setCurrentGroupId(groupNodeId)
       }
+    },
+    onAddOperation(operation: Operation) {
+      const { type } = this.node
+      let action = this.action
+      const actionType = this.currentActionType
+      if (!action) {
+        if (type === 'group') {
+          const group = this.node as GroupNode
+          action = {
+            id: uid.rnd()
+          } as Action
+          group.test[actionType] = action
+        } else {
+          // type === 'case'
+          const kase = this.node as CaseNode
+          action = {
+            id: uid.rnd()
+          } as Action
+          kase.test['action'] = action
+        }
+      }
+      if (!action.operations) {
+        action.operations = []
+      }
+
+      action.operations.push(operation)
     }
   }
 })

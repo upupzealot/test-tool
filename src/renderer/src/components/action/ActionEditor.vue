@@ -67,18 +67,14 @@ export default defineComponent({
     Operation
   },
   props: {
-    node: {
-      type: Object as PropType<TestNode>,
-      required: true
-    },
-    actionType: {
-      type: String as PropType<ActionType>,
-      required: true
+    action: {
+      type: Object as PropType<Action>,
+      required: false
     }
   },
+  emits: ['addOperation'],
   data() {
     return {
-      childNode: null as TestNode | null,
       OperationOpts,
       OperationOptMap,
       running: false
@@ -86,54 +82,12 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useProjectStore, ['project']),
-    ...mapState(useStateStore, ['currentNode']),
-    group() {
-      return this.node as GroupNode
-    },
-    action(): Action | null {
-      if (this.node.type === 'group') {
-        if (this.actionType !== 'settings' && this.actionType !== 'children') {
-          return (this.node.test as TestGroup)[this.actionType]
-        } else {
-          return null
-        }
-      } else {
-        return (this.node.test as TestCase).action
-      }
-    }
+    ...mapState(useStateStore, ['currentNode'])
   },
   methods: {
     ...mapActions(useStateStore, ['getNode', 'setCurrentGroupId', 'updateTestTree']),
-    async onSelectNode(nodeId: string) {
-      this.childNode = this.getNode(nodeId)
-    },
-    async onEnterGroup(groupNodeId: string) {
-      const group = this.getNode(groupNodeId)
-      if (group.type === 'group') {
-        this.setCurrentGroupId(groupNodeId)
-      }
-    },
     addOperation(type: string) {
-      let action = this.action
-      if (!action) {
-        if (this.node.type === 'group') {
-          const group = this.node as GroupNode
-          action = {
-            id: uid.rnd()
-          } as Action
-          group.test[this.actionType] = action
-        } else {
-          const kase = this.node as CaseNode
-          action = {
-            id: uid.rnd()
-          } as Action
-          kase.test['action'] = action
-        }
-      }
-      if (!action.operations) {
-        action.operations = []
-      }
-      action.operations.push({
+      this.$emit('addOperation', {
         id: uid.rnd(),
         type,
         params: {}
