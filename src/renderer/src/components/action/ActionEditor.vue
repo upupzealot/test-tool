@@ -29,20 +29,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { mapActions, mapState } from 'pinia'
-import {
-  CodeOutlined,
-  FolderOutlined,
-  RightOutlined,
-  DoubleRightOutlined
-} from '@ant-design/icons-vue'
 import { VueDraggable } from 'vue-draggable-plus'
 
-import { useProjectStore } from '@renderer/store/project'
-import { useStateStore } from '@renderer/store/state'
 import { Action } from './types'
-import OperationOpts, { OperationOptMap } from './OperationOpts'
-import ActionHeader from '../test/TestNodeHeader.vue'
+import OperationOpts from './OperationOpts'
 import Operation from './Operation.vue'
 
 import ShortUniqueId from 'short-unique-id'
@@ -50,11 +40,6 @@ const uid = new ShortUniqueId({ length: 10 })
 
 export default defineComponent({
   components: {
-    CodeOutlined,
-    FolderOutlined,
-    RightOutlined,
-    DoubleRightOutlined,
-    ActionHeader,
     VueDraggable,
     Operation
   },
@@ -68,16 +53,10 @@ export default defineComponent({
   data() {
     return {
       OperationOpts,
-      OperationOptMap,
       running: false
     }
   },
-  computed: {
-    ...mapState(useProjectStore, ['project']),
-    ...mapState(useStateStore, ['currentNode'])
-  },
   methods: {
-    ...mapActions(useStateStore, ['getNode', 'setCurrentGroupId', 'updateTestTree']),
     addOperation(type: string) {
       this.$emit('addOperation', {
         id: uid.rnd(),

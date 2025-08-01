@@ -59,7 +59,6 @@ import {
 } from '@ant-design/icons-vue'
 
 import { ActionType, TestNode } from '../types'
-import ActionEditor from '../action/ActionEditor.vue'
 import { mapActions, mapState } from 'pinia'
 
 export default defineComponent({
@@ -70,8 +69,7 @@ export default defineComponent({
     MenuUnfoldOutlined,
     LeftSquareFilled,
     PlaySquareFilled,
-    RightSquareFilled,
-    ActionEditor
+    RightSquareFilled
   },
   props: {
     node: {
