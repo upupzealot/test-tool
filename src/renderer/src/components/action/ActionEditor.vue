@@ -40,15 +40,7 @@ import { VueDraggable } from 'vue-draggable-plus'
 
 import { useProjectStore } from '@renderer/store/project'
 import { useStateStore } from '@renderer/store/state'
-import {
-  Action,
-  CaseNode,
-  GroupNode,
-  ActionType,
-  TestCase,
-  TestGroup,
-  TestNode
-} from '../types'
+import { Action } from './types'
 import OperationOpts, { OperationOptMap } from './OperationOpts'
 import ActionHeader from '../test/TestNodeHeader.vue'
 import Operation from './Operation.vue'

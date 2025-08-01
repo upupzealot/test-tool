@@ -1,4 +1,5 @@
-import { Action, ActionType, Operation, TestCase, TestGroup } from '../types'
+import { ActionType, TestCase, TestGroup } from '../types'
+import { Action, Operation } from '../action/types'
 
 export type TestState = 'toTest' | 'passed' | 'failed'
 

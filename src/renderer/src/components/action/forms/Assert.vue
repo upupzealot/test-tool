@@ -49,7 +49,7 @@
 
 <script lang="ts">
 import { PropType } from 'vue'
-import { Action } from '../../types'
+import { Action } from '../types'
 import _Mixin from './_Mixin.vue'
 import OutputTypes, { TypeLabel } from './OutputTypes'
 import ItemTextOpt from '../form-items/TextOpt.vue'

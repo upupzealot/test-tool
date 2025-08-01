@@ -1,3 +1,5 @@
+import { Action } from './action/types'
+
 export interface Test {
   id: string
   type: 'case' | 'group'
@@ -15,16 +17,6 @@ export type ActionType =
   | 'afterEach'
   | 'children'
 
-export interface Action {
-  id: string
-  desc?: string
-  operations: Operation[]
-}
-export interface Operation {
-  id: string
-  type: string
-  params: any
-}
 export interface TestGroup extends Test {
   before?: Action
   beforeEach?: Action

@@ -50,7 +50,7 @@ import { createVNode, defineComponent, PropType } from 'vue'
 import { Modal } from 'ant-design-vue'
 import { CloseOutlined, WarningOutlined } from '@ant-design/icons-vue'
 
-import { Action, Operation } from '../types'
+import { Action, Operation } from './types'
 import { OperationOptMap } from './OperationOpts'
 import FormGoto from './forms/Goto.vue'
 import FormInput from './forms/Input.vue'

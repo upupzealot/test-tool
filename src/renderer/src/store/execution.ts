@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { Action, CaseNode, GroupNode, TestGroup, TestNode } from '../components/types'
+import { CaseNode, GroupNode, TestGroup, TestNode } from '../components/types'
+import { Action } from '@renderer/components/action/types'
 import {
   ActionExecution,
   CaseExecution,

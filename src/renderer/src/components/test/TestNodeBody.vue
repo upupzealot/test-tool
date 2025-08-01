@@ -48,15 +48,8 @@ import {
 import { mapActions, mapState } from 'pinia'
 import { useStateStore } from '@renderer/store/state'
 
-import {
-  TestCase,
-  TestGroup,
-  TestNode,
-  CaseNode,
-  GroupNode,
-  Action,
-  Operation
-} from '../types'
+import { TestCase, TestGroup, TestNode, CaseNode, GroupNode } from '../types'
+import { Action, Operation } from '../action/types'
 import ActionSelector from './ActionSelector.vue'
 import ActionHeader from './TestNodeHeader.vue'
 import TestSettings from './TestSettings.vue'
