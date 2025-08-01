@@ -1,3 +1,4 @@
+import { TestSettings } from './test-settings/types'
 import { Action } from './action/types'
 
 export interface Test {
@@ -53,17 +54,6 @@ export interface ProjectConfig {
     label: string
     locator: string
   }[]
-}
-
-export const DEFAULT_SETTINGS: TestSettings = {
-  delay: 0,
-  retry: 1,
-  timeout: 10 * 1000
-}
-export interface TestSettings {
-  delay?: number
-  retry?: number
-  timeout?: number
 }
 
 export interface Project extends TestGroup {

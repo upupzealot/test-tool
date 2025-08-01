@@ -54,7 +54,8 @@ import { defineComponent, PropType } from 'vue'
 import { mapActions } from 'pinia'
 
 import { useStateStore } from '@renderer/store/state'
-import { TestNode, TestSettings, DEFAULT_SETTINGS } from '../types'
+import { DEFAULT_SETTINGS, TestSettings } from './types'
+import { TestNode } from '../types'
 
 export default defineComponent({
   props: {
