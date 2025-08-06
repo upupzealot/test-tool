@@ -6,6 +6,18 @@
       size="small"
     >
       <a-form-item
+        label="窗口"
+        name="windows"
+        size="default"
+      >
+        <WindowsSettings
+          :settings="settings"
+          :parentSettings="parentSettings"
+          @createWindow="onCreateWindow"
+        />
+      </a-form-item>
+
+      <a-form-item
         label="延迟"
         name="delay"
         :class="modified.delay ? ['modified'] : []"
@@ -52,12 +64,16 @@
 import _ from 'lodash'
 import { defineComponent, PropType } from 'vue'
 import { mapActions } from 'pinia'
+import { PlusOutlined } from '@ant-design/icons-vue'
 
 import { useStateStore } from '@renderer/store/state'
-import { DEFAULT_SETTINGS, TestSettings } from './types'
+import { DEFAULT_SETTINGS, TestSettings, TestWindow } from './types'
 import { TestNode } from '../types'
 
+import WindowsSettings from './WindowsSettings.vue'
+
 export default defineComponent({
+  components: { PlusOutlined, WindowsSettings },
   props: {
     currentNode: {
       type: Object as PropType<TestNode>,
@@ -100,7 +116,18 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions(useStateStore, ['getNode'])
+    ...mapActions(useStateStore, ['getNode']),
+    onCreateWindow(winObj: TestWindow) {
+      if (!this.settings.windows) {
+        this.settings.windows = {}
+      }
+      this.settings.windows[winObj.id] = winObj
+
+      if (!this.settings.windowsOrder) {
+        this.settings.windowsOrder = []
+      }
+      this.settings.windowsOrder.push(winObj.id)
+    }
   }
 })
 </script>
