@@ -5,7 +5,10 @@
     :locale="{ emptyText: '' }"
   >
     <a-list-item v-if="parentWindowList.length">父级窗口</a-list-item>
-    <a-list-item v-for="win in parentWindowList">
+    <a-list-item
+      v-for="win in parentWindowList"
+      :key="win.id"
+    >
       <span>
         <DesktopOutlined v-if="win.mode === 'desktop'" />
         <MobileOutlined v-if="win.mode === 'mobile'" />
@@ -14,15 +17,16 @@
     </a-list-item>
 
     <a-list-item>本级窗口</a-list-item>
-    <VueDraggable v-model="windowList">
-      <a-list-item v-for="win in windowList">
-        <span>
-          <DesktopOutlined v-if="win.mode === 'desktop'" />
-          <MobileOutlined v-if="win.mode === 'mobile'" />
-          <span style="padding-left: 10px">{{ win.name }}</span>
-        </span>
-      </a-list-item>
-    </VueDraggable>
+    <a-list-item
+      v-for="win in windowList"
+      :key="win.id"
+    >
+      <span :style="{ opacity: isParentWindow(win.id) ? 0.5 : 1 }">
+        <DesktopOutlined v-if="win.mode === 'desktop'" />
+        <MobileOutlined v-if="win.mode === 'mobile'" />
+        <span style="padding-left: 10px">{{ win.name }}</span>
+      </span>
+    </a-list-item>
 
     <a-list-item>
       <a-button
@@ -83,7 +87,6 @@
 import _ from 'lodash'
 import { defineComponent, PropType } from 'vue'
 import { PlusOutlined, DesktopOutlined, MobileOutlined } from '@ant-design/icons-vue'
-import { VueDraggable } from 'vue-draggable-plus'
 
 import { TestSettings, TestWindow } from './types'
 
@@ -91,7 +94,7 @@ import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
 
 export default defineComponent({
-  components: { PlusOutlined, DesktopOutlined, MobileOutlined, VueDraggable },
+  components: { PlusOutlined, DesktopOutlined, MobileOutlined },
   props: {
     settings: {
       type: Object as PropType<TestSettings>,
@@ -114,23 +117,17 @@ export default defineComponent({
   },
   computed: {
     parentWindowList() {
-      const winMap = this.parentSettings.windows || {}
-      const winIds = this.parentSettings.windowsOrder || []
-      return winIds.map((winId) => winMap[winId]).filter((win) => !!win)
+      return _.sortBy(this.parentSettings.windows, 'name')
     },
-    windowList: {
-      get() {
-        const winMap = this.settings.windows || {}
-        const winIds = this.settings.windowsOrder || []
-        return winIds.map((winId) => winMap[winId]).filter((win) => !!win)
-      },
-      set(windows) {
-        const ids = windows.map((win) => win.id)
-        this.settings.windowsOrder = ids
-      }
+    windowList() {
+      return _.sortBy(this.settings.windows, 'name')
     }
   },
   methods: {
+    isParentWindow(winId: string) {
+      const parentWindows = this.parentSettings.windows
+      return !!(parentWindows && parentWindows[winId])
+    },
     onAddWindow() {
       this.windowForm = {} as TestWindow
       this.addWindowModalVisible = true

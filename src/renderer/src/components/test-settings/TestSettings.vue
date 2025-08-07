@@ -122,11 +122,6 @@ export default defineComponent({
         this.settings.windows = {}
       }
       this.settings.windows[winObj.id] = winObj
-
-      if (!this.settings.windowsOrder) {
-        this.settings.windowsOrder = []
-      }
-      this.settings.windowsOrder.push(winObj.id)
     }
   }
 })
