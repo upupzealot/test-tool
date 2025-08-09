@@ -19,13 +19,15 @@ export const useStateStore = defineStore('state', {
       testNodeMap: {},
       currentNodeId: '-',
       currentGroupId: '-',
-      currentActionType: ''
+      currentActionType: '',
+      currentWindowId: ''
     }) as {
       activeTab: string
       testNodeMap: Map<string, TestNode>
       currentNodeId: string
       currentGroupId: string
       currentActionType: ActionType
+      currentWindowId: string
     },
   getters: {
     currentNode(): TestNode | null {

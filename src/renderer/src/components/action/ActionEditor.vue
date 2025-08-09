@@ -1,15 +1,25 @@
 <template>
-  <div class="operation-container">
+  <div class="action-editor">
     <div
       v-if="windowList.length"
-      class="windows-headers"
+      class="window-headers"
     >
-      <div
-        v-for="win in windowList"
-        :class="win.id ? ['header-item'] : ['header-item', 'default']"
-      >
-        {{ win.name || '默认窗口' }}
-      </div>
+      <template v-for="(win, i) in windowList">
+        <div
+          :class="
+            win.id === currentWindowId ? ['window-header', 'active'] : ['window-header']
+          "
+        >
+          <div :style="{ width: `${50 * i}px` }" />
+          <div
+            :class="win.id ? ['title'] : ['title', 'default']"
+            @click="onSelectWindow(win.id)"
+          >
+            {{ win.name || '默认窗口' }}
+          </div>
+          <div :style="{ width: `${50 * (windowList.length - 1 - i)}px` }" />
+        </div>
+      </template>
       <a-dropdown>
         <a-button
           type="link"
@@ -34,21 +44,37 @@
       <VueDraggable
         v-model="action.operations"
         :handle="'.operation-tag'"
+        class="operation-list"
       >
-        <Operation
+        <div
           v-for="operation in action.operations"
-          :action="action"
-          :operation="operation"
-          @delete="onDeleteOperation(operation.id)"
-        />
+          :class="
+            operation.winId === currentWindowId
+              ? ['operation-item', 'active']
+              : ['operation-item']
+          "
+        >
+          <div :style="{ width: `${50 * windowsOrder.indexOf(operation.winId)}px` }" />
+          <Operation
+            :action="action"
+            :operation="operation"
+            @delete="onDeleteOperation(operation.id)"
+          />
+          <div
+            :style="{
+              width: `${50 * (windowsOrder.length - 1 - windowsOrder.indexOf(operation.winId))}px`
+            }"
+          />
+        </div>
       </VueDraggable>
     </template>
-    <div class="operation add-btn-panel">
+
+    <div class="add-operation-btns">
       插入指令：
       <a-tag
         v-for="option in OperationOpts"
         :color="option.color"
-        class="add-btn"
+        class="operation-btn"
         @click="addOperation(option.key)"
       >
         {{ option.label }}
@@ -60,11 +86,13 @@
 <script lang="ts">
 import _ from 'lodash'
 import { defineComponent, PropType } from 'vue'
+import { mapWritableState } from 'pinia'
 import { VueDraggable } from 'vue-draggable-plus'
 import { PlusOutlined } from '@ant-design/icons-vue'
 
 import { TestWindow } from '../test-settings/types'
 import { Action } from './types'
+import { useStateStore } from '@renderer/store/state'
 import OperationOpts from './OperationOpts'
 import Operation from './Operation.vue'
 
@@ -96,6 +124,7 @@ export default defineComponent({
     }
   },
   computed: {
+    ...mapWritableState(useStateStore, ['currentWindowId']),
     windowMap() {
       const operations = this.action?.operations || []
       const openOperations = operations.filter((op) => op.type === 'open')
@@ -130,8 +159,12 @@ export default defineComponent({
     onUseWindow(winId: string) {
       this.usingWinIds.push(winId)
     },
+    onSelectWindow(winId: string) {
+      this.currentWindowId = winId
+    },
     addOperation(type: string) {
       this.$emit('addOperation', {
+        winId: this.currentWindowId,
         id: uid.rnd(),
         type,
         params: {}
@@ -151,50 +184,78 @@ export default defineComponent({
 </script>
 
 <style lang="css" scoped>
-.operation-container .windows-headers {
-  margin-bottom: -1px;
+.action-editor {
+  border: #eee 1px solid;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+}
+.action-editor .window-headers {
+  display: flex;
+  flex-direction: column;
   position: relative;
 }
-.operation-container .windows-headers .header-item {
+.window-headers .window-header {
+  display: flex;
+  flex-direction: row;
+}
+.window-headers .add-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 10px;
+}
+
+.window-header .title {
   border: #eee 1px solid;
   padding: 5px;
   text-align: center;
   flex: 1;
   cursor: pointer;
 }
-.operation-container .windows-headers .header-item:not(:first-child) {
-  margin-left: -1px;
+.window-header:not(:first-of-type) .title {
+  margin-top: -1px;
 }
-.operation-container .windows-headers .header-item.default {
+.window-header:first-of-type .title {
+  border-top: none;
+  border-left: none;
+}
+.window-header:last-of-type .title {
+  /* border-bottom: none; */
+  border-right: none;
+}
+.window-header.active .title {
+  background-color: aliceblue;
+}
+.window-header .title.default {
   color: #ccc;
   font-style: italic;
 }
-.operation-container .windows-headers .add-btn {
-  position: absolute;
-  right: 0;
-  padding: 5px 10px;
-}
 
-.operation-container {
-  border: #eee 1px solid;
-  padding: 10px 15px;
+.operation-list {
+  margin: -1px;
 }
-.operation-container .operation {
+.operation-item {
+  display: flex;
+  flex-direction: row;
+}
+.operation-item.active .operation {
+  background-color: aliceblue;
+}
+.operation-item:not(:first-of-type) {
+  margin-top: -1px;
+}
+.operation {
   position: relative;
-  flex: 0;
+  flex: 1;
   border: #eee 1px solid;
   min-height: 46px;
   padding: 30px 20px 10px 10px;
 }
-.operation-container .operation:not(:first-child) {
-  margin-top: -1px;
-}
-.operation-container .operation.add-btn-panel {
+.add-operation-btns {
+  border-top: #eee 1px solid;
   padding: 10px 15px;
 }
-.operation-container .operation.add-btn-panel .add-btn {
+.add-operation-btns .operation-btn {
   cursor: pointer;
 }
 </style>
