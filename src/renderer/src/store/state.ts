@@ -47,22 +47,30 @@ export const useStateStore = defineStore('state', {
       this.activeTab = activeTab
     },
     updateTestTree(project: Project) {
-      const testNodeMap = {} as Map<string, TestNode>
+      if (!project.children) {
+        project.children = []
+      }
+      if (!project.settings) {
+        project.settings = {}
+      }
       const rootNode = {
         id: '-',
         type: 'group',
         name: project.name,
         // desc: project.desc,
-        desc: '默认设置',
+        desc: '项目设置',
         paths: ['-'],
         children: [],
         test: {
           id: '-',
           type: 'group',
           name: '-',
-          children: project.children
+          children: project.children,
+          settings: project.settings
         } as Test
       } as TestGroup
+
+      const testNodeMap = {} as Map<string, TestNode>
       let arr = [rootNode] as TestNode[]
       while (arr.length) {
         const testNode = arr.shift()!

@@ -11,6 +11,8 @@
       <TestSettings
         v-if="currentActionType === 'settings'"
         :currentNode="node"
+        :parentSettings="parentSettings"
+        :settings="settings"
       />
 
       <!-- 子节点列表 -->
@@ -29,6 +31,7 @@
           currentActionType !== 'settings' &&
           currentActionType !== 'children'
         "
+        :contextWindows="windows"
         :action="action"
         @addOperation="onAddOperation"
       />
@@ -37,7 +40,10 @@
 </template>
 
 <script lang="ts">
+import _ from 'lodash'
 import { defineComponent, PropType } from 'vue'
+import { mapActions, mapState } from 'pinia'
+import { useStateStore } from '@renderer/store/state'
 import {
   CodeFilled,
   LeftSquareFilled,
@@ -45,15 +51,13 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { mapActions, mapState } from 'pinia'
-import { useStateStore } from '@renderer/store/state'
-
 import { TestCase, TestGroup, TestNode, CaseNode, GroupNode } from '../types'
 import { Action, Operation } from '../action/types'
 import ActionSelector from './ActionSelector.vue'
 import ActionHeader from './TestNodeHeader.vue'
 import TestTreeList from './TestTreeList.vue'
-import TestSettings from '../test-settings/TestSettings.vue'
+import { DEFAULT_SETTINGS, TestSettings } from '../test-settings/types'
+import TestSettingsComponent from '../test-settings/TestSettings.vue'
 import ActionEditor from '../action/ActionEditor.vue'
 
 import ShortUniqueId from 'short-unique-id'
@@ -67,7 +71,7 @@ export default defineComponent({
     RightSquareFilled,
     ActionSelector,
     ActionHeader,
-    TestSettings,
+    TestSettings: TestSettingsComponent,
     TestTreeList,
     ActionEditor
   },
@@ -102,6 +106,24 @@ export default defineComponent({
         // type === 'case'
         return (test as TestCase).action
       }
+    },
+    parentSettings(): TestSettings {
+      const parentPaths = [...this.node.paths]
+      parentPaths.pop()
+      const pathSettings = parentPaths.map((path) => {
+        const pathNode = this.getNode(path)
+        return pathNode.test.settings || {}
+      })
+      return _.merge({}, ...[DEFAULT_SETTINGS, ...pathSettings])
+    },
+    settings(): TestSettings {
+      if (!this.node.test.settings) {
+        this.node.test.settings = {}
+      }
+      return this.node.test.settings
+    },
+    windows() {
+      return _.merge({}, this.parentSettings.windows, this.settings.windows)
     }
   },
   methods: {

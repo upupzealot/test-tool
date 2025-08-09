@@ -3,8 +3,14 @@
     bordered
     size="small"
     :locale="{ emptyText: '' }"
+    class="window-settings"
   >
-    <a-list-item v-if="parentWindowList.length">父级窗口</a-list-item>
+    <a-list-item
+      v-if="parentWindowList.length"
+      class="title-item"
+    >
+      父级窗口
+    </a-list-item>
     <a-list-item
       v-for="win in parentWindowList"
       :key="win.id"
@@ -16,7 +22,7 @@
       </span>
     </a-list-item>
 
-    <a-list-item>本级窗口</a-list-item>
+    <a-list-item class="title-item">本级窗口</a-list-item>
     <a-list-item
       v-for="win in windowList"
       :key="win.id"
@@ -144,3 +150,10 @@ export default defineComponent({
   }
 })
 </script>
+
+<style lang="css" scoped>
+.window-settings .title-item {
+  color: #bbb;
+  padding: 4px 16px;
+}
+</style>

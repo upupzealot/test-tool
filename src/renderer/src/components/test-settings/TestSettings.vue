@@ -63,20 +63,20 @@
 <script lang="ts">
 import _ from 'lodash'
 import { defineComponent, PropType } from 'vue'
-import { mapActions } from 'pinia'
 import { PlusOutlined } from '@ant-design/icons-vue'
 
-import { useStateStore } from '@renderer/store/state'
 import { DEFAULT_SETTINGS, TestSettings, TestWindow } from './types'
-import { TestNode } from '../types'
-
 import WindowsSettings from './WindowsSettings.vue'
 
 export default defineComponent({
   components: { PlusOutlined, WindowsSettings },
   props: {
-    currentNode: {
-      type: Object as PropType<TestNode>,
+    parentSettings: {
+      type: Object as PropType<TestSettings>,
+      required: true
+    },
+    settings: {
+      type: Object as PropType<TestSettings>,
       required: true
     }
   },
@@ -98,25 +98,9 @@ export default defineComponent({
           !_.isNil(this.settings.timeout) &&
           this.settings.timeout !== this.parentSettings.timeout
       }
-    },
-    parentSettings() {
-      const parentPaths = [...this.currentNode.paths]
-      parentPaths.pop()
-      const pathSettings = parentPaths.map((path) => {
-        const pathNode = this.getNode(path)
-        return pathNode.test.settings || {}
-      })
-      return _.merge({}, ...[DEFAULT_SETTINGS, ...pathSettings]) as TestSettings
-    },
-    settings() {
-      if (!this.currentNode.test.settings) {
-        this.currentNode.test.settings = {}
-      }
-      return this.currentNode.test.settings
     }
   },
   methods: {
-    ...mapActions(useStateStore, ['getNode']),
     onCreateWindow(winObj: TestWindow) {
       if (!this.settings.windows) {
         this.settings.windows = {}
