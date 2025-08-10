@@ -37,56 +37,18 @@
     <a-list-item>
       <a-button
         type="link"
-        @click="onAddWindow"
+        @click="showAddWindow"
         style="padding-left: 0"
         ><PlusOutlined />新建窗口</a-button
       >
     </a-list-item>
   </a-list>
-  <a-modal
-    v-model:open="addWindowModalVisible"
-    title="新建窗口"
-  >
-    <a-form
-      ref="windowForm"
-      :model="windowForm"
-      size="default"
-      style="padding-top: 10px"
-    >
-      <a-form-item
-        label="窗口名称"
-        name="name"
-      >
-        <a-input v-model:value="windowForm.name"></a-input>
-      </a-form-item>
-      <a-form-item
-        label="窗口类型"
-        name="mode"
-      >
-        <a-radio-group v-model:value="windowForm.mode">
-          <a-radio value="desktop"><DesktopOutlined /> 桌面端</a-radio>
-          <a-radio value="mobile"><MobileOutlined /> 移动端</a-radio>
-        </a-radio-group>
-      </a-form-item>
-    </a-form>
-    <template #footer>
-      <a-button
-        key="back"
-        size="default"
-        @click="onCancel"
-      >
-        取消
-      </a-button>
-      <a-button
-        key="submit"
-        type="primary"
-        size="default"
-        @click="onSubmit"
-      >
-        保存
-      </a-button>
-    </template>
-  </a-modal>
+
+  <EditWindowModal
+    v-model:open="windowModalVisible"
+    :window="windowForm"
+    @submitWindow="onAddWindow"
+  />
 </template>
 
 <script lang="ts">
@@ -95,12 +57,13 @@ import { defineComponent, PropType } from 'vue'
 import { PlusOutlined, DesktopOutlined, MobileOutlined } from '@ant-design/icons-vue'
 
 import { TestSettings, TestWindow } from './types'
+import EditWindowModal from './EditWindowModal.vue'
 
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
 
 export default defineComponent({
-  components: { PlusOutlined, DesktopOutlined, MobileOutlined },
+  components: { PlusOutlined, DesktopOutlined, MobileOutlined, EditWindowModal },
   props: {
     settings: {
       type: Object as PropType<TestSettings>,
@@ -111,10 +74,10 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['createWindow'],
+  emits: ['addWindow'],
   data() {
     return {
-      addWindowModalVisible: false,
+      windowModalVisible: false,
       windowForm: {
         name: '',
         mode: ''
@@ -134,18 +97,17 @@ export default defineComponent({
       const parentWindows = this.parentSettings.windows
       return !!(parentWindows && parentWindows[winId])
     },
-    onAddWindow() {
+    showAddWindow() {
       this.windowForm = {} as TestWindow
-      this.addWindowModalVisible = true
+      this.windowModalVisible = true
     },
-    onCancel() {
-      this.addWindowModalVisible = false
-    },
-    onSubmit() {
-      const winObj = JSON.parse(JSON.stringify(this.windowForm)) as TestWindow
+    onAddWindow(winObj: TestWindow) {
       winObj.id = uid.rnd()
-      this.$emit('createWindow', winObj)
-      this.addWindowModalVisible = false
+      this.$emit('addWindow', winObj)
+    },
+    showEditWindow(winObj: TestWindow) {
+      this.windowForm = winObj
+      this.windowModalVisible = true
     }
   }
 })

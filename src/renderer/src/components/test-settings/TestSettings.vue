@@ -13,7 +13,7 @@
         <WindowsSettings
           :settings="settings"
           :parentSettings="parentSettings"
-          @createWindow="onCreateWindow"
+          @addWindow="onAddWindow"
         />
       </a-form-item>
 
@@ -101,7 +101,7 @@ export default defineComponent({
     }
   },
   methods: {
-    onCreateWindow(winObj: TestWindow) {
+    onAddWindow(winObj: TestWindow) {
       if (!this.settings.windows) {
         this.settings.windows = {}
       }

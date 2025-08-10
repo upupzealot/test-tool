@@ -4,22 +4,21 @@
       v-if="windowList.length"
       class="window-headers"
     >
-      <template v-for="(win, i) in windowList">
+      <div
+        v-for="(win, i) in windowList"
+        :class="
+          win.id === currentWindowId ? ['window-header', 'active'] : ['window-header']
+        "
+      >
+        <div :style="{ width: `${50 * i}px` }" />
         <div
-          :class="
-            win.id === currentWindowId ? ['window-header', 'active'] : ['window-header']
-          "
+          :class="win.id ? ['title'] : ['title', 'default']"
+          @click="onSelectWindow(win.id)"
         >
-          <div :style="{ width: `${50 * i}px` }" />
-          <div
-            :class="win.id ? ['title'] : ['title', 'default']"
-            @click="onSelectWindow(win.id)"
-          >
-            {{ win.name || '默认窗口' }}
-          </div>
-          <div :style="{ width: `${50 * (windowList.length - 1 - i)}px` }" />
+          {{ win.name || '默认窗口' }}
         </div>
-      </template>
+        <div :style="{ width: `${50 * (windowList.length - 1 - i)}px` }" />
+      </div>
       <a-dropdown>
         <a-button
           type="link"
@@ -58,6 +57,7 @@
           <Operation
             :action="action"
             :operation="operation"
+            @click="onSelectWindow(operation.winId)"
             @delete="onDeleteOperation(operation.id)"
           />
           <div
@@ -69,17 +69,7 @@
       </VueDraggable>
     </template>
 
-    <div class="add-operation-btns">
-      插入指令：
-      <a-tag
-        v-for="option in OperationOpts"
-        :color="option.color"
-        class="operation-btn"
-        @click="addOperation(option.key)"
-      >
-        {{ option.label }}
-      </a-tag>
-    </div>
+    <AddOperationPanel @addOperation="onAddOperation" />
   </div>
 </template>
 
@@ -91,19 +81,17 @@ import { VueDraggable } from 'vue-draggable-plus'
 import { PlusOutlined } from '@ant-design/icons-vue'
 
 import { TestWindow } from '../test-settings/types'
-import { Action } from './types'
+import { Action, Operation } from './types'
 import { useStateStore } from '@renderer/store/state'
-import OperationOpts from './OperationOpts'
-import Operation from './Operation.vue'
-
-import ShortUniqueId from 'short-unique-id'
-const uid = new ShortUniqueId({ length: 10 })
+import OperationComponent from './Operation.vue'
+import AddOperationPanel from './AddOperationPanel.vue'
 
 export default defineComponent({
   components: {
     PlusOutlined,
     VueDraggable,
-    Operation
+    Operation: OperationComponent,
+    AddOperationPanel
   },
   props: {
     contextWindows: {
@@ -119,7 +107,6 @@ export default defineComponent({
   data() {
     return {
       usingWinIds: [] as string[],
-      OperationOpts,
       running: false
     }
   },
@@ -130,7 +117,11 @@ export default defineComponent({
       const openOperations = operations.filter((op) => op.type === 'open')
       const operationWindows = {} as { [key: string]: TestWindow }
       openOperations.forEach((open) => {
-        operationWindows[open.id] = open.params as TestWindow
+        operationWindows[open.id] = {
+          winId: open.id,
+          id: open.id,
+          ...open.params
+        } as TestWindow
       })
 
       return _.merge({}, this.contextWindows, operationWindows)
@@ -162,13 +153,11 @@ export default defineComponent({
     onSelectWindow(winId: string) {
       this.currentWindowId = winId
     },
-    addOperation(type: string) {
-      this.$emit('addOperation', {
-        winId: this.currentWindowId,
-        id: uid.rnd(),
-        type,
-        params: {}
-      })
+    onAddOperation(operation: Operation) {
+      if (operation.type === 'open') {
+        console.log(1111, operation)
+      }
+      this.$emit('addOperation', operation)
     },
     onDeleteOperation(operationId: string) {
       const { action } = this
@@ -250,12 +239,5 @@ export default defineComponent({
   border: #eee 1px solid;
   min-height: 46px;
   padding: 30px 20px 10px 10px;
-}
-.add-operation-btns {
-  border-top: #eee 1px solid;
-  padding: 10px 15px;
-}
-.add-operation-btns .operation-btn {
-  cursor: pointer;
 }
 </style>

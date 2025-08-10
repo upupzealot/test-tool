@@ -6,6 +6,10 @@
     >
       {{ option.label }}
     </a-tag>
+    <FormOpen
+      v-if="operation.type === 'open'"
+      :operation="operation"
+    />
     <FormGoto
       v-if="operation.type === 'goto'"
       :operation="operation"
@@ -52,6 +56,7 @@ import { CloseOutlined, WarningOutlined } from '@ant-design/icons-vue'
 
 import { Action, Operation } from './types'
 import { OperationOptMap } from './OperationOpts'
+import FormOpen from './forms/Open.vue'
 import FormGoto from './forms/Goto.vue'
 import FormInput from './forms/Input.vue'
 import FormClick from './forms/Click.vue'
@@ -62,6 +67,7 @@ import FormAssert from './forms/Assert.vue'
 
 export default defineComponent({
   components: {
+    FormOpen,
     FormGoto,
     FormInput,
     FormClick,
