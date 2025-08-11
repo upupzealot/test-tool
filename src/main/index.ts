@@ -3,7 +3,8 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-import initIpcServer from './server'
+import initServer from './server'
+import initRunner from './runner'
 
 // init electron-conf
 import { Conf } from 'electron-conf/main'
@@ -61,7 +62,8 @@ app.whenReady().then(() => {
   })
 
   // register IPC functions
-  initIpcServer(ipcMain)
+  initServer(ipcMain)
+  initRunner(ipcMain)
 
   createWindow()
 
