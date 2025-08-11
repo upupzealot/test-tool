@@ -7,7 +7,7 @@
       {{ option.label }}
     </a-tag>
     <FormOpen
-      v-if="operation.type === 'open'"
+      v-if="operation.type === 'open:window'"
       :operation="operation"
     />
     <FormGoto

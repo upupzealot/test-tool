@@ -114,7 +114,7 @@ export default defineComponent({
     ...mapWritableState(useStateStore, ['currentWindowId']),
     windowMap() {
       const operations = this.action?.operations || []
-      const openOperations = operations.filter((op) => op.type === 'open')
+      const openOperations = operations.filter((op) => op.type === 'open:window')
       const operationWindows = {} as { [key: string]: TestWindow }
       openOperations.forEach((open) => {
         operationWindows[open.id] = {
@@ -154,9 +154,6 @@ export default defineComponent({
       this.currentWindowId = winId
     },
     onAddOperation(operation: Operation) {
-      if (operation.type === 'open') {
-        console.log(1111, operation)
-      }
       this.$emit('addOperation', operation)
     },
     onDeleteOperation(operationId: string) {

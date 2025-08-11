@@ -65,7 +65,7 @@ export default defineComponent({
       this.$emit('addOperation', {
         winId,
         id: winId,
-        type: 'open',
+        type: 'open:window',
         params: {
           ...winObj
         }

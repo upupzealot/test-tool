@@ -4,7 +4,7 @@ export interface Action {
   operations: Operation[]
 }
 export interface Operation {
-  winId?: string
+  winId: string
   id: string
   type: string
   params: any

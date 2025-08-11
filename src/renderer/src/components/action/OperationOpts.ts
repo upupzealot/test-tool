@@ -6,7 +6,7 @@ export type OperationOption = {
 
 const OperationOpts = [
   {
-    key: 'open',
+    key: 'open:window',
     label: '打开窗口',
     color: 'orange'
   },
