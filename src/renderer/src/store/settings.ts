@@ -13,7 +13,7 @@ export const useSettingsStore = defineStore('settings', {
         chromium: '',
         chrome: ''
       },
-      browserBorder: {
+      browserBorderMap: {
         chromium: null,
         chrome: null
       }
@@ -23,7 +23,7 @@ export const useSettingsStore = defineStore('settings', {
         chromium: string
         chrome: string
       }
-      browserBorder: {
+      browserBorderMap: {
         chromium: null | Dimension
         chrome: null | Dimension
       }
@@ -31,6 +31,9 @@ export const useSettingsStore = defineStore('settings', {
   getters: {
     browserPath(): string {
       return this.browserPathMap[this.browserType]
+    },
+    browserBorder(): Dimension | null {
+      return this.browserBorderMap[this.browserType]
     }
   },
   actions: {
@@ -60,11 +63,11 @@ export const useSettingsStore = defineStore('settings', {
 
       const chromiumBorderStr = (await conf.get('chromiumBorder')) as string
       const chromeBorderStr = (await conf.get('chromiumBorder')) as string
-      const browserBorder = {
+      const browserBorderMap = {
         chromium: chromiumBorderStr ? (JSON.parse(chromiumBorderStr) as Dimension) : null,
         chrome: chromeBorderStr ? (JSON.parse(chromeBorderStr) as Dimension) : null
       }
-      this.browserBorder = browserBorder
+      this.browserBorderMap = browserBorderMap
     },
     async setBrowserType(type: 'chromium' | 'chrome') {
       this.browserType = type
@@ -83,7 +86,7 @@ export const useSettingsStore = defineStore('settings', {
         width: win.width - viewport.width,
         height: win.height - viewport.height
       }
-      this.browserBorder[this.browserType] = browserBorder
+      this.browserBorderMap[this.browserType] = browserBorder
 
       await conf.set(`${this.browserType}Border`, JSON.stringify(browserBorder))
     }

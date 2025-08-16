@@ -26,6 +26,15 @@ export default class ActionRunner extends Runner {
     let actionPass = true
     let message
 
+    const { ipcRenderer } = window.electron
+    const actionCtx = JSON.parse(
+      JSON.stringify({
+        action: this.action,
+        settings: this.settings
+      })
+    )
+    await ipcRenderer.invoke('test-context:action', actionCtx)
+
     for (let i = 0; i < operations.length; i++) {
       const operation = operations[i]
       const startAt = Date.now()

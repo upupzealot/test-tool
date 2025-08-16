@@ -11,17 +11,25 @@ export default abstract class Runner {
   async launch() {
     const store = useSettingsStore()
     await store.initBrowserSelection()
-    const { browserPath } = store
+    const { browserPath, browserBorder } = store
     const { ipcRenderer } = window.electron
 
-    const { project } = this.projectCtx
-    const configObj = JSON.parse(JSON.stringify(project.config))
-    await ipcRenderer.invoke('test-operation--init', browserPath, configObj)
+    await ipcRenderer.invoke(
+      'test-context:project',
+      JSON.parse(
+        JSON.stringify({
+          browserPath,
+          browserBorder,
+          // TODO projectCtx 在主进程上下文生成
+          projectCtx: this.projectCtx
+        })
+      )
+    )
   }
 
   async close() {
     const { ipcRenderer } = window.electron
-    await ipcRenderer.invoke('test-operation--close')
+    await ipcRenderer.invoke('test-close')
   }
 
   abstract run(): Promise<boolean>

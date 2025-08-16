@@ -1,31 +1,18 @@
-import puppeteer, { Browser } from 'puppeteer-core'
+import puppeteer, { Browser, KnownDevices } from 'puppeteer-core'
+const iPhone = KnownDevices['iPhone 14 Pro']
+const mobileWindow = iPhone
+const desktopWindow = {
+  width: 640,
+  height: 640
+}
 
 import _ from 'lodash'
 import delay from './delay'
 
 export default function init(ipcMain: Electron.IpcMain): void {
-  let browserMap: { [key: string]: Browser } = {}
-  let browserPath = ''
-  async function windowOpening(winId: string) {
-    let browser = browserMap[winId]
-    if (!browser) {
-      const windowWidth = 640
-      const windowHeight = 640
-      browser = await puppeteer.launch({
-        headless: false,
-        executablePath: browserPath,
-        defaultViewport: null,
-        args: [`--window-size=${windowWidth},${windowHeight}`]
-      })
-      browserMap[winId] = browser
-    }
-    return browser
-  }
-
-  let variables: {
-    [key: string]: any
-  } = {}
-
+  let browserPath: string = ''
+  let browserBorder = {} as { width: number; height: number }
+  let projectCtx
   let presetLocators: {
     [key: string]: {
       key: string
@@ -34,35 +21,85 @@ export default function init(ipcMain: Electron.IpcMain): void {
     }
   } = {}
 
-  ipcMain.handle('test-operation--init', async (__, ...args) => {
-    browserPath = args[0]
-    const projectConf = args[1]
-    projectConf.presetLocators.forEach((preset) => {
-      presetLocators[preset.key] = preset
-    })
+  ipcMain.handle('test-context:project', async (__, ...args) => {
+    if (args[0].browserPath) {
+      browserPath = args[0].browserPath
+    }
+    if (!browserBorder) {
+      browserBorder = args[0].browserBorder || { width: 0, height: 0 }
+    } else if (args[0].browserBorder) {
+      browserBorder = args[0].browserBorder
+    }
+
+    if (args[0].projectCtx) {
+      projectCtx = args[0].projectCtx
+      const projectConf = projectCtx.project.config
+      projectConf.presetLocators.forEach((preset) => {
+        presetLocators[preset.key] = preset
+      })
+    }
   })
 
-  ipcMain.handle('test-operation--close', async (__, ...args) => {
+  let actionCtx
+  let windowMap: { [key: string]: any } = {}
+  ipcMain.handle('test-context:action', async (__, ...args) => {
+    ;[actionCtx] = args
+    windowMap = actionCtx.settings.windows
+  })
+
+  let browserMap: { [key: string]: Browser } = {}
+  async function getPage(winId: string) {
+    const window = windowMap[winId]
+
+    let browser = browserMap[winId]
+    if (!browser) {
+      const dimention = window.mode === 'mobile' ? mobileWindow.viewport : desktopWindow
+
+      const windowWidth = dimention.width + (browserBorder?.width || 0)
+      const windowHeight = dimention.height + (browserBorder?.height || 0)
+      browser = await puppeteer.launch({
+        headless: false,
+        executablePath: browserPath,
+        defaultViewport: null,
+        args: [`--window-size=${windowWidth},${windowHeight}`]
+      })
+
+
+      browserMap[winId] = browser
+    }
+    const page = (await browser.pages())[0]
+
+    if (window.mode === 'mobile') {
+      await page.emulate(mobileWindow)
+    }
+
+    return page
+  }
+  ipcMain.handle('test-close', async () => {
     const winIds = _.keys(browserMap)
     await winIds.map(async (winId) => {
       const browser = browserMap[winId]
       await browser.close()
     })
-    browserMap = {}
+
     browserPath = ''
+    windowMap = {}
+    browserMap = {}
   })
+
+  let variables: {
+    [key: string]: any
+  } = {}
   ipcMain.handle('test-operation--goto', async (__, ...args) => {
     const [winId, { url }] = args
-    const browser = await windowOpening(winId)
-    const page = (await browser.pages())[0]
+    const page = await getPage(winId)
 
     await page.goto(url)
     return { pass: true }
   })
   ipcMain.handle('test-operation--input', async (__, ...args) => {
     const [winId, { locator, text }] = args
-    const browser = await windowOpening(winId)
-    const page = (await browser.pages())[0]
+    const page = await getPage(winId)
 
     const count = await page.$$eval(locator, async ($elements) => {
       return $elements.length
@@ -77,8 +114,7 @@ export default function init(ipcMain: Electron.IpcMain): void {
   })
   ipcMain.handle('test-operation--click', async (__, ...args) => {
     const [winId, { selectorPreset, selector, textOpt, text }] = args
-    const browser = await windowOpening(winId)
-    const page = (await browser.pages())[0]
+    const page = await getPage(winId)
 
     let query = selector
     if (selectorPreset !== 'custom') {
@@ -117,8 +153,7 @@ export default function init(ipcMain: Electron.IpcMain): void {
   })
   ipcMain.handle('test-operation--lookup', async (__, ...args) => {
     const [winId, { locator, attribute, output }] = args
-    const browser = await windowOpening(winId)
-    const page = (await browser.pages())[0]
+    const page = await getPage(winId)
 
     const value = await page.$$eval(
       locator,
@@ -134,8 +169,7 @@ export default function init(ipcMain: Electron.IpcMain): void {
   })
   ipcMain.handle('test-operation--lookup:page', async (__, ...args) => {
     const [winId, { attribute, output }] = args
-    const browser = await windowOpening(winId)
-    const page = (await browser.pages())[0]
+    const page = await getPage(winId)
 
     const value = await page.evaluate((attribute) => {
       if (attribute === 'url') {
@@ -153,16 +187,13 @@ export default function init(ipcMain: Electron.IpcMain): void {
   })
   ipcMain.handle('test-operation--wait', async (__, ...args) => {
     const [winId, { wait }] = args
-    const browser = await windowOpening(winId)
-    const page = (await browser.pages())[0]
+    const page = await getPage(winId)
 
     await delay(wait)
     return { pass: true }
   })
   ipcMain.handle('test-operation--assert', async (__, ...args) => {
-    const [winId, { variable, numOpt, num, textOpt, text }] = args
-    const browser = await windowOpening(winId)
-    const page = (await browser.pages())[0]
+    const [_, { variable, numOpt, num, textOpt, text }] = args
 
     const value = variables[variable]
     console.log(value, text)
