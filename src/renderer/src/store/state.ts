@@ -9,7 +9,7 @@ import {
   TestNode
 } from '@common/types/test'
 
-import ProjectContext from '@renderer/components/project/ProjectContext'
+import ProjectContext from '@common/ProjectContext'
 
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })

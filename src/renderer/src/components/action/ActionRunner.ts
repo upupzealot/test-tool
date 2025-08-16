@@ -2,7 +2,7 @@ import _ from 'lodash'
 
 import { DEFAULT_SETTINGS, TestSettings } from '@common/types/test-settings'
 import { ActionExecution } from '@common/types/execution'
-import ProjectContext from '../project/ProjectContext'
+import ProjectContext from '@common/ProjectContext'
 
 import Runner from './Runner'
 

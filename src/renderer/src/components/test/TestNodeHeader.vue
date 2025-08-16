@@ -69,12 +69,12 @@ import {
   TestNode
 } from '@common/types/test'
 import { Action } from '@common/types/action'
+import ProjectContext from '@common/ProjectContext'
 
 import { useProjectStore } from '@renderer/store/project'
 import { useStateStore } from '@renderer/store/state'
 import { useExecutionStore } from '@renderer/store/execution'
 import OperationOpts, { OperationOptMap } from '../action/OperationOpts'
-import ProjectContext from '../project/ProjectContext'
 import ActionRunner from '../action/ActionRunner'
 import CaseRunner from '../action/CaseRunner'
 import GroupRunner from '../action/GroupRunner'

@@ -1,5 +1,5 @@
 import { useSettingsStore } from '@renderer/store/settings'
-import ProjectContext from '../project/ProjectContext'
+import ProjectContext from '@common/ProjectContext'
 
 export default abstract class Runner {
   projectCtx: ProjectContext

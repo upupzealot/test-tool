@@ -1,18 +1,23 @@
+import _ from 'lodash'
+import delay from './delay'
 import puppeteer, { Browser, KnownDevices } from 'puppeteer-core'
+
+import { Dimension } from '@common/types/test'
+import { TestSettings, TestWindow } from '@common/types/test-settings'
+import { ActionExecution } from '@common/types/execution'
+import ProjectContext from '@common/ProjectContext'
+
 const iPhone = KnownDevices['iPhone 14 Pro']
-const mobileWindow = iPhone
-const desktopWindow = {
+const mobileViewport: Dimension = iPhone.viewport
+const desktopViewport: Dimension = {
   width: 640,
   height: 640
 }
 
-import _ from 'lodash'
-import delay from './delay'
-
 export default function init(ipcMain: Electron.IpcMain): void {
   let browserPath: string = ''
-  let browserBorder = {} as { width: number; height: number }
-  let projectCtx
+  let browserBorder = {} as Dimension
+  let projectCtx: ProjectContext
   let presetLocators: {
     [key: string]: {
       key: string
@@ -40,11 +45,11 @@ export default function init(ipcMain: Electron.IpcMain): void {
     }
   })
 
-  let actionCtx
-  let windowMap: { [key: string]: any } = {}
+  let actionCtx: { action: ActionExecution; settings: TestSettings }
+  let windowMap: { [key: string]: TestWindow } = {}
   ipcMain.handle('test-context:action', async (__, ...args) => {
     ;[actionCtx] = args
-    windowMap = actionCtx.settings.windows
+    windowMap = actionCtx.settings.windows || {}
   })
 
   let browserMap: { [key: string]: Browser } = {}
@@ -53,7 +58,7 @@ export default function init(ipcMain: Electron.IpcMain): void {
 
     let browser = browserMap[winId]
     if (!browser) {
-      const dimention = window.mode === 'mobile' ? mobileWindow.viewport : desktopWindow
+      const dimention = window.mode === 'mobile' ? mobileViewport : desktopViewport
 
       const windowWidth = dimention.width + (browserBorder?.width || 0)
       const windowHeight = dimention.height + (browserBorder?.height || 0)
@@ -70,7 +75,7 @@ export default function init(ipcMain: Electron.IpcMain): void {
     const page = (await browser.pages())[0]
 
     if (window.mode === 'mobile') {
-      await page.emulate(mobileWindow)
+      await page.emulate(iPhone)
     }
 
     return page
