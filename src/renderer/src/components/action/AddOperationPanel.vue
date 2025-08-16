@@ -44,7 +44,7 @@ export default defineComponent({
   },
   methods: {
     addOperation(type: string) {
-      if (type === 'open') {
+      if (type === 'open:window') {
         this.windowForm = {} as TestWindow
         this.windowModalVisible = true
       } else {

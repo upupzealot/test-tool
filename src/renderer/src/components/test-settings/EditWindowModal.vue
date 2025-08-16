@@ -6,6 +6,7 @@
     <a-form
       ref="windowForm"
       :model="windowForm"
+      :rules="rules"
       size="default"
       style="padding-top: 10px"
     >
@@ -47,6 +48,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
+import { FormInstance } from 'ant-design-vue'
 import { DesktopOutlined, MobileOutlined } from '@ant-design/icons-vue'
 
 import { TestWindow } from './types'
@@ -66,7 +68,17 @@ export default defineComponent({
   emits: ['update:open', 'submitWindow'],
   data() {
     return {
-      windowForm: {} as unknown as TestWindow
+      windowForm: {} as unknown as TestWindow,
+      rules: {
+        name: {
+          required: true,
+          message: '请输入窗口名称'
+        },
+        mode: {
+          required: true,
+          message: '请选择窗口类型'
+        }
+      }
     }
   },
   computed: {
@@ -75,6 +87,9 @@ export default defineComponent({
         return this.open
       },
       set(visible) {
+        if (visible) {
+          ;(this.$refs['windowForm'] as FormInstance).resetFields()
+        }
         this.$emit('update:open', visible)
       }
     }
@@ -87,13 +102,24 @@ export default defineComponent({
     }
   },
   methods: {
+    async validate() {
+      return (this.$refs['windowForm'] as FormInstance).validate()
+    },
     onCancel() {
       this.modalVisible = false
     },
-    onSubmit() {
-      const winObj = JSON.parse(JSON.stringify(this.windowForm)) as TestWindow
-      this.$emit('submitWindow', winObj)
-      this.modalVisible = false
+    async onSubmit() {
+      let valid = true
+      try {
+        await (this.$refs['windowForm'] as FormInstance).validate()
+      } catch (e) {
+        valid = false
+      }
+      if (valid) {
+        const winObj = JSON.parse(JSON.stringify(this.windowForm)) as TestWindow
+        this.$emit('submitWindow', winObj)
+        this.modalVisible = false
+      }
     }
   }
 })
