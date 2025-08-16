@@ -1,8 +1,9 @@
+import { defineStore } from 'pinia'
+
+import { Project } from '@common/types/test'
+
 import { Conf } from 'electron-conf/renderer'
 const conf = new Conf()
-
-import { defineStore } from 'pinia'
-import { Project } from '../components/types'
 
 export const useProjectStore = defineStore('project', {
   state: () =>

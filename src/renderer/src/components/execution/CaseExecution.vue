@@ -25,8 +25,9 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 
+import { CaseExecution } from '@common/types/execution'
+
 import ActionExecution from './ActionExecution.vue'
-import { CaseExecution } from './types'
 
 export default defineComponent({
   components: { ActionExecution },

@@ -1,5 +1,5 @@
-import { TestSettings } from './test-settings/types'
-import { Action } from './action/types'
+import { TestSettings } from './test-settings'
+import { Action } from './action'
 
 export interface Test {
   id: string

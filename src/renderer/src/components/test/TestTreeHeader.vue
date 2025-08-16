@@ -55,7 +55,7 @@ import {
 } from '@ant-design/icons-vue'
 
 import TestForm from './TestForm.vue'
-import { Test, TestNode, GroupNode } from '../types'
+import { Test, TestNode, GroupNode } from '@common/types/test'
 
 export default defineComponent({
   components: {

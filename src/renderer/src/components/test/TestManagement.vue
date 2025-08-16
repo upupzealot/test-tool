@@ -43,10 +43,11 @@
 
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
+
+import { Test } from '@common/types/test'
+
 import { useProjectStore } from '../../store/project'
 import { useStateStore } from '../../store/state'
-
-import { Test } from '../types'
 import TestNodeHeader from './TestNodeHeader.vue'
 import TestNodeBody from './TestNodeBody.vue'
 import TestTreeHeader from './TestTreeHeader.vue'

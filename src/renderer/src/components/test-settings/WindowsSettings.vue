@@ -56,7 +56,7 @@ import _ from 'lodash'
 import { defineComponent, PropType } from 'vue'
 import { PlusOutlined, DesktopOutlined, MobileOutlined } from '@ant-design/icons-vue'
 
-import { TestSettings, TestWindow } from './types'
+import { TestSettings, TestWindow } from '@common/types/test-settings'
 import EditWindowModal from './EditWindowModal.vue'
 
 import ShortUniqueId from 'short-unique-id'

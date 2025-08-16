@@ -23,7 +23,7 @@ import { mapWritableState } from 'pinia'
 
 import { useStateStore } from '@renderer/store/state'
 import OperationOpts from './OperationOpts'
-import { TestWindow } from '../test-settings/types'
+import { TestWindow } from '@common/types/test-settings'
 import EditWindowModal from '../test-settings/EditWindowModal.vue'
 
 import ShortUniqueId from 'short-unique-id'

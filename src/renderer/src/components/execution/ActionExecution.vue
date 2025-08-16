@@ -55,7 +55,8 @@ import {
   MinusCircleOutlined
 } from '@ant-design/icons-vue'
 
-import { ActionExecution } from './types'
+import { ActionExecution } from '@common/types/execution'
+
 import { OperationOptMap } from '../action/OperationOpts'
 
 export default defineComponent({

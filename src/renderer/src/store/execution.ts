@@ -1,11 +1,8 @@
 import { defineStore } from 'pinia'
-import { CaseNode, GroupNode, TestGroup, TestNode } from '../components/types'
-import { Action } from '@renderer/components/action/types'
-import {
-  ActionExecution,
-  CaseExecution,
-  GroupExecution
-} from '../components/execution/types'
+
+import { CaseNode, GroupNode, TestGroup, TestNode } from '@common/types/test'
+import { Action } from '@common/types/action'
+import { ActionExecution, CaseExecution, GroupExecution } from '@common/types/execution'
 
 export const useExecutionStore = defineStore('execution', {
   state: () =>

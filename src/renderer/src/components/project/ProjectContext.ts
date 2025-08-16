@@ -1,5 +1,12 @@
-import { ActionType, Project, Test, TestCase, TestGroup, TestNode } from '../types'
-import { Action } from '../action/types'
+import {
+  ActionType,
+  Project,
+  Test,
+  TestCase,
+  TestGroup,
+  TestNode
+} from '@common/types/test'
+import { Action } from '@common/types/action'
 
 export default class ProjectContext {
   project: Project

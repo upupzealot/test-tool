@@ -1,7 +1,7 @@
 <script lang="ts">
 import { PropType } from 'vue'
 
-import { Operation } from '../../types'
+import { Operation } from '@common/types/action'
 import { Form } from 'ant-design-vue'
 
 export default {

@@ -46,8 +46,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { useStateStore } from '@renderer/store/state'
-
+import { mapActions, mapState } from 'pinia'
 import {
   SettingFilled,
   CodeFilled,
@@ -58,8 +57,9 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { ActionType, TestNode } from '../types'
-import { mapActions, mapState } from 'pinia'
+import { ActionType, TestNode } from '@common/types/test'
+
+import { useStateStore } from '@renderer/store/state'
 
 export default defineComponent({
   components: {

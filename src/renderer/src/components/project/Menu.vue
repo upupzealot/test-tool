@@ -45,18 +45,18 @@
 </template>
 
 <script lang="ts">
-import { Conf } from 'electron-conf/renderer'
-const conf = new Conf()
-
+import { mapState, mapActions } from 'pinia'
 import { theme } from 'ant-design-vue'
 import { FolderOpenOutlined, PlusOutlined } from '@ant-design/icons-vue'
 
-import { mapState, mapActions } from 'pinia'
+import { Project } from '@common/types/test'
+
+import { Conf } from 'electron-conf/renderer'
+const conf = new Conf()
+
 import { useProjectStore } from '../../store/project'
 import { useStateStore } from '../../store/state'
-
 import ProjectForm from './ProjectForm.vue'
-import { Project } from '../types'
 
 export default {
   components: { FolderOpenOutlined, PlusOutlined, ProjectForm },

@@ -25,7 +25,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 
-import { Project } from '../types'
+import { Project } from '@common/types/test'
 
 export default defineComponent({
   props: {

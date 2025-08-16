@@ -1,7 +1,9 @@
 import _ from 'lodash'
-import { DEFAULT_SETTINGS, TestSettings } from '../test-settings/types'
-import { ActionExecution } from '../execution/types'
+
+import { DEFAULT_SETTINGS, TestSettings } from '@common/types/test-settings'
+import { ActionExecution } from '@common/types/execution'
 import ProjectContext from '../project/ProjectContext'
+
 import Runner from './Runner'
 
 export default class ActionRunner extends Runner {

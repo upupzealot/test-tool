@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+
 import {
   GroupNode,
   Project,
@@ -6,7 +7,8 @@ import {
   Test,
   TestGroup,
   TestNode
-} from '../components/types'
+} from '@common/types/test'
+
 import ProjectContext from '@renderer/components/project/ProjectContext'
 
 import ShortUniqueId from 'short-unique-id'

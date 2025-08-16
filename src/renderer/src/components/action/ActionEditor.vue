@@ -80,8 +80,9 @@ import { mapWritableState } from 'pinia'
 import { VueDraggable } from 'vue-draggable-plus'
 import { PlusOutlined } from '@ant-design/icons-vue'
 
-import { TestWindow } from '../test-settings/types'
-import { Action, Operation } from './types'
+import { TestWindow } from '@common/types/test-settings'
+import { Action, Operation } from '@common/types/action'
+
 import { useStateStore } from '@renderer/store/state'
 import OperationComponent from './Operation.vue'
 import AddOperationPanel from './AddOperationPanel.vue'

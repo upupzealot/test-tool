@@ -51,12 +51,13 @@ import {
   RightSquareFilled
 } from '@ant-design/icons-vue'
 
-import { TestCase, TestGroup, TestNode, CaseNode, GroupNode } from '../types'
-import { Action, Operation } from '../action/types'
+import { TestCase, TestGroup, TestNode, CaseNode, GroupNode } from '@common/types/test'
+import { Action, Operation } from '@common/types/action'
+import { DEFAULT_SETTINGS, TestSettings } from '@common/types/test-settings'
+
 import ActionSelector from './ActionSelector.vue'
 import ActionHeader from './TestNodeHeader.vue'
 import TestTreeList from './TestTreeList.vue'
-import { DEFAULT_SETTINGS, TestSettings } from '../test-settings/types'
 import TestSettingsComponent from '../test-settings/TestSettings.vue'
 import ActionEditor from '../action/ActionEditor.vue'
 

@@ -51,7 +51,7 @@ import { defineComponent, PropType } from 'vue'
 import { FormInstance } from 'ant-design-vue'
 import { DesktopOutlined, MobileOutlined } from '@ant-design/icons-vue'
 
-import { TestWindow } from './types'
+import { TestWindow } from '@common/types/test-settings'
 
 export default defineComponent({
   components: { DesktopOutlined, MobileOutlined },

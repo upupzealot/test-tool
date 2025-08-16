@@ -65,7 +65,7 @@ import _ from 'lodash'
 import { defineComponent, PropType } from 'vue'
 import { PlusOutlined } from '@ant-design/icons-vue'
 
-import { DEFAULT_SETTINGS, TestSettings, TestWindow } from './types'
+import { DEFAULT_SETTINGS, TestSettings, TestWindow } from '@common/types/test-settings'
 import WindowsSettings from './WindowsSettings.vue'
 
 export default defineComponent({

@@ -37,9 +37,10 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { mapWritableState } from 'pinia'
-
 import { CodeOutlined, FolderOutlined, FolderOpenOutlined } from '@ant-design/icons-vue'
-import { CaseExecution, GroupExecution } from './types'
+
+import { CaseExecution, GroupExecution } from '@common/types/execution'
+
 import { useExecutionStore } from '@renderer/store/execution'
 import ActionExecution from './ActionExecution.vue'
 

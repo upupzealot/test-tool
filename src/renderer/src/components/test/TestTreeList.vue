@@ -60,7 +60,7 @@ import {
   CodeOutlined
 } from '@ant-design/icons-vue'
 
-import { TestNode, GroupNode } from '../types'
+import { GroupNode, TestNode } from '@common/types/test'
 
 export default defineComponent({
   components: {

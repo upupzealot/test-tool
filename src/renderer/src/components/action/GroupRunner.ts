@@ -1,5 +1,5 @@
+import { CaseExecution, GroupExecution } from '@common/types/execution'
 import ProjectContext from '../project/ProjectContext'
-import { CaseExecution, GroupExecution } from '../execution/types'
 
 import Runner from './Runner'
 import CaseRunner from './CaseRunner'

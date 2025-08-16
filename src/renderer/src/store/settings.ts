@@ -1,8 +1,9 @@
+import { defineStore } from 'pinia'
+
+import { Dimension } from '@common/types/test'
+
 import { Conf } from 'electron-conf/renderer'
 const conf = new Conf()
-
-import { defineStore } from 'pinia'
-import { Dimension } from '../components/types'
 
 export const useSettingsStore = defineStore('settings', {
   state: () =>

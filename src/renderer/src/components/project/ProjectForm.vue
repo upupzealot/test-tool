@@ -54,10 +54,11 @@
 </template>
 
 <script lang="ts">
-import { Form } from 'ant-design-vue'
 import { defineComponent, PropType, toRaw } from 'vue'
+import { Form } from 'ant-design-vue'
 
-import { Project } from '../types'
+import { Project } from '@common/types/test'
+
 import ProjectConf from './ProjectConf.vue'
 
 export default defineComponent({
