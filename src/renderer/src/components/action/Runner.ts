@@ -1,11 +1,11 @@
 import { useSettingsStore } from '@renderer/store/settings'
-import { Project } from '../types'
+import ProjectContext from '../project/ProjectContext'
 
 export default abstract class Runner {
-  project: Project
+  projectCtx: ProjectContext
 
-  constructor(project: Project) {
-    this.project = project
+  constructor(projectCtx: ProjectContext) {
+    this.projectCtx = projectCtx
   }
 
   async launch() {
@@ -14,8 +14,9 @@ export default abstract class Runner {
     const { browserPath } = store
     const { ipcRenderer } = window.electron
 
-    const configObj = JSON.parse(JSON.stringify(this.project.config))
-    await ipcRenderer.invoke('test-operation--launch', browserPath, configObj)
+    const { project } = this.projectCtx
+    const configObj = JSON.parse(JSON.stringify(project.config))
+    await ipcRenderer.invoke('test-operation--init', browserPath, configObj)
   }
 
   async close() {

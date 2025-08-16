@@ -1,9 +1,31 @@
-import puppeteer, { Browser, Page } from 'puppeteer-core'
+import puppeteer, { Browser } from 'puppeteer-core'
 
+import _ from 'lodash'
 import delay from './delay'
 
 export default function init(ipcMain: Electron.IpcMain): void {
-  let browser: Browser
+  let browserMap: { [key: string]: Browser } = {}
+  let browserPath = ''
+  async function windowOpening(winId: string) {
+    let browser = browserMap[winId]
+    if (!browser) {
+      const windowWidth = 640
+      const windowHeight = 640
+      browser = await puppeteer.launch({
+        headless: false,
+        executablePath: browserPath,
+        defaultViewport: null,
+        args: [`--window-size=${windowWidth},${windowHeight}`]
+      })
+      browserMap[winId] = browser
+    }
+    return browser
+  }
+
+  let variables: {
+    [key: string]: any
+  } = {}
+
   let presetLocators: {
     [key: string]: {
       key: string
@@ -11,37 +33,37 @@ export default function init(ipcMain: Electron.IpcMain): void {
       locator: string
     }
   } = {}
-  let page: Page
-  let variables: {
-    [key: string]: any
-  } = {}
-  ipcMain.handle('test-operation--launch', async (__, ...args) => {
-    const [browserPath, projectConf] = args
+
+  ipcMain.handle('test-operation--init', async (__, ...args) => {
+    browserPath = args[0]
+    const projectConf = args[1]
     projectConf.presetLocators.forEach((preset) => {
       presetLocators[preset.key] = preset
     })
-
-    const windowWidth = 640
-    const windowHeight = 640
-    browser = await puppeteer.launch({
-      headless: false,
-      executablePath: browserPath,
-      defaultViewport: null,
-      args: [`--window-size=${windowWidth},${windowHeight}`]
-    })
-
-    page = (await browser.pages())[0]
   })
-  ipcMain.handle('test-operation--close', async () => {
-    await browser.close()
+
+  ipcMain.handle('test-operation--close', async (__, ...args) => {
+    const winIds = _.keys(browserMap)
+    await winIds.map(async (winId) => {
+      const browser = browserMap[winId]
+      await browser.close()
+    })
+    browserMap = {}
+    browserPath = ''
   })
   ipcMain.handle('test-operation--goto', async (__, ...args) => {
-    const [{ url }] = args
+    const [winId, { url }] = args
+    const browser = await windowOpening(winId)
+    const page = (await browser.pages())[0]
+
     await page.goto(url)
     return { pass: true }
   })
   ipcMain.handle('test-operation--input', async (__, ...args) => {
-    const [{ locator, text }] = args
+    const [winId, { locator, text }] = args
+    const browser = await windowOpening(winId)
+    const page = (await browser.pages())[0]
+
     const count = await page.$$eval(locator, async ($elements) => {
       return $elements.length
     })
@@ -54,7 +76,10 @@ export default function init(ipcMain: Electron.IpcMain): void {
     }
   })
   ipcMain.handle('test-operation--click', async (__, ...args) => {
-    const [{ selectorPreset, selector, textOpt, text }] = args
+    const [winId, { selectorPreset, selector, textOpt, text }] = args
+    const browser = await windowOpening(winId)
+    const page = (await browser.pages())[0]
+
     let query = selector
     if (selectorPreset !== 'custom') {
       query = presetLocators[selectorPreset].locator
@@ -91,7 +116,10 @@ export default function init(ipcMain: Electron.IpcMain): void {
     return result
   })
   ipcMain.handle('test-operation--lookup', async (__, ...args) => {
-    const [{ locator, attribute, output }] = args
+    const [winId, { locator, attribute, output }] = args
+    const browser = await windowOpening(winId)
+    const page = (await browser.pages())[0]
+
     const value = await page.$$eval(
       locator,
       ($elements, attribute) => {
@@ -105,7 +133,10 @@ export default function init(ipcMain: Electron.IpcMain): void {
     return { pass: true, variables }
   })
   ipcMain.handle('test-operation--lookup:page', async (__, ...args) => {
-    const [{ attribute, output }] = args
+    const [winId, { attribute, output }] = args
+    const browser = await windowOpening(winId)
+    const page = (await browser.pages())[0]
+
     const value = await page.evaluate((attribute) => {
       if (attribute === 'url') {
         return window.location.href
@@ -121,14 +152,19 @@ export default function init(ipcMain: Electron.IpcMain): void {
     return { pass: true, variables }
   })
   ipcMain.handle('test-operation--wait', async (__, ...args) => {
-    const [{ wait }] = args
+    const [winId, { wait }] = args
+    const browser = await windowOpening(winId)
+    const page = (await browser.pages())[0]
+
     await delay(wait)
     return { pass: true }
   })
   ipcMain.handle('test-operation--assert', async (__, ...args) => {
-    const [{ variable, numOpt, num, textOpt, text }] = args
-    const value = variables[variable]
+    const [winId, { variable, numOpt, num, textOpt, text }] = args
+    const browser = await windowOpening(winId)
+    const page = (await browser.pages())[0]
 
+    const value = variables[variable]
     console.log(value, text)
     if (numOpt) {
       if (numOpt === '=') {

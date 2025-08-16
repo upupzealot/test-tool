@@ -66,6 +66,7 @@ import { useExecutionStore } from '@renderer/store/execution'
 import { CaseNode, GroupNode, ActionType, TestCase, TestGroup, TestNode } from '../types'
 import { Action } from '../action/types'
 import OperationOpts, { OperationOptMap } from '../action/OperationOpts'
+import ProjectContext from '../project/ProjectContext'
 import ActionRunner from '../action/ActionRunner'
 import CaseRunner from '../action/CaseRunner'
 import GroupRunner from '../action/GroupRunner'
@@ -132,10 +133,11 @@ export default defineComponent({
 
       this.setActiveTab('test-execution')
       this.mode = 'action'
+      const projectCtx = new ProjectContext(this.project)
       const actionExecutionObj = this.getActionExecution(action)
       this.executingAction = actionExecutionObj
       // 传入 this.executingAction 引入响应式
-      const runner = new ActionRunner(this.project, this.executingAction)
+      const runner = new ActionRunner(projectCtx, this.executingAction)
       this.running = true
       await runner.launch()
       const pass = await runner.run()
@@ -161,10 +163,11 @@ export default defineComponent({
       const pathNodes = [...this.currentPaths]
       this.setActiveTab('test-execution')
       this.mode = 'case'
+      const projectCtx = new ProjectContext(this.project)
       const kaseExecutionObj = this.getCaseExecution(kaseNode, pathNodes)
       this.executingCase = kaseExecutionObj
       // 传入 this.executingCase 引入响应式
-      const runner = new CaseRunner(this.project, this.executingCase)
+      const runner = new CaseRunner(projectCtx, this.executingCase)
       this.running = true
       await runner.launch()
       const pass = await runner.run()
@@ -179,10 +182,11 @@ export default defineComponent({
       const pathNodes = [...this.currentPaths]
       this.setActiveTab('test-execution')
       this.mode = 'group'
+      const projectCtx = new ProjectContext(this.project)
       const groupExecutionObj = this.getGroupExecution(groupNode, pathNodes)
       this.executingGroup = groupExecutionObj
       // 传入 this.executingGroup 引入响应式
-      const runner = new GroupRunner(this.project, this.executingGroup)
+      const runner = new GroupRunner(projectCtx, this.executingGroup)
       this.running = true
       await runner.launch()
       const pass = await runner.run()

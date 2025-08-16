@@ -1,4 +1,4 @@
-import { Project } from '../types'
+import ProjectContext from '../project/ProjectContext'
 import { CaseExecution } from '../execution/types'
 
 import Runner from './Runner'
@@ -7,8 +7,8 @@ import ActionRunner from './ActionRunner'
 export default class CaseRunner extends Runner {
   kase: CaseExecution
 
-  constructor(project: Project, kase: CaseExecution) {
-    super(project)
+  constructor(projectCtx: ProjectContext, kase: CaseExecution) {
+    super(projectCtx)
     this.kase = kase
   }
 
@@ -18,7 +18,7 @@ export default class CaseRunner extends Runner {
     let pass = true
     for (let i = 0; i < actionList.length; i++) {
       const action = actionList[i]
-      const actionRunner = new ActionRunner(this.project, action)
+      const actionRunner = new ActionRunner(this.projectCtx, action)
       const result = await actionRunner.run()
       pass = pass && result
       if (!pass) {

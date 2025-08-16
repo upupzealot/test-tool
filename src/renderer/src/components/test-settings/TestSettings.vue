@@ -115,7 +115,6 @@ export default defineComponent({
 .settings-container {
   border: #eee 1px solid;
   padding: 10px 15px;
-  cursor: pointer;
 }
 
 .ant-form-item .dot {

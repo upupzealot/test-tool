@@ -7,6 +7,7 @@ import {
   TestGroup,
   TestNode
 } from '../components/types'
+import ProjectContext from '@renderer/components/project/ProjectContext'
 
 import ShortUniqueId from 'short-unique-id'
 const uid = new ShortUniqueId({ length: 10 })
@@ -23,7 +24,7 @@ export const useStateStore = defineStore('state', {
       currentWindowId: ''
     }) as {
       activeTab: string
-      testNodeMap: Map<string, TestNode>
+      testNodeMap: { [key: string]: TestNode }
       currentNodeId: string
       currentGroupId: string
       currentActionType: ActionType
@@ -38,7 +39,7 @@ export const useStateStore = defineStore('state', {
       }
     },
     currentGroupNode(): GroupNode {
-      return this.testNodeMap[this.currentGroupId || '-']
+      return this.testNodeMap[this.currentGroupId || '-'] as GroupNode
     },
     currentPaths(): TestNode[] {
       return this.currentGroupNode.paths.map((path) => this.testNodeMap[path])
@@ -49,51 +50,7 @@ export const useStateStore = defineStore('state', {
       this.activeTab = activeTab
     },
     updateTestTree(project: Project) {
-      if (!project.children) {
-        project.children = []
-      }
-      if (!project.settings) {
-        project.settings = {}
-      }
-      const rootNode = {
-        id: '-',
-        type: 'group',
-        name: project.name,
-        // desc: project.desc,
-        desc: '项目设置',
-        paths: ['-'],
-        children: [],
-        test: {
-          id: '-',
-          type: 'group',
-          name: '-',
-          children: project.children,
-          settings: project.settings
-        } as Test
-      } as TestGroup
-
-      const testNodeMap = {} as Map<string, TestNode>
-      let arr = [rootNode] as TestNode[]
-      while (arr.length) {
-        const testNode = arr.shift()!
-        testNodeMap[testNode.id] = testNode
-
-        if (testNode.type === 'group') {
-          const childrenNodes = (testNode.test as TestGroup).children.map(
-            (childTest) =>
-              ({
-                id: childTest.id,
-                name: childTest.name,
-                desc: childTest.desc,
-                type: childTest.type,
-                paths: [...testNode.paths, childTest.id],
-                test: childTest
-              }) as TestNode
-          )
-          testNode.children = childrenNodes
-          arr = arr.concat(childrenNodes)
-        }
-      }
+      const { testNodeMap } = new ProjectContext(project)
       this.testNodeMap = testNodeMap
     },
     getNode(id: string): TestNode {

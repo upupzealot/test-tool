@@ -1,14 +1,24 @@
-import { Project } from '../types'
+import _ from 'lodash'
+import { DEFAULT_SETTINGS, TestSettings } from '../test-settings/types'
 import { ActionExecution } from '../execution/types'
-
+import ProjectContext from '../project/ProjectContext'
 import Runner from './Runner'
 
 export default class ActionRunner extends Runner {
   action: ActionExecution
+  settings: TestSettings
 
-  constructor(project: Project, action: ActionExecution) {
-    super(project)
+  constructor(projectCtx: ProjectContext, action: ActionExecution) {
+    super(projectCtx)
     this.action = action
+
+    const { testNodeMap, testMap, actionMap } = this.projectCtx
+    const { testId } = actionMap[action.id]
+    const testNode = testNodeMap[testId]
+    const pathSettings = [...testNode.paths].map(
+      (parentId) => testMap[parentId].settings || {}
+    )
+    this.settings = _.merge({}, ...[DEFAULT_SETTINGS, ...pathSettings])
   }
 
   async run(): Promise<boolean> {
@@ -20,7 +30,11 @@ export default class ActionRunner extends Runner {
       const operation = operations[i]
       const startAt = Date.now()
       try {
-        const result = await this.operate(operation.type, operation.params)
+        const result = await this.operate(
+          operation.winId,
+          operation.type,
+          operation.params
+        )
         operation.time = Date.now() - startAt
         operation.pass = result.pass
 
@@ -47,9 +61,9 @@ export default class ActionRunner extends Runner {
     return actionPass
   }
 
-  async operate(operationType: string, params: any) {
+  async operate(winId: string, operationType: string, params: any) {
     const { ipcRenderer } = window.electron
     const paramsObj = JSON.parse(JSON.stringify(params))
-    return await ipcRenderer.invoke(`test-operation--${operationType}`, paramsObj)
+    return await ipcRenderer.invoke(`test-operation--${operationType}`, winId, paramsObj)
   }
 }
