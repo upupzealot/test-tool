@@ -4,13 +4,17 @@
     "src/renderer/src/env.d.ts",
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.vue",
-    "src/preload/*.d.ts"
+    "src/preload/*.d.ts",
+    "src/common/**/*.ts"
   ],
   "compilerOptions": {
     // https://github.com/developer-plus/weekly/issues/31
     // "composite": true,
     "baseUrl": ".",
     "paths": {
+      "@common/*": [
+        "src/common/*"
+      ],
       "@renderer/*": [
         "src/renderer/src/*"
       ]

@@ -12,6 +12,7 @@ export default defineConfig({
   renderer: {
     resolve: {
       alias: {
+        '@common': resolve('src/common'),
         '@renderer': resolve('src/renderer/src')
       }
     },
